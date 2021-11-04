@@ -2,6 +2,9 @@
 # You'll need to install the package (i.e. pip install mysql-connector) first
 import mysql.connector as ms
 
+# These will be useful for serving queries based on date range
+from datetime import datetime, date, timedelta
+
 config = {
   'user': 'SideRideProject',
   'password': 'SideRideProject130*',
