@@ -1,22 +1,26 @@
-import React from "react";
 import logo from "./logo.svg";
-import { useHistory } from "react-router"
+import React from "react";
 
-export default function LoginPage() {
-    let history = useHistory();
+export default function SearchPage() {
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo"/>
+        <div className="SearchPage">
+            <header className="SearchPage-header">
+                <img src={logo} className="App-logo" alt="logo" />
                 <div>
-                    <NameForm history={history}/>
+                    <p>
+                        <Selection/>
+                    </p>
+                </div>
+                <div>
+                    <Results/>
                 </div>
             </header>
         </div>
     );
 }
 
-class NameForm extends React.Component {
+
+class Selection extends React.Component {
     constructor(props) {
         super(props);
         this.state = {username: '', password: ''};
@@ -45,18 +49,37 @@ class NameForm extends React.Component {
             <form onSubmit={this.handleSubmit}>
                 <div>
                     <label>
-                        Username: &nbsp;
+                        From: &nbsp;
                         <input type="text" value={this.state.username} onChange={this.handleChange}/>
+                        &nbsp;
                     </label>
-                </div>
-                <div>
                     <label>
-                        Password: &nbsp;
-                        <input type="password" value={this.state.password} onChange={this.handlePasswordChange} />
+                        To: &nbsp;
+                        <input type="text" value={this.state.password} onChange={this.handlePasswordChange} />
                     </label>
+                    <label>
+                        Date: &nbsp;
+                        <input type="date" value={this.state.password} onChange={this.handlePasswordChange} />
+                        &nbsp;
+                    </label>
+                    <input type="submit" value="Search" />
                 </div>
-                <input type="submit" value="Login" />
             </form>
+
+        );
+    }
+}
+
+class Results extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <p>
+                Dropdown Menu Here
+            </p>
 
         );
     }
