@@ -39,7 +39,7 @@ class NameForm extends React.Component {
 
     handleSubmit(event) {
         this.props.history.push('/search')
-        const resp = API.get('flaskapi', '/api/' + this.state.username)
+        API.get('flaskapi', '/api/' + this.state.username)
             .then((response) => console.log(response))
         event.preventDefault();
     }
