@@ -5,8 +5,8 @@ import { useHistory } from "react-router"
 export default function SearchPage() {
     let history = useHistory();
     return (
-        <div className="SearchPage">
-            <header className="SearchPage-header">
+        <div className="App">
+            <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <div>
                     <p>
@@ -26,23 +26,27 @@ export default function SearchPage() {
 class Selection extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {username: '', password: ''};
+        this.state = {from: '', to: '', date: ''};
         this.handleChange = this.handleChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(event) {
-        this.setState({username: event.target.value});
+        this.setState({from: event.target.value});
     }
 
     handlePasswordChange(event) {
-        this.setState({password: event.target.value});
+        this.setState({to: event.target.value});
+    }
+
+    handleDateChange(event) {
+        this.setState({date: event.target.value});
     }
 
     handleSubmit(event) {
-        alert('A name was submitted: ' + this.state.username + ' with password ' + this.state.password);
-        this.props.history.push('/results')
+        this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
         event.preventDefault();
     }
 
@@ -52,16 +56,17 @@ class Selection extends React.Component {
                 <div>
                     <label>
                         From: &nbsp;
-                        <input type="text" value={this.state.username} onChange={this.handleChange}/>
+                        <input type="text" value={this.state.from} onChange={this.handleChange}/>
                         &nbsp;
                     </label>
                     <label>
                         To: &nbsp;
-                        <input type="text" value={this.state.password} onChange={this.handlePasswordChange} />
+                        <input type="text" value={this.state.to} onChange={this.handlePasswordChange} />
+                        &nbsp;
                     </label>
                     <label>
                         Date: &nbsp;
-                        <input type="date" value={this.state.password} onChange={this.handlePasswordChange} />
+                        <input type="date" value={this.state.date} onChange={this.handleDateChange} />
                     </label>
                 </div>
 
