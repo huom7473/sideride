@@ -5,8 +5,8 @@ import { useHistory } from "react-router"
 export default function SearchPage() {
     let history = useHistory();
     return (
-        <div className="SearchPage">
-            <header className="SearchPage-header">
+        <div className="App">
+            <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <div>
                     <p>
@@ -46,7 +46,6 @@ class Selection extends React.Component {
     }
 
     handleSubmit(event) {
-        alert('From ' + this.state.from + ' to: ' + this.state.to + " on the date of " + this.state.date);
         this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
         event.preventDefault();
     }
@@ -63,6 +62,7 @@ class Selection extends React.Component {
                     <label>
                         To: &nbsp;
                         <input type="text" value={this.state.to} onChange={this.handlePasswordChange} />
+                        &nbsp;
                     </label>
                     <label>
                         Date: &nbsp;
