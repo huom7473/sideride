@@ -6,6 +6,10 @@ import reportWebVitals from './reportWebVitals';
 import routes from "./routes"
 import {Router} from 'react-router'
 import {createBrowserHistory} from 'history'
+import { Amplify } from 'aws-amplify'
+import config from './aws-exports'
+
+Amplify.configure(config)
 
 const history = createBrowserHistory();
 
