@@ -1,6 +1,8 @@
 import React from "react";
 import logo from "./logo.svg";
 import { useHistory } from "react-router"
+import { API } from 'aws-amplify'
+
 
 export default function LoginPage() {
     let history = useHistory();
@@ -37,6 +39,8 @@ class NameForm extends React.Component {
     handleSubmit(event) {
         alert('A name was submitted: ' + this.state.username + ' with password ' + this.state.password);
         this.props.history.push('/search')
+        //const resp = API.get('flaskapi', '/api/' + this.props.username)
+        //console.log(resp)
         event.preventDefault();
     }
 
