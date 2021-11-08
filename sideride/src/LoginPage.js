@@ -35,7 +35,6 @@ class NameForm extends React.Component {
     }
 
     handleSubmit(event) {
-        alert('A name was submitted: ' + this.state.username + ' with password ' + this.state.password);
         this.props.history.push('/search')
         event.preventDefault();
     }
