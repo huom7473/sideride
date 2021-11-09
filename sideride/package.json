@@ -12,6 +12,7 @@
     "react-dom": "^17.0.2",
     "react-router": "^5.2.1",
     "react-scripts": "4.0.3",
+    "sinon": "^12.0.1",
     "styled-components": "^5.3.3",
     "web-vitals": "^1.1.2"
   },
@@ -40,6 +41,8 @@
     ]
   },
   "devDependencies": {
-    "history": "^4.10.1"
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
+    "history": "^4.10.1",
+    "jest": "^26.6.0"
   }
 }

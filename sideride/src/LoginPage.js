@@ -19,7 +19,7 @@ export default function LoginPage() {
     );
 }
 
-class NameForm extends React.Component {
+export class NameForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {username: '', password: ''};
@@ -50,7 +50,11 @@ class NameForm extends React.Component {
                 <div>
                     <label>
                         Username: &nbsp;
-                        <input type="text" value={this.state.username} onChange={this.handleChange}/>
+                        <input 
+                        type="text" 
+                        value={this.state.username} 
+                        onChange={this.handleChange}
+                        />
                     </label>
                 </div>
                 <div>
