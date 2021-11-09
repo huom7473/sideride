@@ -6,6 +6,7 @@ import SearchPage from "./SearchPage"
 import LoginPage from "./LoginPage"
 import NotFoundPage from "./NotFoundPage"
 import ResultsPage from "./ResultsPage"
+import CreateAccountPage from "./CreateAccount"
 
 export default (
     <Switch>
@@ -13,6 +14,7 @@ export default (
         <Route path="/login" component={LoginPage}/>
         <Route path="/search" component={SearchPage}/>
         <Route path="/results" component={ResultsPage}/>
+        <Route path="/create" component={CreateAccountPage}/> 
         <Route component={NotFoundPage}/>
     </Switch>
 
