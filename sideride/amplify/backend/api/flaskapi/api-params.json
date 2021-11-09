@@ -1,0 +1,35 @@
+{
+  "paths": [
+    {
+      "name": "/api",
+      "lambdaFunction": "flaskapi",
+      "privacy": {
+        "open": true
+      },
+      "policyResourceName": "/api"
+    }
+  ],
+  "resourceName": "flaskapi",
+  "apiName": "flaskapi",
+  "functionArns": [
+    {
+      "lambdaFunction": "flaskapi"
+    }
+  ],
+  "privacy": {
+    "auth": 0,
+    "unauth": 0,
+    "authRoleName": "amplify-amplify067eadd867394-staging-224446-authRole",
+    "unAuthRoleName": "amplify-amplify067eadd867394-staging-224446-unauthRole"
+  },
+  "dependsOn": [
+    {
+      "category": "function",
+      "resourceName": "flaskapi",
+      "attributes": [
+        "Name",
+        "Arn"
+      ]
+    }
+  ]
+}
