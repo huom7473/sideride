@@ -9,6 +9,7 @@ verify_ssl = true
 src = {editable = true, path = "./src"}
 flask = "*"
 aws-wsgi = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.9"

@@ -19,7 +19,7 @@ export default function LoginPage() {
     );
 }
 
-class NameForm extends React.Component {
+export class NameForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {username: '', password: ''};
@@ -39,7 +39,7 @@ class NameForm extends React.Component {
 
     handleSubmit(event) {
         this.props.history.push('/search')
-        const resp = API.get('flaskapi', '/api/' + this.state.username)
+        API.get('flaskapi', '/api/' + this.state.username)
             .then((response) => console.log(response))
         event.preventDefault();
     }
@@ -50,7 +50,11 @@ class NameForm extends React.Component {
                 <div>
                     <label>
                         Username: &nbsp;
-                        <input type="text" value={this.state.username} onChange={this.handleChange}/>
+                        <input 
+                        type="text" 
+                        value={this.state.username} 
+                        onChange={this.handleChange}
+                        />
                     </label>
                 </div>
                 <div>
