@@ -1,9 +1,8 @@
 import React from "react";
 import logo from "./logo.svg";
-import { useHistory } from "react-router"
+import { useHistory, Link } from "react-router"
 import { API } from 'aws-amplify'
-
-
+import styled from "styled-components";
 
 export default function LoginPage() {
     let history = useHistory();
@@ -22,50 +21,81 @@ export default function LoginPage() {
 export class NameForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {username: '', password: ''};
+        this.state = {
+            username: '', 
+            password: ''
+        };
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
-        this.setState({username: event.target.value});
-    }
+    _handleUpdate = (evt) => {
+        const { name, value } = evt.target;
+    
+        //this code is really nifty, it dynamically sets the input field with "name" to the corresponding value,
+        //so it can update any of: email, password, confirmedPassword, errored... 
+        this.setState({ [name]: value }, () => {
+          console.log("this.state", this.state);
+        });
+      };
 
-    handlePasswordChange(event) {
-        this.setState({password: event.target.value});
-    }
-
-    handleSubmit(event) {
+    _handleSubmit = (evt) => {
         this.props.history.push('/search')
         API.get('flaskapi', '/api/' + this.state.username)
             .then((response) => console.log(response))
-        event.preventDefault();
-    }
+        evt.preventDefault();
+    };
+
+    _handleCreateAccount = (evt) => {
+        this.props.history.push('/create');
+        evt.preventDefault();
+    };
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
+            <>
+            <Form>
                 <div>
                     <label>
                         Username: &nbsp;
-                        <input 
-                        type="text" 
-                        value={this.state.username} 
-                        onChange={this.handleChange}
+                        <Input name="username" type="text" value={this.state.username} onChange={this._handleUpdate}
                         />
                     </label>
                 </div>
                 <div>
                     <label>
                         Password: &nbsp;
-                        <input type="password" value={this.state.password} onChange={this.handlePasswordChange} />
+                        <Input name="password" type="password" value={this.state.password} onChange={this._handleUpdate} 
+                        />
                     </label>
                 </div>
-                <input type="submit" value="Login" />
-            </form>
-
+                <Button onClick = {this._handleSubmit}>Login</Button>
+            </Form>
+            <P>Or</P>
+            <Button onClick = {this._handleCreateAccount}>Sign up</Button>
+            </>
         );
     }
 }
+
+const Form = styled.form`
+  width: 600px;
+  height: 110px;
+`; 
+
+const Input = styled.input`
+  outline: ${(props) => (props.errored ? "red" : "none")};
+`; 
+
+const Button = styled.button`
+  background-color: lightblue;
+  margin-top:1px;
+  width: 100px;
+  height:30px;
+  font-family : -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+`;
+
+const P = styled.p`
+  line-height:0.2;
+`;

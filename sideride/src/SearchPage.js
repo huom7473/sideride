@@ -27,50 +27,42 @@ class Selection extends React.Component {
     constructor(props) {
         super(props);
         this.state = {from: '', to: '', date: ''};
-        this.handleChange = this.handleChange.bind(this);
-        this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.handleDateChange = this.handleDateChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
-        this.setState({from: event.target.value});
-    }
+    _handleUpdate = (evt) => {
+        const { name, value } = evt.target;
+    
+        //this code is really nifty, it dynamically sets the input field with "name" to the corresponding value,
+        //so it can update any of: email, password, confirmedPassword, errored... 
+        this.setState({ [name]: value }, () => {
+          console.log("this.state", this.state);
+        });
+    };
 
-    handlePasswordChange(event) {
-        this.setState({to: event.target.value});
-    }
-
-    handleDateChange(event) {
-        this.setState({date: event.target.value});
-    }
-
-    handleSubmit(event) {
+    _handleSubmit = (evt) => {
         this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
-        event.preventDefault();
-    }
+        evt.preventDefault();
+    };
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={this._handleSubmit}>
                 <div>
                     <label>
                         From: &nbsp;
-                        <input type="text" value={this.state.from} onChange={this.handleChange}/>
+                        <input name="from" type="text" value={this.state.from} onChange={this._handleUpdate}/>
                         &nbsp;
                     </label>
                     <label>
                         To: &nbsp;
-                        <input type="text" value={this.state.to} onChange={this.handlePasswordChange} />
+                        <input name="to" type="text" value={this.state.to} onChange={this._handleUpdate} />
                         &nbsp;
                     </label>
                     <label>
                         Date: &nbsp;
-                        <input type="date" value={this.state.date} onChange={this.handleDateChange} />
+                        <input name="date" type="date" value={this.state.date} onChange={this._handleUpdate} />
                     </label>
                 </div>
-
-                    
 
                 <input type="submit" value="Host a Ride" />
                 <input type="submit" value="Find a Ride" />
