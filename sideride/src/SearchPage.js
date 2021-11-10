@@ -23,10 +23,11 @@ export default function SearchPage() {
 
 
 
-class Selection extends React.Component {
+export class Selection extends React.Component {
     constructor(props) {
         super(props);
         this.state = {from: '', to: '', date: ''};
+<<<<<<< HEAD
     }
 
     _handleUpdate = (evt) => {
@@ -38,6 +39,21 @@ class Selection extends React.Component {
           console.log("this.state", this.state);
         });
     };
+=======
+        this.handleChange = this.handleChange.bind(this);
+        this.handleToChange = this.handleToChange.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange(event) {
+        this.setState({from: event.target.value});
+    }
+
+    handleToChange(event) {
+        this.setState({to: event.target.value});
+    }
+>>>>>>> a2b9494bcc115e8337713c75fe37dda67f118e4e
 
     _handleSubmit = (evt) => {
         this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
@@ -55,7 +71,11 @@ class Selection extends React.Component {
                     </label>
                     <label>
                         To: &nbsp;
+<<<<<<< HEAD
                         <input name="to" type="text" value={this.state.to} onChange={this._handleUpdate} />
+=======
+                        <input type="text" value={this.state.to} onChange={this.handleToChange} />
+>>>>>>> a2b9494bcc115e8337713c75fe37dda67f118e4e
                         &nbsp;
                     </label>
                     <label>
