@@ -23,12 +23,12 @@ export default function SearchPage() {
 
 
 
-class Selection extends React.Component {
+export class Selection extends React.Component {
     constructor(props) {
         super(props);
         this.state = {from: '', to: '', date: ''};
         this.handleChange = this.handleChange.bind(this);
-        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleToChange = this.handleToChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -37,7 +37,7 @@ class Selection extends React.Component {
         this.setState({from: event.target.value});
     }
 
-    handlePasswordChange(event) {
+    handleToChange(event) {
         this.setState({to: event.target.value});
     }
 
@@ -61,7 +61,7 @@ class Selection extends React.Component {
                     </label>
                     <label>
                         To: &nbsp;
-                        <input type="text" value={this.state.to} onChange={this.handlePasswordChange} />
+                        <input type="text" value={this.state.to} onChange={this.handleToChange} />
                         &nbsp;
                     </label>
                     <label>

@@ -1,5 +1,4 @@
-//mport { fireEvent, render, screen } from '@testing-library/react';
-import { NameForm } from "./LoginPage"
+import { NameForm } from "../LoginPage"
 import { configure, mount } from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
