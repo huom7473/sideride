@@ -1,22 +1,31 @@
 from datetime import datetime, date, timedelta
 import mysql.connector as ms
 
-class mysql_db:
-    def __init__(self, config) -> None:
+CONN_FAILURE = "Connection failed"
+
+default_config =     {
+    'user': 'SideRideProject',
+    'password': 'SideRideProject130*',
+    'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
+    'database': 'SideRideSchema',
+    'raise_on_warnings': True
+}
+
+class DatabaseHandler:
+    def __init__(self, config=default_config) -> None:
         self.config = config
 
     def connect_to_db(self):
         try:
-            connection = ms.connect(**self.config)
-            cursor = connection.cursor()
+            connection = ms.connect(**self.config)     
             return connection 
         except:
-            return "Connection failed"
+            return CONN_FAILURE
     
     def query_db(self, query="SELECT * FROM LoginInformation"):
         connection = self.connect_to_db()
 
-        if connection is not None:
+        if connection is not CONN_FAILURE:
             cursor = connection.cursor()
             cursor.execute(query)
 

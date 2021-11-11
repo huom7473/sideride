@@ -1,15 +1,7 @@
 import unittest
-from sql_db import *
+from DB_manager import *
 
-goodconfig =     {
-    'user': 'SideRideProject',
-    'password': 'SideRideProject130*',
-    'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
-    'database': 'SideRideSchema',
-    'raise_on_warnings': True
-}
-
-poorconfigs = [
+test_configs = [
     #user is incorrect, expect fail
     {
         'user': 'SideRideProjectxyz',
@@ -51,14 +43,14 @@ poorconfigs = [
 class TestDBConnection(unittest.TestCase):
 
     def test_connect_failures(self):
-        for config in poorconfigs:
-            sql_db = mysql_db(config)
+        for config in test_configs:
+            sql_db = DatabaseHandler(config)
             with self.subTest(config):
-                self.assertEqual(sql_db.connect_to_db(), "Connection failed")
+                self.assertEqual(sql_db.connect_to_db(), CONN_FAILURE)
     
     def test_connect_proper(self):
-        sql_db = mysql_db(goodconfig)
-        self.assertNotEqual(sql_db.connect_to_db(), "Connection failed")
+        sql_db = DatabaseHandler()
+        self.assertNotEqual(sql_db.connect_to_db(), CONN_FAILURE)
 
 
 if __name__ == '__main__':
