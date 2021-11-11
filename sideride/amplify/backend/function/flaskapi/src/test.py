@@ -1,22 +1,15 @@
 import unittest
+from sql_db import *
 
-from mysql.connector.connection import MySQLConnection
-from sql_db import mysql_db
+goodconfig =     {
+    'user': 'SideRideProject',
+    'password': 'SideRideProject130*',
+    'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
+    'database': 'SideRideSchema',
+    'raise_on_warnings': True
+}
 
-#test db class file from this test script
-#testing just the connect method from module, few different tests
-#each test needs an input and expected value
-
-configs = [
-    #correct info, expect pass
-    {
-        'user': 'SideRideProject',
-        'password': 'SideRideProject130*',
-        'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
-        'database': 'SideRideSchema',
-        'raise_on_warnings': True
-    }, 
-    
+poorconfigs = [
     #user is incorrect, expect fail
     {
         'user': 'SideRideProjectxyz',
@@ -52,27 +45,21 @@ configs = [
         'database': 'SideRide',
         'raise_on_warnings': True
     }, 
-
 ]
+
 
 class TestDBConnection(unittest.TestCase):
 
-    def test_connect(self):
-        for config in configs:
+    def test_connect_failures(self):
+        for config in poorconfigs:
+            sql_db = mysql_db(config)
             with self.subTest(config):
-                sql_db = mysql_db(config)
-                self.assertIsInstance(sql_db.connect_to_db(), MySQLConnection)
+                self.assertEqual(sql_db.connect_to_db(), "Connection failed")
+    
+    def test_connect_proper(self):
+        sql_db = mysql_db(goodconfig)
+        self.assertNotEqual(sql_db.connect_to_db(), "Connection failed")
 
-
-#or
-#  
-# def suite():
-#     test_suite = unittest.TestSuite()
-#     test_suite.addTest(unittest.makeSuite(TestDBConnection))
-#     return test_suite
-# mySuite = suite()
-# runner = unittest.TextTestRunner()
-# runner.run(mySuite)
 
 if __name__ == '__main__':
     unittest.main()

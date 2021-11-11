@@ -15,9 +15,11 @@ config = {
 
 try:
     connection = ms.connect(**config)
+    print(connection.is_connected())
     cursor = connection.cursor()
 except ms.Error as e:
     print(e.msg)
+    print(connection.is_connected())
     exit()
 
 # Once we have established a connection, do whatever you want 

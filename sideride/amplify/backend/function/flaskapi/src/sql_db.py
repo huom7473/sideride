@@ -1,16 +1,6 @@
-# These will be useful for serving queries based on date range
-# from datetime import datetime, date, timedelta
-#add database functionality here
+from datetime import datetime, date, timedelta
 import mysql.connector as ms
 
-#config must pull from config file
-#test we want:
-#pass in config w wrong params
-#pass in config w right params
-
-
-#the purpose of this class is to connect to the database and 
-#execute SQL queries upon it. 
 class mysql_db:
     def __init__(self, config) -> None:
         self.config = config
@@ -18,11 +8,10 @@ class mysql_db:
     def connect_to_db(self):
         try:
             connection = ms.connect(**self.config)
-            #cursor = connection.cursor()
+            cursor = connection.cursor()
             return connection 
         except:
-            print("Connection failed")
-            return None
+            return "Connection failed"
     
     def query_db(self, query="SELECT * FROM LoginInformation"):
         connection = self.connect_to_db()

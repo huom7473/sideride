@@ -2,6 +2,7 @@ import json
 from flask import Flask, jsonify, request
 import awsgi
 
+
 app = Flask(__name__)
 
 BASE_ROUTE = "/api"
