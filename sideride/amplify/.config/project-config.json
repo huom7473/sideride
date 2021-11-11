@@ -8,10 +8,17 @@
   "javascript": {
     "framework": "react",
     "config": {
+<<<<<<< HEAD
+      "SourceDir": "",
+      "DistributionDir": "",
+      "BuildCommand": "npm.cmd run-script build",
+      "StartCommand": "npm.cmd run-script start"
+=======
       "SourceDir": "src",
       "DistributionDir": "build",
       "BuildCommand": "npm run-script build",
       "StartCommand": "npm run-script start"
+>>>>>>> 55de2cdc472bff61be50510875169c7bcf0e3cb4
     }
   }
 }
