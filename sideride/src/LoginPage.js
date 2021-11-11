@@ -94,7 +94,3 @@ const Button = styled.button`
   'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
   sans-serif;
 `;
-
-const P = styled.p`
-  line-height:0.2;
-`;
