@@ -70,7 +70,6 @@ export class NameForm extends React.Component {
                 </div>
                 <Button onClick = {this._handleSubmit}>Login</Button>
             </Form>
-            <P>Or</P>
             <Button onClick = {this._handleCreateAccount}>Sign up</Button>
             </>
         );

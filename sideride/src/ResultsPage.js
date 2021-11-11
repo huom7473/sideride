@@ -2,7 +2,6 @@ import logo from "./logo.svg";
 import React from "react";
 import qs from "qs";
 import { useHistory, useLocation } from "react-router"
-
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -86,7 +85,7 @@ class Selection extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this._handleSubmit}>
+            <form>
                 <div>
                     <label>
                         From: &nbsp;
@@ -102,7 +101,7 @@ class Selection extends React.Component {
                         <input name="date" type="date" value={this.state.date} onChange={this._handleUpdate} />
                         &nbsp;
                     </label>
-                    <input type="submit" value="Search" />
+                    <Button onClick={this._handleSubmit}>Search</Button> 
                 </div>
             </form>
 
@@ -120,7 +119,7 @@ class Results extends React.Component {
             date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
             rides: []
         };
-        this.testing_arr = ['a','b','c','d','e','f','g','h','i','j']
+        this.testing_arr = ['UCSD','Corner Bakery','UTC San Diego']
 
         for(var i = 0; i < this.testing_arr.length; i++){
             this.state.rides.push(new RideEntry({
@@ -128,6 +127,10 @@ class Results extends React.Component {
                 to: this.testing_arr[i]
             }));
         }
+        this.state.rides.push(new RideEntry({
+            from: "Westwood",
+            to: 'UCSD'
+        }));
         
 
     }
@@ -171,3 +174,13 @@ class RideEntry extends React.Component {
         );
     }
 }
+
+const Button = styled.button`
+  background-color: lightblue;
+  margin-top:1px;
+  width: 100px;
+  height:30px;
+  font-family : -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+`;

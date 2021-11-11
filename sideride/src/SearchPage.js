@@ -1,6 +1,7 @@
 import logo from "./logo.svg";
 import React from "react";
 import { useHistory } from "react-router"
+import styled from "styled-components";
 
 export default function SearchPage() {
     let history = useHistory();
@@ -27,7 +28,6 @@ export class Selection extends React.Component {
     constructor(props) {
         super(props);
         this.state = {from: '', to: '', date: ''};
-<<<<<<< HEAD
     }
 
     _handleUpdate = (evt) => {
@@ -39,21 +39,6 @@ export class Selection extends React.Component {
           console.log("this.state", this.state);
         });
     };
-=======
-        this.handleChange = this.handleChange.bind(this);
-        this.handleToChange = this.handleToChange.bind(this);
-        this.handleDateChange = this.handleDateChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleChange(event) {
-        this.setState({from: event.target.value});
-    }
-
-    handleToChange(event) {
-        this.setState({to: event.target.value});
-    }
->>>>>>> a2b9494bcc115e8337713c75fe37dda67f118e4e
 
     _handleSubmit = (evt) => {
         this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
@@ -62,7 +47,7 @@ export class Selection extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this._handleSubmit}>
+            <form>
                 <div>
                     <label>
                         From: &nbsp;
@@ -71,11 +56,7 @@ export class Selection extends React.Component {
                     </label>
                     <label>
                         To: &nbsp;
-<<<<<<< HEAD
                         <input name="to" type="text" value={this.state.to} onChange={this._handleUpdate} />
-=======
-                        <input type="text" value={this.state.to} onChange={this.handleToChange} />
->>>>>>> a2b9494bcc115e8337713c75fe37dda67f118e4e
                         &nbsp;
                     </label>
                     <label>
@@ -84,10 +65,20 @@ export class Selection extends React.Component {
                     </label>
                 </div>
 
-                <input type="submit" value="Host a Ride" />
-                <input type="submit" value="Find a Ride" />
+                <Button onClick ={this._handleSubmit}>Host a Ride</Button>
+                <Button onClick ={this._handleSubmit}>Find a Ride</Button>
             </form>
 
         );
     }
 }
+
+const Button = styled.button`
+  background-color: lightblue;
+  margin-top:1px;
+  width: 100px;
+  height:30px;
+  font-family : -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+`;
