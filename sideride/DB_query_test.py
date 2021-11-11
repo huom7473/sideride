@@ -9,21 +9,22 @@ config = {
   'user': 'SideRideProject',
   'password': 'SideRideProject130*',
   'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
-  'database': 'SideRideSchema',
+  'database': 'SideRideSchema4',
   'raise_on_warnings': True
 }
 
 try:
     connection = ms.connect(**config)
     cursor = connection.cursor()
-except:
-    print("Connection failed")
+except ms.Error as e:
+    print(e.msg)
+    exit()
 
 # Once we have established a connection, do whatever you want 
 
-query = ("SELECT * FROM LoginInformation")
-
-cursor.execute(query)
+query = ("SELECT * FROM LoginInformation WHERE Password = 'TestPassword' ")
+x = cursor.execute(query)
+if cursor: print("woo!")
 
 for user, pw in cursor:
     print(f"We have user: {user} with password: {pw}")      # basic test to print to console 
