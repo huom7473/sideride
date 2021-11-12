@@ -51,6 +51,17 @@ class TestDBConnection(unittest.TestCase):
     def test_connect_proper(self):
         sql_db = DatabaseHandler()
         self.assertNotEqual(sql_db.connect_to_db(), CONN_FAILURE)
+    
+    def test_add_ride(self):
+        # First properly connect to DB and grab the handle 
+        sql_db = DatabaseHandler()
+        sql_db.connect_to_db()
+
+        # Now try inserting a row and check response from DatabaseHandler 
+        num, start, stop, date = '5', 'Santa Fe', 'ABQ', '2021-10-09'
+
+        self.assertTrue(sql_db.add_ride(num, start, stop, date))
+
 
 if __name__ == '__main__':
     unittest.main()

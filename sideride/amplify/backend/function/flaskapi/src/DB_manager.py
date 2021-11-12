@@ -66,8 +66,8 @@ class DatabaseHandler:
         
         """
         self.config = config
-        self.connection
-        self.cursor
+        self.connection = None
+        self.cursor = None
 
     def get_handle(self) -> ms:
         """
@@ -85,8 +85,7 @@ class DatabaseHandler:
         try:
             self.connection = ms.connect(**self.config) 
             self.cursor = self.connection.cursor()    
-            self.get_handle() 
-            return CONN_SUCCESS
+            return self.get_handle() 
         except:
             return CONN_FAILURE
     
@@ -153,17 +152,19 @@ class DatabaseHandler:
         except:
             return False
 
-    def find_rides_by_date(self, date:str) -> json:
+    def find_rides(self, params:dict) -> dict:
         """
-        Fetches all rides that occur on the specified date from the database
+        Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
         Returns an empty list if no rides found for the given date 
+
+        TODO: Update to handle arbitrary dict of params 
 
         Parameters
         --------
 
-        date : str
-            The user-specified date to query for 
+        params : dict
+            The user-specified set of params on which to query for
         """
         query= (
             "SELECT * FROM Rides WHERE date = %s"

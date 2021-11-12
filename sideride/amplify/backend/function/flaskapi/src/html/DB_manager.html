@@ -94,8 +94,8 @@ class DatabaseHandler:
         
         &#34;&#34;&#34;
         self.config = config
-        self.connection
-        self.cursor
+        self.connection = None
+        self.cursor = None
 
     def get_handle(self) -&gt; ms:
         &#34;&#34;&#34;
@@ -113,8 +113,7 @@ class DatabaseHandler:
         try:
             self.connection = ms.connect(**self.config) 
             self.cursor = self.connection.cursor()    
-            self.get_handle() 
-            return CONN_SUCCESS
+            return self.get_handle() 
         except:
             return CONN_FAILURE
     
@@ -181,17 +180,19 @@ class DatabaseHandler:
         except:
             return False
 
-    def find_rides_by_date(self, date:str) -&gt; json:
+    def find_rides(self, params:dict) -&gt; dict:
         &#34;&#34;&#34;
-        Fetches all rides that occur on the specified date from the database
+        Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
         Returns an empty list if no rides found for the given date 
+
+        TODO: Update to handle arbitrary dict of params 
 
         Parameters
         --------
 
-        date : str
-            The user-specified date to query for 
+        params : dict
+            The user-specified set of params on which to query for
         &#34;&#34;&#34;
         query= (
             &#34;SELECT * FROM Rides WHERE date = %s&#34;
@@ -318,8 +319,8 @@ If none specified, defaults to a pre-tested config in order to connect to a mySQ
         
         &#34;&#34;&#34;
         self.config = config
-        self.connection
-        self.cursor
+        self.connection = None
+        self.cursor = None
 
     def get_handle(self) -&gt; ms:
         &#34;&#34;&#34;
@@ -337,8 +338,7 @@ If none specified, defaults to a pre-tested config in order to connect to a mySQ
         try:
             self.connection = ms.connect(**self.config) 
             self.cursor = self.connection.cursor()    
-            self.get_handle() 
-            return CONN_SUCCESS
+            return self.get_handle() 
         except:
             return CONN_FAILURE
     
@@ -405,17 +405,19 @@ If none specified, defaults to a pre-tested config in order to connect to a mySQ
         except:
             return False
 
-    def find_rides_by_date(self, date:str) -&gt; json:
+    def find_rides(self, params:dict) -&gt; dict:
         &#34;&#34;&#34;
-        Fetches all rides that occur on the specified date from the database
+        Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
         Returns an empty list if no rides found for the given date 
+
+        TODO: Update to handle arbitrary dict of params 
 
         Parameters
         --------
 
-        date : str
-            The user-specified date to query for 
+        params : dict
+            The user-specified set of params on which to query for
         &#34;&#34;&#34;
         query= (
             &#34;SELECT * FROM Rides WHERE date = %s&#34;
@@ -521,8 +523,7 @@ for the connection to user </p>
     try:
         self.connection = ms.connect(**self.config) 
         self.cursor = self.connection.cursor()    
-        self.get_handle() 
-        return CONN_SUCCESS
+        return self.get_handle() 
     except:
         return CONN_FAILURE</code></pre>
 </details>
@@ -568,33 +569,36 @@ for the connection to user </p>
         return False</code></pre>
 </details>
 </dd>
-<dt id="DB_manager.DatabaseHandler.find_rides_by_date"><code class="name flex">
-<span>def <span class="ident">find_rides_by_date</span></span>(<span>self, date: str) ‑> <module 'flask.json' from '/usr/local/lib/python3.9/site-packages/flask/json/__init__.py'></span>
+<dt id="DB_manager.DatabaseHandler.find_rides"><code class="name flex">
+<span>def <span class="ident">find_rides</span></span>(<span>self, params: dict) ‑> dict</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fetches all rides that occur on the specified date from the database
+<div class="desc"><p>Currently fetches all rides that occur on the specified date from the database
 Converts result into JSON format for easy processing in front end
 Returns an empty list if no rides found for the given date </p>
+<p>TODO: Update to handle arbitrary dict of params </p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>date</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user-specified date to query for</dd>
+<dt><strong><code>params</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The user-specified set of params on which to query for</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def find_rides_by_date(self, date:str) -&gt; json:
+<pre><code class="python">def find_rides(self, params:dict) -&gt; dict:
     &#34;&#34;&#34;
-    Fetches all rides that occur on the specified date from the database
+    Currently fetches all rides that occur on the specified date from the database
     Converts result into JSON format for easy processing in front end
     Returns an empty list if no rides found for the given date 
+
+    TODO: Update to handle arbitrary dict of params 
 
     Parameters
     --------
 
-    date : str
-        The user-specified date to query for 
+    params : dict
+        The user-specified set of params on which to query for
     &#34;&#34;&#34;
     query= (
         &#34;SELECT * FROM Rides WHERE date = %s&#34;
@@ -653,7 +657,7 @@ Returns an empty list if no rides found for the given date </p>
 <li><code><a title="DB_manager.DatabaseHandler.add_ride" href="#DB_manager.DatabaseHandler.add_ride">add_ride</a></code></li>
 <li><code><a title="DB_manager.DatabaseHandler.connect_to_db" href="#DB_manager.DatabaseHandler.connect_to_db">connect_to_db</a></code></li>
 <li><code><a title="DB_manager.DatabaseHandler.delete_ride" href="#DB_manager.DatabaseHandler.delete_ride">delete_ride</a></code></li>
-<li><code><a title="DB_manager.DatabaseHandler.find_rides_by_date" href="#DB_manager.DatabaseHandler.find_rides_by_date">find_rides_by_date</a></code></li>
+<li><code><a title="DB_manager.DatabaseHandler.find_rides" href="#DB_manager.DatabaseHandler.find_rides">find_rides</a></code></li>
 <li><code><a title="DB_manager.DatabaseHandler.get_handle" href="#DB_manager.DatabaseHandler.get_handle">get_handle</a></code></li>
 </ul>
 </li>
