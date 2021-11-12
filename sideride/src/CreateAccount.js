@@ -55,21 +55,20 @@ export default class CreateAccountPage extends React.Component {
       <>
         <Container>
           <Form>
-            <label>Username:</label>
+            <Title>Create Account</Title>
+            <Label>Username:</Label>
             <Input name="username" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <label>Password:</label>
+            <Label>Password:</Label>
             <Input name="password" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <label>Confirm Password:</label>
+            <Label>Confirm Password:</Label>
             <Input name="confirmPassword" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <label>First Name:</label>
+            <Label>First Name:</Label>
             <Input name="firstName" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <label>Last Name:</label>
+            <Label>Last Name:</Label>
             <Input name="lastName" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <label>email:</label>
+            <Label>email:</Label>
             <Input name="email" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <label>password:</label>
-            <Input name="password" onChange={this._handleUpdate}></Input><br></br>
-            <button onClick={this._handleSubmit}>Submit</button>
+            <Button onClick={this._handleSubmit} > Submit </Button>
           </Form>
         </Container>
       </>
@@ -77,19 +76,65 @@ export default class CreateAccountPage extends React.Component {
   }; 
 }; 
 
-const Container = styled.div`
+const Title = styled.h1`
   display: flex;
-  flex-direction: row;
   justify-content: center;
-  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;  
+  font-weight: lighter;
+  margin-top: 0.5em;
+  letter-spacing: 2px;
+`;
+
+const Container = styled.div`
+  font-family: Roboto-light;
+  height: 97vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: lightblue;
 `; 
 
 const Form = styled.form`
-  width: 600px;
-  height: 500px;
-  background-color: lightblue;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  min-width: 100px;
+  min-height: 400px;
+  padding: 20px 40px 40px 40px;
+  border-radius: 6px;
+  box-shadow: 0px 8px 36px #222;
+  background-color: #fefefe;
 `; 
+
+const Button = styled.button`
+  min-width: 100%;
+  cursor: pointer;
+  margin-right: 0.25em;
+  margin-top: 0.5em;
+  padding: 	0.938em;
+  border: none;
+  border-radius: 4px;
+  background-color: #22223B;
+  color: #fefefe;
+
+  &:hover {
+    background-color: #4A4E69;
+    color: #fefefe;
+  }
+`;
+
+const Label = styled.label`
+  margin-bottom: 0.5em;
+  color: #444;
+  font-weight: lighter;
+`;
 
 const Input = styled.input`
   outline: ${(props) => (props.errored ? "red" : "none")};
 `; 
+
+
