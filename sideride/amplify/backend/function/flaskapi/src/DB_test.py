@@ -52,6 +52,5 @@ class TestDBConnection(unittest.TestCase):
         sql_db = DatabaseHandler()
         self.assertNotEqual(sql_db.connect_to_db(), CONN_FAILURE)
 
-
 if __name__ == '__main__':
     unittest.main()
