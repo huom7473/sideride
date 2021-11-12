@@ -2,7 +2,7 @@
 
 ## Contributors: Michael, Tygan, Aditya, Malik, Austin, Anthony
 
-## Project structure:
+## Project structure
 
 ### Frontend
 The frontend was boostrapped with npm create-react-app. The contents are in the sideride directory, and by convention, the source code for the frontend
