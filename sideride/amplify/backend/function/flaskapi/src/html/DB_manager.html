@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>DB_manager API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>DB_manager</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from datetime import datetime, date, timedelta
+import mysql.connector as ms
+from flask import jsonify
+
+CONN_FAILURE = &#34;Connection failed&#34;
+
+default_config =     {
+    &#39;user&#39;: &#39;SideRideProject&#39;,
+    &#39;password&#39;: &#39;SideRideProject130*&#39;,
+    &#39;host&#39;: &#39;database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com&#39;,
+    &#39;database&#39;: &#39;SideRideSchema&#39;,
+    &#39;raise_on_warnings&#39;: True
+}
+
+class DatabaseHandler:
+    &#34;&#34;&#34;
+    A class used to interact with the backend database and serve results to the frontend
+
+    Attributes
+    ---------
+    config : dict
+        a formatted dictionary holding the required parameters to establish a DB connection
+    
+    connection : mysql.connector.MySQLConnection 
+        acts as a handle (i.e. file handle) to access the mySQL database after establishing connection
+    
+    cursor : mysql.connector.MySQLCursor
+        responsible for executing specified queries on the database and buffering fetched results 
+    
+
+    Methods
+    --------
+
+    get_handle()
+        returns the handle for the connected instance of the database
+    
+    connect_to_db()
+        tries to establish a connection to the database using supplied config file
+    
+    add_ride(id, start, stop, date)
+        adds an entry to the DB signifying the new ride with the given params 
+    
+    delete_ride(id)
+        removes the unique ride from the system 
+    
+    find_rides_by_date(date)
+        queries DB for rides matching given date and returns results in JSON format for frontend 
+    
+    &#34;&#34;&#34;
+    
+    def __init__(self, config=default_config) -&gt; None:
+        &#34;&#34;&#34;
+        Parameters
+        ----------
+        config : dict
+            A formatted dictionary holding the required parameters to establish a DB connection
+            If none specified, defaults to a pre-tested config in order to connect to a mySQL DB 
+    
+        connection : mysql.connector.MySQLConnection 
+            Acts as a handle (i.e. file handle) to access the mySQL database after establishing connection
+    
+        cursor : mysql.connector.MySQLCursor
+            Responsible for executing specified queries on the database and buffering fetched results 
+        
+        &#34;&#34;&#34;
+        self.config = config
+        self.connection
+        self.cursor
+
+    def get_handle(self):
+        &#34;&#34;&#34;
+        Returns handle to the DB instance 
+        &#34;&#34;&#34;
+        return self.connection
+
+    def connect_to_db(self):
+        &#34;&#34;&#34;
+        Uses supplied config file to connect to a mySQL database, initialize the cursor, and return the handle
+        for the connection to user 
+
+        Returns a static message CONN_FAILURE on failure to establish connection
+        &#34;&#34;&#34;
+        try:
+            self.connection = ms.connect(**self.config) 
+            self.cursor = self.connection.cursor()    
+            self.get_handle() 
+        except:
+            return CONN_FAILURE
+    
+    def add_ride(self, id:str, start:str, stop:str, date:str):
+        &#34;&#34;&#34;
+        Adds the specified ride to the Rides table in the backend DB
+
+        Parameters
+        --------
+
+        id : str
+            A unique id that identifies the Driver object responsible for this ride 
+        
+        start : str
+            The starting location for the trip
+        
+        stop : str
+            The ending location for the trip
+        
+        date : 
+            The date (YYYY-MM-DD) for which the trip is scheduled
+
+        &#34;&#34;&#34;
+        insert_stmt = (
+            &#34;INSERT INTO Rides (driver_id, start, stop, date) &#34;
+            &#34;VALUES (%s, %s, %s, %s)&#34;
+        )
+        
+        params = (id, start, stop, date)
+
+        # This catches improper insertions 
+        try:
+            self.cursor.execute(insert_stmt,params)
+            self.connection.commit()
+            return True
+        except:
+            self.cursor.fetchwarnings()
+            return False
+    
+    def delete_ride(self, id:str):
+        &#34;&#34;&#34;
+        Removes the given ride from the Rides table 
+
+        Parameters
+        ----------
+
+        id : str
+            The unique identifier for this ride 
+
+        &#34;&#34;&#34;
+        query = (
+            &#34; DELETE FROM Rides WHERE driver_id = %s&#34;
+        )
+        params = (id,)
+
+        self.cursor.execute(query,params)
+        self.connection.commit()
+
+    def find_rides_by_date(self, date:str):
+        &#34;&#34;&#34;
+        Fetches all rides that occur on the specified date from the database
+        Converts result into JSON format for easy processing in front end
+        Returns an empty list if no rides found for the given date 
+
+        Parameters
+        --------
+
+        date : str
+            The user-specified date to query for 
+        &#34;&#34;&#34;
+        query= (
+            &#34;SELECT * FROM Rides WHERE date = %s&#34;
+        )
+
+        try:
+            self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+            rows = self.cursor.fetchall()
+        except:
+            return []
+
+        # Now convert SQL output into JSON for frontend 
+        results = []
+        headers = [ x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rows:
+            results.append(dict(zip(headers,record)))
+        
+        # NOTE: &#39;date&#39; return as datetime.date object
+        # TODO: So &#39;2015-9-22&#39; will come back as datetime.date(2015,9,22) so convert prior to displaying
+        return jsonify(results)
+        
+    </code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="DB_manager.DatabaseHandler"><code class="flex name class">
+<span>class <span class="ident">DatabaseHandler</span></span>
+<span>(</span><span>config={'user': 'SideRideProject', 'password': 'SideRideProject130*', 'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com', 'database': 'SideRideSchema', 'raise_on_warnings': True})</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class used to interact with the backend database and serve results to the frontend</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>config</code></strong> :&ensp;<code>dict</code></dt>
+<dd>a formatted dictionary holding the required parameters to establish a DB connection</dd>
+<dt><strong><code>connection</code></strong> :&ensp;<code>mysql.connector.MySQLConnection </code></dt>
+<dd>acts as a handle (i.e. file handle) to access the mySQL database after establishing connection</dd>
+<dt><strong><code>cursor</code></strong> :&ensp;<code>mysql.connector.MySQLCursor</code></dt>
+<dd>responsible for executing specified queries on the database and buffering fetched results</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>get_handle()
+returns the handle for the connected instance of the database</p>
+<p>connect_to_db()
+tries to establish a connection to the database using supplied config file</p>
+<p>add_ride(id, start, stop, date)
+adds an entry to the DB signifying the new ride with the given params </p>
+<p>delete_ride(id)
+removes the unique ride from the system </p>
+<p>find_rides_by_date(date)
+queries DB for rides matching given date and returns results in JSON format for frontend </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>config</code></strong> :&ensp;<code>dict</code></dt>
+<dd>A formatted dictionary holding the required parameters to establish a DB connection
+If none specified, defaults to a pre-tested config in order to connect to a mySQL DB</dd>
+<dt><strong><code>connection</code></strong> :&ensp;<code>mysql.connector.MySQLConnection </code></dt>
+<dd>Acts as a handle (i.e. file handle) to access the mySQL database after establishing connection</dd>
+<dt><strong><code>cursor</code></strong> :&ensp;<code>mysql.connector.MySQLCursor</code></dt>
+<dd>Responsible for executing specified queries on the database and buffering fetched results</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DatabaseHandler:
+    &#34;&#34;&#34;
+    A class used to interact with the backend database and serve results to the frontend
+
+    Attributes
+    ---------
+    config : dict
+        a formatted dictionary holding the required parameters to establish a DB connection
+    
+    connection : mysql.connector.MySQLConnection 
+        acts as a handle (i.e. file handle) to access the mySQL database after establishing connection
+    
+    cursor : mysql.connector.MySQLCursor
+        responsible for executing specified queries on the database and buffering fetched results 
+    
+
+    Methods
+    --------
+
+    get_handle()
+        returns the handle for the connected instance of the database
+    
+    connect_to_db()
+        tries to establish a connection to the database using supplied config file
+    
+    add_ride(id, start, stop, date)
+        adds an entry to the DB signifying the new ride with the given params 
+    
+    delete_ride(id)
+        removes the unique ride from the system 
+    
+    find_rides_by_date(date)
+        queries DB for rides matching given date and returns results in JSON format for frontend 
+    
+    &#34;&#34;&#34;
+    
+    def __init__(self, config=default_config) -&gt; None:
+        &#34;&#34;&#34;
+        Parameters
+        ----------
+        config : dict
+            A formatted dictionary holding the required parameters to establish a DB connection
+            If none specified, defaults to a pre-tested config in order to connect to a mySQL DB 
+    
+        connection : mysql.connector.MySQLConnection 
+            Acts as a handle (i.e. file handle) to access the mySQL database after establishing connection
+    
+        cursor : mysql.connector.MySQLCursor
+            Responsible for executing specified queries on the database and buffering fetched results 
+        
+        &#34;&#34;&#34;
+        self.config = config
+        self.connection
+        self.cursor
+
+    def get_handle(self):
+        &#34;&#34;&#34;
+        Returns handle to the DB instance 
+        &#34;&#34;&#34;
+        return self.connection
+
+    def connect_to_db(self):
+        &#34;&#34;&#34;
+        Uses supplied config file to connect to a mySQL database, initialize the cursor, and return the handle
+        for the connection to user 
+
+        Returns a static message CONN_FAILURE on failure to establish connection
+        &#34;&#34;&#34;
+        try:
+            self.connection = ms.connect(**self.config) 
+            self.cursor = self.connection.cursor()    
+            self.get_handle() 
+        except:
+            return CONN_FAILURE
+    
+    def add_ride(self, id:str, start:str, stop:str, date:str):
+        &#34;&#34;&#34;
+        Adds the specified ride to the Rides table in the backend DB
+
+        Parameters
+        --------
+
+        id : str
+            A unique id that identifies the Driver object responsible for this ride 
+        
+        start : str
+            The starting location for the trip
+        
+        stop : str
+            The ending location for the trip
+        
+        date : 
+            The date (YYYY-MM-DD) for which the trip is scheduled
+
+        &#34;&#34;&#34;
+        insert_stmt = (
+            &#34;INSERT INTO Rides (driver_id, start, stop, date) &#34;
+            &#34;VALUES (%s, %s, %s, %s)&#34;
+        )
+        
+        params = (id, start, stop, date)
+
+        # This catches improper insertions 
+        try:
+            self.cursor.execute(insert_stmt,params)
+            self.connection.commit()
+            return True
+        except:
+            self.cursor.fetchwarnings()
+            return False
+    
+    def delete_ride(self, id:str):
+        &#34;&#34;&#34;
+        Removes the given ride from the Rides table 
+
+        Parameters
+        ----------
+
+        id : str
+            The unique identifier for this ride 
+
+        &#34;&#34;&#34;
+        query = (
+            &#34; DELETE FROM Rides WHERE driver_id = %s&#34;
+        )
+        params = (id,)
+
+        self.cursor.execute(query,params)
+        self.connection.commit()
+
+    def find_rides_by_date(self, date:str):
+        &#34;&#34;&#34;
+        Fetches all rides that occur on the specified date from the database
+        Converts result into JSON format for easy processing in front end
+        Returns an empty list if no rides found for the given date 
+
+        Parameters
+        --------
+
+        date : str
+            The user-specified date to query for 
+        &#34;&#34;&#34;
+        query= (
+            &#34;SELECT * FROM Rides WHERE date = %s&#34;
+        )
+
+        try:
+            self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+            rows = self.cursor.fetchall()
+        except:
+            return []
+
+        # Now convert SQL output into JSON for frontend 
+        results = []
+        headers = [ x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rows:
+            results.append(dict(zip(headers,record)))
+        
+        # NOTE: &#39;date&#39; return as datetime.date object
+        # TODO: So &#39;2015-9-22&#39; will come back as datetime.date(2015,9,22) so convert prior to displaying
+        return jsonify(results)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="DB_manager.DatabaseHandler.add_ride"><code class="name flex">
+<span>def <span class="ident">add_ride</span></span>(<span>self, id: str, start: str, stop: str, date: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds the specified ride to the Rides table in the backend DB</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dd>A unique id that identifies the Driver object responsible for this ride</dd>
+<dt><strong><code>start</code></strong> :&ensp;<code>str</code></dt>
+<dd>The starting location for the trip</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ending location for the trip</dd>
+<dt><strong><code>date</code></strong></dt>
+<dd>The date (YYYY-MM-DD) for which the trip is scheduled</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_ride(self, id:str, start:str, stop:str, date:str):
+    &#34;&#34;&#34;
+    Adds the specified ride to the Rides table in the backend DB
+
+    Parameters
+    --------
+
+    id : str
+        A unique id that identifies the Driver object responsible for this ride 
+    
+    start : str
+        The starting location for the trip
+    
+    stop : str
+        The ending location for the trip
+    
+    date : 
+        The date (YYYY-MM-DD) for which the trip is scheduled
+
+    &#34;&#34;&#34;
+    insert_stmt = (
+        &#34;INSERT INTO Rides (driver_id, start, stop, date) &#34;
+        &#34;VALUES (%s, %s, %s, %s)&#34;
+    )
+    
+    params = (id, start, stop, date)
+
+    # This catches improper insertions 
+    try:
+        self.cursor.execute(insert_stmt,params)
+        self.connection.commit()
+        return True
+    except:
+        self.cursor.fetchwarnings()
+        return False</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.DatabaseHandler.connect_to_db"><code class="name flex">
+<span>def <span class="ident">connect_to_db</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Uses supplied config file to connect to a mySQL database, initialize the cursor, and return the handle
+for the connection to user </p>
+<p>Returns a static message CONN_FAILURE on failure to establish connection</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connect_to_db(self):
+    &#34;&#34;&#34;
+    Uses supplied config file to connect to a mySQL database, initialize the cursor, and return the handle
+    for the connection to user 
+
+    Returns a static message CONN_FAILURE on failure to establish connection
+    &#34;&#34;&#34;
+    try:
+        self.connection = ms.connect(**self.config) 
+        self.cursor = self.connection.cursor()    
+        self.get_handle() 
+    except:
+        return CONN_FAILURE</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.DatabaseHandler.delete_ride"><code class="name flex">
+<span>def <span class="ident">delete_ride</span></span>(<span>self, id: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Removes the given ride from the Rides table </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The unique identifier for this ride</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_ride(self, id:str):
+    &#34;&#34;&#34;
+    Removes the given ride from the Rides table 
+
+    Parameters
+    ----------
+
+    id : str
+        The unique identifier for this ride 
+
+    &#34;&#34;&#34;
+    query = (
+        &#34; DELETE FROM Rides WHERE driver_id = %s&#34;
+    )
+    params = (id,)
+
+    self.cursor.execute(query,params)
+    self.connection.commit()</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.DatabaseHandler.find_rides_by_date"><code class="name flex">
+<span>def <span class="ident">find_rides_by_date</span></span>(<span>self, date: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetches all rides that occur on the specified date from the database
+Converts result into JSON format for easy processing in front end
+Returns an empty list if no rides found for the given date </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>date</code></strong> :&ensp;<code>str</code></dt>
+<dd>The user-specified date to query for</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_rides_by_date(self, date:str):
+    &#34;&#34;&#34;
+    Fetches all rides that occur on the specified date from the database
+    Converts result into JSON format for easy processing in front end
+    Returns an empty list if no rides found for the given date 
+
+    Parameters
+    --------
+
+    date : str
+        The user-specified date to query for 
+    &#34;&#34;&#34;
+    query= (
+        &#34;SELECT * FROM Rides WHERE date = %s&#34;
+    )
+
+    try:
+        self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+        rows = self.cursor.fetchall()
+    except:
+        return []
+
+    # Now convert SQL output into JSON for frontend 
+    results = []
+    headers = [ x[0] for x in self.cursor.description]   # grab column names
+
+    for record in rows:
+        results.append(dict(zip(headers,record)))
+    
+    # NOTE: &#39;date&#39; return as datetime.date object
+    # TODO: So &#39;2015-9-22&#39; will come back as datetime.date(2015,9,22) so convert prior to displaying
+    return jsonify(results)</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.DatabaseHandler.get_handle"><code class="name flex">
+<span>def <span class="ident">get_handle</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns handle to the DB instance</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_handle(self):
+    &#34;&#34;&#34;
+    Returns handle to the DB instance 
+    &#34;&#34;&#34;
+    return self.connection</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="DB_manager.DatabaseHandler" href="#DB_manager.DatabaseHandler">DatabaseHandler</a></code></h4>
+<ul class="">
+<li><code><a title="DB_manager.DatabaseHandler.add_ride" href="#DB_manager.DatabaseHandler.add_ride">add_ride</a></code></li>
+<li><code><a title="DB_manager.DatabaseHandler.connect_to_db" href="#DB_manager.DatabaseHandler.connect_to_db">connect_to_db</a></code></li>
+<li><code><a title="DB_manager.DatabaseHandler.delete_ride" href="#DB_manager.DatabaseHandler.delete_ride">delete_ride</a></code></li>
+<li><code><a title="DB_manager.DatabaseHandler.find_rides_by_date" href="#DB_manager.DatabaseHandler.find_rides_by_date">find_rides_by_date</a></code></li>
+<li><code><a title="DB_manager.DatabaseHandler.get_handle" href="#DB_manager.DatabaseHandler.get_handle">get_handle</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
