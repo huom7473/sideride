@@ -27,12 +27,12 @@ insert_stmt = (
   "INSERT INTO Rides (driver_id, start, stop, date) "
   "VALUES (%s, %s, %s, %s)"
 )
-data = (5, 'Los Angeles', 'Tijuana', '2012-05-12')
+data = (0, 'Santa Fe', 'Salinas', '2019-12-02')
 
 table = "LoginInformation"
 
 query_stmt = (
-    "DELETE FROM Rides WHERE stop = %s"
+    "SELECT * FROM Rides"
 )
 
 data2 = ('Tijuana',)
@@ -40,16 +40,23 @@ data2 = ('Tijuana',)
 
 # This catches improper queries 
 try:
-    cursor.execute(query_stmt,data2)
+    cursor.execute(query_stmt)
     connection.commit()
 except:
     cursor.fetchwarnings()
 
-a = cursor.fetchall()
-print(f"Cursor had: {a}")           # this catches valid queries that return empty set 
+rows = cursor.fetchall()
 
-for user, pw in cursor:
-    print(f"We have user: {user} with password: {pw}")      # basic test to print to console 
+# Now convert results into JSON format for React to be happy 
+results = []
+headers = [ x[0] for x in cursor.description]   # grab column names
+
+for record in rows:
+    results.append(dict(zip(headers,record)))
+
+for result in results:
+    print(result)
+
 
 
 # Always close connections when done

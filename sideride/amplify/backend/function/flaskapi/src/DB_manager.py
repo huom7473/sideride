@@ -1,5 +1,6 @@
 from datetime import datetime, date, timedelta
 import mysql.connector as ms
+from flask import jsonify
 
 CONN_FAILURE = "Connection failed"
 
@@ -63,10 +64,19 @@ class DatabaseHandler:
 
         try:
             self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
-            results = self.cursor.fetchall()
+            rows = self.cursor.fetchall()
         except:
             return []
 
-        return results 
+        # Now convert SQL output into JSON for frontend 
+        results = []
+        headers = [ x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rows:
+            results.append(dict(zip(headers,record)))
+        
+        # NOTE: 'date' return as datetime.date object
+        # TODO: So '2015-9-22' will come back as datetime.date(2015,9,22) so convert prior to displaying
+        return jsonify(results)
         
     
