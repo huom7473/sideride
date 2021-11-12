@@ -1,8 +1,10 @@
 from datetime import datetime, date, timedelta
 import mysql.connector as ms
-from flask import jsonify
+from flask import json, jsonify
 
+# Static global 
 CONN_FAILURE = "Connection failed"
+CONN_SUCCESS = "Connection established"
 
 default_config =     {
     'user': 'SideRideProject',
@@ -67,13 +69,13 @@ class DatabaseHandler:
         self.connection
         self.cursor
 
-    def get_handle(self):
+    def get_handle(self) -> ms:
         """
         Returns handle to the DB instance 
         """
         return self.connection
 
-    def connect_to_db(self):
+    def connect_to_db(self) -> str:
         """
         Uses supplied config file to connect to a mySQL database, initialize the cursor, and return the handle
         for the connection to user 
@@ -84,12 +86,15 @@ class DatabaseHandler:
             self.connection = ms.connect(**self.config) 
             self.cursor = self.connection.cursor()    
             self.get_handle() 
+            return CONN_SUCCESS
         except:
             return CONN_FAILURE
     
-    def add_ride(self, id:str, start:str, stop:str, date:str):
+    def add_ride(self, id:str, start:str, stop:str, date:str) -> bool:
         """
         Adds the specified ride to the Rides table in the backend DB
+
+        Returns True if ride was succesfully added, False if not 
 
         Parameters
         --------
@@ -123,9 +128,11 @@ class DatabaseHandler:
             self.cursor.fetchwarnings()
             return False
     
-    def delete_ride(self, id:str):
+    def delete_ride(self, id:str) -> bool:
         """
         Removes the given ride from the Rides table 
+
+        Returns True upon successful deletion, False otherwise 
 
         Parameters
         ----------
@@ -139,10 +146,14 @@ class DatabaseHandler:
         )
         params = (id,)
 
-        self.cursor.execute(query,params)
-        self.connection.commit()
+        try:
+            self.cursor.execute(query,params)
+            self.connection.commit()
+            return True
+        except:
+            return False
 
-    def find_rides_by_date(self, date:str):
+    def find_rides_by_date(self, date:str) -> json:
         """
         Fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
