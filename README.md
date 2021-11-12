@@ -11,4 +11,19 @@ Backend: the backend was created in the form of an AWS Amplify (REST) API with a
 
 Frontend testing: JavaScript tests are in sideride/src/test. They focus on making sure the frontend behaves properly with some preliminary inputs.
 
+Example frontend test case - Testing the handle_update method: 
+
+test('Update username ', () => {
+    instance._handleUpdate(username_event)
+    expect(instance.state.username).toBe(username_event.target.value);
+    });
+
 Backend testing: Tests for the Python backend are in sideride/amplify/backend/function/flaskapi/src/DB_test.py; they're designed to be run with python's built in module unit testing framework: ```python3 -m unittest -v DB_test.py```
+
+Example backend test case - testing the database connection:
+
+def test_connect_failures(self):
+        for config in test_configs:
+            sql_db = DatabaseHandler(config)
+            with self.subTest(config):
+                self.assertEqual(sql_db.connect_to_db(), CONN_FAILURE)
