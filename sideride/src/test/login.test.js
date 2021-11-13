@@ -7,12 +7,8 @@ configure({ adapter: new Adapter() });      // for enzyme methods like mount
 
 const wrapper = mount(<NameForm />);
 const instance = wrapper.instance();
-const username_event = {
-    target: { name: 'username', value: 'test-value' }
-};
-
-const password_event = {
-    target: { name: 'password', value: 'test-value' }
+const dummy_event = {
+    target: { value: 'test-value' }
 };
 
 test('Login initialization - username', () => {
@@ -26,11 +22,11 @@ test('Login initialization - password', () => {
 
 
 test('Update username ', () => {
-    instance._handleUpdate(username_event)
-    expect(instance.state.username).toBe(username_event.target.value);
+    instance.handleChange(dummy_event)
+    expect(instance.state.username).toBe(dummy_event.target.value);
     });
 
 test('Update password ', () => {
-    instance._handleUpdate(password_event)
-    expect(instance.state.password).toBe(password_event.target.value);
+    instance.handlePasswordChange(dummy_event)
+    expect(instance.state.username).toBe(dummy_event.target.value);
     });

@@ -15,48 +15,18 @@ config = {
 
 try:
     connection = ms.connect(**config)
-    connection.get_warnings = True
     cursor = connection.cursor()
-except ms.Error as e:
-    print(e.msg)
-    #print(connection.is_connected())       use to check if connection still alive 
-    exit()
-
-# Once we have established a connection, do whatever you want to the table
-insert_stmt = (
-  "INSERT INTO Rides (driver_id, start, stop, date) "
-  "VALUES (%s, %s, %s, %s)"
-)
-data = (0, 'Santa Fe', 'Salinas', '2019-12-02')
-
-table = "LoginInformation"
-
-query_stmt = (
-    "SELECT * FROM Rides"
-)
-
-data2 = ('Tijuana',)
-# query = ("SELECT * FROM " +table+ " WHERE Password = 'TestPassword1f' ")
-
-# This catches improper queries 
-try:
-    cursor.execute(query_stmt)
-    connection.commit()
 except:
-    cursor.fetchwarnings()
+    print("Connection failed")
 
-rows = cursor.fetchall()
+# Once we have established a connection, do whatever you want 
 
-# Now convert results into JSON format for React to be happy 
-results = []
-headers = [ x[0] for x in cursor.description]   # grab column names
+query = ("SELECT * FROM LoginInformation")
 
-for record in rows:
-    results.append(dict(zip(headers,record)))
+cursor.execute(query)
 
-for result in results:
-    print(result)
-
+for user, pw in cursor:
+    print(f"We have user: {user} with password: {pw}")      # basic test to print to console 
 
 
 # Always close connections when done
