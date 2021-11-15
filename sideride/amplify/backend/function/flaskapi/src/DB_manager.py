@@ -178,7 +178,7 @@ class DatabaseHandler:
 
         # Now convert SQL output into JSON for frontend 
         results = []
-        headers = [ x[0] for x in self.cursor.description]   # grab column names
+        headers = [x[0] for x in self.cursor.description]   # grab column names
 
         for record in rows:
             results.append(dict(zip(headers,record)))

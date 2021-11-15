@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 from flask_restful import Api, Resource, reqparse
 from flask_cors import CORS #comment this on deployment
 import mysql.connector as ms
-import unittest
 
 app = Flask(__name__, static_url_path='', static_folder='sideride/sideride/src')
 CORS(app) #comment this on deployment
@@ -29,20 +28,6 @@ config = {
   'raise_on_warnings': True
 }
 
-def connectToDB(config):
-    """
-        Input: a static config file used to connect to the RDS mySQL DB instance 
-
-        Output: a handle to the mySQL connection for executing queries 
-    """
-    try:
-        connection = ms.connect(**config)
-        handle = connection.cursor()
-        return handle
-    except ms.Error as e:
-        return jsonify({'msg': e.msg}), 400
-
-
 @app.route('/login', methods=['POST'])
 def login():
     login_json = request.get_json()
@@ -59,24 +44,20 @@ def login():
     if not password:
         return jsonify({'msg': 'Password is missing'}), 400
 
-    # Connect to the DB if possible, report error and exit out if not 
-    cursor = connectToDB(config)
+    try:
+        connection = ms.connect(**config)
+        cursor = connection.cursor()
+    except:
+        return jsonify({'msg': 'Failed to connect to database'}), 400
 
-    #query = (f"SELECT * FROM LoginInformation where Username = '{username}'' and password = '{password}'")
-    
-    x = cursor.execute()
-     # not sure if this is complete
-     # need to execute the query on the connected DB before checking validity 
+    query = (f"SELECT * FROM LoginInformation where Username = '{username}'' and password = '{password}'")
+
     if not query:
         return jsonify({'msg': 'Username and/or password not correct'}), 400
 
     else:
         print('NOT DONE')
         #This is not complete. The gaol here is to go to the page of the associated username
-
-        # get user name first from the executed query (if the query executed at all)
-
-        # 
         #return jsonify({'access_token': access_token}), 200
 
 

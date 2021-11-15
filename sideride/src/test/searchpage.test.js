@@ -7,8 +7,9 @@ configure({ adapter: new Adapter() });      // for enzyme methods like mount
 
 const wrapper = mount(<Selection />);
 const instance = wrapper.instance();
-const fields = ["from", "to", "date"]
-
+const dummy_event = {
+    target: { value: 'test-value' }
+};
 
 test('Search page: initialization', () => {
     expect(instance.state.from).toEqual("");
@@ -19,20 +20,15 @@ test('Search page: initialization', () => {
 
 
 test('Search page: update states (to,from,date) ', () => {
-    for(var i = 0; i < fields.length; i++){
-      const dummy_event = {
-        target: { name: fields[i], value: 'test-value' }
-      };
-        instance._handleUpdate(dummy_event);
-        if (i === 0){
-          expect(instance.state.from).toBe(dummy_event.target.value);
-        } else if (i === 1){
-          expect(instance.state.to).toBe(dummy_event.target.value);
-        } else if (i === 2){
-          expect(instance.state.date).toBe(dummy_event.target.value);
-        }
-    
-    }
-    
+    instance.handleChange(dummy_event);
+    expect(instance.state.from).toBe(dummy_event.target.value);
+
+    instance.handleToChange(dummy_event);
+    expect(instance.state.to).toBe(dummy_event.target.value);
+
+
+    instance.handleDateChange(dummy_event);
+    expect(instance.state.date).toBe(dummy_event.target.value);
+
     });
 
