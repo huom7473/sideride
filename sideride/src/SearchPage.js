@@ -10,7 +10,7 @@ export default function SearchPage() {
                 <img src={logo} className="App-logo" alt="logo" />
                 <div>
                     <p>
-                        Where are you headed?
+                        Where are you headed???
                     </p>
                 </div>
                 <div>
