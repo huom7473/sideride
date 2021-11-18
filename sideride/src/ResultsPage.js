@@ -42,9 +42,7 @@ export default function SearchPage() {
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <div>
-                    <p>
-                        <Selection history={history} location={location}/>
-                    </p>
+                    <Selection history={history} location={location}/>
                 </div>
                 <div>
                     <Results location={location}/>
