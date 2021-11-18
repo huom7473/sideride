@@ -10,7 +10,7 @@ BASE_ROUTE = "/api"
 
 @app.route(BASE_ROUTE + '/<arg>', methods=['POST', 'GET'])
 def base_route(arg):
-    return {'arg': arg}
+    return {'arg': arg+"rocks"}
 
 def handler(event, context):
     return awsgi.response(app, event, context)
