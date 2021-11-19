@@ -6,11 +6,6 @@ import { useHistory, useLocation } from "react-router"
 
 import styled from 'styled-components';
 
-// const Container = styled.div`
-//   background: #282c34;
-//   width: 100%;
-//   height: 100%;
-// `;
 const List = styled.div`
   display: flex;
   justify-content: center; // 3

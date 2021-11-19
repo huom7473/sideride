@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import React from "react";
 import { useHistory } from "react-router"
 import { API } from 'aws-amplify'
+import {Button, Col, Container, Form, FormControl, Row} from "react-bootstrap";
 import styled from "styled-components";
 
 export default function SearchPage() {
@@ -10,6 +11,8 @@ export default function SearchPage() {
         <div className="App">
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
+            </header>
+            <Container>
                 <div>
                     <p>
                         Where are you headed?
@@ -18,7 +21,7 @@ export default function SearchPage() {
                 <div>
                     <Selection history={history}/>
                 </div>
-            </header>
+            </Container>
         </div>
     );
 }
@@ -54,37 +57,38 @@ export class Selection extends React.Component {
 
     render() {
         return (
-            <form>
-                <div>
-                    <label>
-                        From: &nbsp;
-                        <input name="from" type="text" value={this.state.from} onChange={this._handleUpdate}/>
-                        &nbsp;
-                    </label>
-                    <label>
-                        To: &nbsp;
-                        <input name="to" type="text" value={this.state.to} onChange={this._handleUpdate} />
-                        &nbsp;
-                    </label>
-                    <label>
-                        Date: &nbsp;
-                        <input name="date" type="date" value={this.state.date} onChange={this._handleUpdate} />
-                    </label>
-                </div>
-                <Button onClick = {this._handleCreateRide}>Host a Ride</Button>
-                <Button onClick = {this._handleFindRide}>Find a Ride</Button>
-            </form>
+            <Container>
+                <Form>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={"auto"}>From:</Form.Label>
+                        <Col>
+                            <Form.Control name="from"
+                                          type="text"
+                                          value={this.state.from}
+                                          onChange={this._handleUpdate}
+                                          placeholder="UCLA" />
+                        </Col>
+                        <Form.Label column sm={"auto"}>To:</Form.Label>
+                        <Col>
+                            <Form.Control name="to"
+                                          type="text"
+                                          value={this.state.to}
+                                          onChange={this._handleUpdate}
+                                          placeholder="Westwood" />
+                        </Col>
+                        <Form.Label column sm={"auto"}>Date:</Form.Label>
+                        <Col>
+                            <Form.Control name="date"
+                                          type="date"
+                                          value={this.state.date}
+                                          onChange={this._handleUpdate}/>
+                        </Col>
+                    </Form.Group>
+                </Form>
+                    <Button onClick={this._handleCreateRide}
+                            className="me-2">Host a Ride</Button>
+                    <Button onClick={this._handleFindRide}>Find a Ride</Button>
+            </Container>
         );
     }
 }
-
-
-const Button = styled.button`
-  background-color: lightblue;
-  margin-top:1px;
-  width: 100px;
-  height:30px;
-  font-family : -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-  sans-serif;
-`;
