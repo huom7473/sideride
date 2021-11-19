@@ -1,18 +1,16 @@
 import logo from "./logo.svg";
 import React from "react";
 import qs from "qs";
+import {Accordion, Container} from "react-bootstrap";
 import { useHistory, useLocation } from "react-router"
 
 import styled from 'styled-components';
 
-const Container = styled.div`
-  background: #282c34;
-  display: flex;
-  justify-content: center; // 1
-  flex-flow: row wrap; // 2
-  width: 100%;
-  height: 100%;
-`;
+// const Container = styled.div`
+//   background: #282c34;
+//   width: 100%;
+//   height: 100%;
+// `;
 const List = styled.div`
   display: flex;
   justify-content: center; // 3
@@ -22,7 +20,6 @@ const List = styled.div`
 const Card = styled.div`
   background: #36393e;
   margin: 10px;
-
   height: 50px;
   width: 400px;
   border-radius: 20px;
@@ -41,13 +38,15 @@ export default function SearchPage() {
         <div className="App">
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
-                <div>
-                    <Selection history={history} location={location}/>
-                </div>
-                <div>
-                    <Results location={location}/>
-                </div>
             </header>
+            <Container>
+            <div>
+                <Selection history={history} location={location}/>
+            </div>
+            <div>
+                <Results location={location}/>
+            </div>
+            </Container>
         </div>
     );
 }
@@ -137,15 +136,37 @@ class Results extends React.Component {
                 <p>
                     Results for rides from {this.state.from} to {this.state.to} on {this.state.date}
                 </p>
-                
-                <Container>
-                    <List>
-                        {this.state.rides.map((it, index) => <Card>{it.render()}</Card>)}
-                    </List>
-                </Container>
-                
+                <div>
+                    <Accordion defaultActiveKey="0" className="accordionnonretard">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Accordion Item #1</Accordion.Header>
+                            <Accordion.Body>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="1">
+                            <Accordion.Header>Accordion Item #2</Accordion.Header>
+                            <Accordion.Body>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
+                </div>
+
             </div>
-            
+
         );
     }
 }
