@@ -1,6 +1,7 @@
 import logo from "./logo.svg";
 import React from "react";
 import { useHistory } from "react-router"
+import { API } from 'aws-amplify'
 import styled from "styled-components";
 
 export default function SearchPage() {
