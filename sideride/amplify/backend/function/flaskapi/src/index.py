@@ -16,7 +16,7 @@ def base_route(arg):
     passed_param = request.args.get('arg')
     
     if request.method == 'GET':
-        return {'arg': "test"}
+        return {'arg': "malik"}
     
     elif request.method == 'POST': return {'arg': arg+"POST"}
 
@@ -26,7 +26,7 @@ def base_route(arg):
 
 @app.route(BASE_ROUTE, methods = ['POST', 'GET'] )
 def base():
-    return {'arg': "wooooo"}
+    if request.method == 'POST': return {'arg': "wooooo"}
 
 
 @app.route(BASE_ROUTE + 'find')
