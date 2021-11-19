@@ -53,43 +53,43 @@ export default class CreateAccountPage extends React.Component {
 
     return (
       <>
-        <Container>
-          <Form>
+        <Container2>
+          <Form2>
             <label>Username:</label>
-            <Input name="username" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input2 name="username" onChange={this._handleUpdate} errored={errored}></Input2><br></br>
             <label>Password:</label>
-            <Input name="password" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input2 name="password" onChange={this._handleUpdate} errored={errored}></Input2><br></br>
             <label>Confirm Password:</label>
-            <Input name="confirmPassword" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input2 name="confirmPassword" onChange={this._handleUpdate} errored={errored}></Input2><br></br>
             <label>First Name:</label>
-            <Input name="firstName" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input2 name="firstName" onChange={this._handleUpdate} errored={errored}></Input2><br></br>
             <label>Last Name:</label>
-            <Input name="lastName" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input2 name="lastName" onChange={this._handleUpdate} errored={errored}></Input2><br></br>
             <label>email:</label>
-            <Input name="email" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input2 name="email" onChange={this._handleUpdate} errored={errored}></Input2><br></br>
             <label>password:</label>
-            <Input name="password" onChange={this._handleUpdate}></Input><br></br>
+            <Input2 name="password" onChange={this._handleUpdate}></Input2><br></br>
             <button onClick={this._handleSubmit}>Submit</button>
-          </Form>
-        </Container>
+          </Form2>
+        </Container2>
       </>
     );
   }; 
 }; 
 
-const Container = styled.div`
+const Container2 = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
   width: 100%;
 `; 
 
-const Form = styled.form`
+const Form2 = styled.form`
   width: 600px;
   height: 500px;
   background-color: lightblue;
 `; 
 
-const Input = styled.input`
+const Input2 = styled.input`
   outline: ${(props) => (props.errored ? "red" : "none")};
 `; 

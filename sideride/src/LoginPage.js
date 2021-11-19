@@ -3,17 +3,20 @@ import logo from "./logo.svg";
 import { useHistory, Link } from "react-router"
 import { API } from 'aws-amplify'
 import styled from "styled-components";
+import {Button, Container, Form} from "react-bootstrap";
 
 export default function LoginPage() {
     let history = useHistory();
     return (
         <div className="App">
             <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo"/>
-                <div>
-                    <NameForm history={history}/>
-                </div>
             </header>
+            <Container>
+            <img src={logo} className="App-logo" alt="logo"/>
+            <div>
+                <NameForm history={history}/>
+            </div>
+            </Container>
         </div>
     );
 }
@@ -56,48 +59,33 @@ export class NameForm extends React.Component {
 
     render() {
         return (
-            <>
-            <Form>
-                <div>
-                    <label>
-                        Username: &nbsp;
-                        <Input name="username" type="text" value={this.state.username} onChange={this._handleUpdate}
-                        />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Password: &nbsp;
-                        <Input name="password" type="password" value={this.state.password} onChange={this._handleUpdate} 
-                        />
-                    </label>
-                </div>
-                <Button onClick = {this._handleSubmit}>Login</Button>
-            </Form>
-            <P>Or</P>
-            <Button onClick = {this._handleCreateAccount}>Sign up</Button>
-            </>
+            <div>
+                <Form>
+                    <div>
+                        <label>
+                            Username: &nbsp;
+                            <Input name="username" type="text" value={this.state.username} onChange={this._handleUpdate}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Password: &nbsp;
+                            <Input name="password" type="password" value={this.state.password} onChange={this._handleUpdate}
+                            />
+                        </label>
+                    </div>
+                    <Button onClick = {this._handleSubmit}>Login</Button>
+                </Form>
+                <Button onClick = {this._handleCreateAccount}>Sign up</Button>
+            </div>
         );
     }
 }
 
-const Form = styled.form`
-  width: 600px;
-  height: 110px;
-`; 
 
 const Input = styled.input`
   outline: ${(props) => (props.errored ? "red" : "none")};
-`; 
-
-const Button = styled.button`
-  background-color: lightblue;
-  margin-top:1px;
-  width: 100px;
-  height:30px;
-  font-family : -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-  sans-serif;
 `;
 
 const P = styled.p`
