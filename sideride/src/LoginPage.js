@@ -44,10 +44,10 @@ export class NameForm extends React.Component {
     _handleSubmit = (evt) => {
         this.props.history.push('/search')
         
-        API.get('flaskapi', '/api/login/username=' + this.state.username + ',password=' + this.state.password)
-            .then((response) => console.log(response))
+        // API.get('flaskapi', '/api/login/username=' + this.state.username + ',password=' + this.state.password)
+        //     .then((response) => console.log(response))
         
-        API.post('flaskapi', '/api/').then((response) => console.log(response) )
+        // API.post('flaskapi', '/api/').then((response) => console.log(response) )
         
         evt.preventDefault();
     };
