@@ -3,19 +3,19 @@ import logo from "./logo.svg";
 import { useHistory, Link } from "react-router"
 import { API } from 'aws-amplify'
 import styled from "styled-components";
-import {Button, Container, Form} from "react-bootstrap";
+import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
 export default function LoginPage() {
     let history = useHistory();
     return (
         <div className="App">
             <header className="App-header">
+                <img src={logo} className="App-logo" alt="logo"/>
             </header>
             <Container>
-            <img src={logo} className="App-logo" alt="logo"/>
-            <div>
-                <NameForm history={history}/>
-            </div>
+                <div>
+                    <NameForm history={history}/>
+                </div>
             </Container>
         </div>
     );
@@ -25,7 +25,7 @@ export class NameForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: '', 
+            username: '',
             password: ''
         };
 
@@ -59,26 +59,33 @@ export class NameForm extends React.Component {
 
     render() {
         return (
-            <div>
-                <Form>
-                    <div>
-                        <label>
-                            Username: &nbsp;
-                            <Input name="username" type="text" value={this.state.username} onChange={this._handleUpdate}
-                            />
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            Password: &nbsp;
-                            <Input name="password" type="password" value={this.state.password} onChange={this._handleUpdate}
-                            />
-                        </label>
-                    </div>
-                    <Button onClick = {this._handleSubmit}>Login</Button>
-                </Form>
+            <Container>
+                    <Form>
+                        <Form.Group as={Row} className="mb-3 justify-content-center">
+                            <Form.Label column sm="1">Username:</Form.Label>
+                            <Col sm={"auto"}>
+                            <Form.Control name="username"
+                                          type="text"
+                                          value={this.state.username}
+                                          onChange={this._handleUpdate}
+                                          placeholder="Username" />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 justify-content-center">
+                            <Form.Label column sm="1">Password:</Form.Label>
+                            <Col sm={"auto"}>
+                                <Form.Control name="password"
+                                              type="password"
+                                              value={this.state.password}
+                                              onChange={this._handleUpdate}
+                                              placeholder="Password" />
+                            </Col>
+                        </Form.Group>
+                    </Form>
+                <Button onClick = {this._handleCreateAccount} className="mb-2">Log in</Button>
+                <div>Don't have an account?</div>
                 <Button onClick = {this._handleCreateAccount}>Sign up</Button>
-            </div>
+            </Container>
         );
     }
 }
