@@ -1,5 +1,5 @@
 import json
-#import mysql as ms
+import mysql as ms
 from flask import Flask, jsonify, request
 import awsgi
 from flask_cors import CORS
