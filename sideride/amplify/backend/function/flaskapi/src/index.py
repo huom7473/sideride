@@ -1,9 +1,8 @@
 import json
-import mysql as ms
 from flask import Flask, jsonify, request
 import awsgi
 from flask_cors import CORS
-#import DB_manager
+import DB_manager
 
 
 app = Flask(__name__)
@@ -38,16 +37,14 @@ def find():
 def createride(arg):
     params =  dict(x.split("=") for x in arg.split(","))
 
-    # db = DB_manager.DatabaseHandler()
-    # if db.connect_to_db() == db.CONN_FAILURE:
-    #     return {'msg':'Error conneting to database'}
+    db = DB_manager.DatabaseHandler()
+    if db.connect_to_db() == db.CONN_FAILURE:
+        return {'msg':'Error conneting to database'}
     
-    # if db.add_ride(0,start=params['from'],stop=params['to'],date=params['date']):
-    #     return {'msg': 'Ride added to database'}
-    # else:
-    #     return {'msg':'Error with adding ride to database'}
-
-    return params
+    if db.add_ride('0',start=params['from'],stop=params['to'],date=params['date']):
+        return {'msg': 'Ride added to database'}
+    else:
+        return {'msg':'Error with adding ride to database'}
 
 def handler(event, context):
     return awsgi.response(app, event, context)

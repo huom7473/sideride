@@ -1,6 +1,6 @@
 from datetime import datetime, date, timedelta
 import mysql.connector as ms
-#from flask import json, jsonify
+from flask import json, jsonify
 
 # Static global 
 CONN_FAILURE = "Connection failed"
@@ -152,39 +152,39 @@ class DatabaseHandler:
         except:
             return False
 
-    # def find_rides(self, params:dict) -> dict:
-    #     """
-    #     Currently fetches all rides that occur on the specified date from the database
-    #     Converts result into JSON format for easy processing in front end
-    #     Returns an empty list if no rides found for the given date 
+    def find_rides(self, params:dict) -> dict:
+        """
+        Currently fetches all rides that occur on the specified date from the database
+        Converts result into JSON format for easy processing in front end
+        Returns an empty list if no rides found for the given date 
 
-    #     TODO: Update to handle arbitrary dict of params 
+        TODO: Update to handle arbitrary dict of params 
 
-    #     Parameters
-    #     --------
+        Parameters
+        --------
 
-    #     params : dict
-    #         The user-specified set of params on which to query for
-    #     """
-    #     query= (
-    #         "SELECT * FROM Rides WHERE date = %s"
-    #     )
+        params : dict
+            The user-specified set of params on which to query for
+        """
+        query= (
+            "SELECT * FROM Rides WHERE date = %s"
+        )
 
-    #     try:
-    #         self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
-    #         rows = self.cursor.fetchall()
-    #     except:
-    #         return []
+        try:
+            self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+            rows = self.cursor.fetchall()
+        except:
+            return []
 
-    #     # Now convert SQL output into JSON for frontend 
-    #     results = []
-    #     headers = [x[0] for x in self.cursor.description]   # grab column names
+        # Now convert SQL output into JSON for frontend 
+        results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
 
-    #     for record in rows:
-    #         results.append(dict(zip(headers,record)))
+        for record in rows:
+            results.append(dict(zip(headers,record)))
         
-    #     # NOTE: 'date' return as datetime.date object
-    #     # TODO: So '2015-9-22' will come back as datetime.date(2015,9,22) so convert prior to displaying
-    #     return jsonify(results)
+        # NOTE: 'date' return as datetime.date object
+        # TODO: So '2015-9-22' will come back as datetime.date(2015,9,22) so convert prior to displaying
+        return jsonify(results)
         
     
