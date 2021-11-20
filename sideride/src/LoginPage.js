@@ -47,7 +47,7 @@ export class NameForm extends React.Component {
         // API.get('flaskapi', '/api/login/username=' + this.state.username + ',password=' + this.state.password)
         //     .then((response) => console.log(response))
         
-        // API.post('flaskapi', '/api/').then((response) => console.log(response) )
+        API.post('flaskapi', '/api/').then((response) => console.log(response) )
         
         evt.preventDefault();
     };
