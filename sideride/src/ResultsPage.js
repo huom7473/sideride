@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import React from "react";
 import qs from "qs";
-import {Accordion, Container} from "react-bootstrap";
+import { Accordion, Container } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router"
 
 import styled from 'styled-components';
@@ -25,8 +25,7 @@ const Card = styled.div`
   align-items: center;
 `;
 
-
-export default function SearchPage() {
+export default function ResultsPage() {
     let history = useHistory();
     let location = useLocation();
     return (
@@ -35,12 +34,12 @@ export default function SearchPage() {
                 <img src={logo} className="App-logo" alt="logo" />
             </header>
             <Container>
-            <div>
-                <Selection history={history} location={location}/>
-            </div>
-            <div>
-                <Results location={location}/>
-            </div>
+                <div>
+                    <Selection history={history} location={location} />
+                </div>
+                <div>
+                    <Results location={location} />
+                </div>
             </Container>
         </div>
     );
@@ -50,7 +49,7 @@ export default function SearchPage() {
 class Selection extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             from: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).from,
             to: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).to,
@@ -60,11 +59,11 @@ class Selection extends React.Component {
 
     _handleUpdate = (evt) => {
         const { name, value } = evt.target;
-    
+
         //this code is really nifty, it dynamically sets the input field with "name" to the corresponding value,
         //so it can update any of: email, password, confirmedPassword, errored... 
         this.setState({ [name]: value }, () => {
-          console.log("this.state", this.state);
+            console.log("this.state", this.state);
         });
     };
 
@@ -82,7 +81,7 @@ class Selection extends React.Component {
                 <div>
                     <label>
                         From: &nbsp;
-                        <input name="from" type="text" value={this.state.from} onChange={this._handleUpdate}/>
+                        <input name="from" type="text" value={this.state.from} onChange={this._handleUpdate} />
                         &nbsp;
                     </label>
                     <label>
@@ -112,19 +111,29 @@ class Results extends React.Component {
             date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
             rides: []
         };
-        this.testing_arr = ['a','b','c','d','e','f','g','h','i','j']
+        this.testing_arr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
-        for(var i = 0; i < this.testing_arr.length; i++){
-            this.state.rides.push(new RideEntry({
+        for (var i = 0; i < this.testing_arr.length; i++) {
+            this.state.rides[i] = new RideEntry({
+                id: i,
                 from: "UCLA",
-                to: this.testing_arr[i]
-            }));
+                to: this.testing_arr[i],
+                time: 12,
+                price: 20,
+                info: "More Detailed information"
+            });
         }
-        
+
 
     }
 
     render() {
+        var test_guy = new RideEntry({
+            id: 333,
+            from: "UCLA",
+            to: "Test loc",
+            info: "More Detailed information"
+        });
         console.log(this.state.rides);
         return (
             <div>
@@ -133,30 +142,7 @@ class Results extends React.Component {
                 </p>
                 <div>
                     <Accordion defaultActiveKey="0" className="accordionnonretard">
-                        <Accordion.Item eventKey="0">
-                            <Accordion.Header>Accordion Item #1</Accordion.Header>
-                            <Accordion.Body>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-                                est laborum.
-                            </Accordion.Body>
-                        </Accordion.Item>
-                        <Accordion.Item eventKey="1">
-                            <Accordion.Header>Accordion Item #2</Accordion.Header>
-                            <Accordion.Body>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-                                est laborum.
-                            </Accordion.Body>
-                        </Accordion.Item>
+                        {this.state.rides.map((it, index) => <Accordion.Item eventKey={index}>{it.render()}</Accordion.Item>)}
                     </Accordion>
                 </div>
 
@@ -172,16 +158,62 @@ class RideEntry extends React.Component {
     }
     render() {
         return (
-            <div>
-                <span>
-                    From: {this.props.from} 
-                </span>
-                &nbsp;
-                <span>
-                    To: {this.props.to}
-                </span>
-            </div>
-
+            <>
+                <Accordion.Header>
+                    <AccordionContent>
+                        <PlaceContainer>
+                            <div>
+                                From: {this.props.from}
+                            </div>
+                            <div>
+                                To: {this.props.to}
+                            </div>
+                        </PlaceContainer>
+                        <TimePriceContainer>
+                            <div>
+                                Pickup from:
+                            </div>
+                            <div>
+                                {this.props.time}
+                            </div>
+                            <div>
+                                ${this.props.price}
+                            </div>
+                        </TimePriceContainer>
+                    </AccordionContent>
+                </Accordion.Header>
+                <Accordion.Body>
+                    {this.props.info}
+                </Accordion.Body>
+            </>
         );
     }
 }
+
+const PlaceContainer = styled.div`
+    margin-right:1em;
+    flex:4;
+    display:flex;
+    flex-direction:column;
+    & > * {
+        flex: 1;
+        padding:0.25em 4em;
+        background-color:#0074b2;
+        border-radius:990px;
+        margin:0.25em;
+    }
+`;
+
+const TimePriceContainer = styled.div`
+    width:125px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-around;
+    text-align:center;
+`;
+
+const AccordionContent = styled.div`
+    display:flex;
+    width:100%;
+    color:white;
+`;
