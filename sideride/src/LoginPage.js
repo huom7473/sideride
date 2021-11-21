@@ -3,25 +3,9 @@ import logo from "./logo.svg";
 import { useHistory, Link } from "react-router"
 import { API } from 'aws-amplify'
 import styled from "styled-components";
-import { Button, Row, Col, Container, Form } from "react-bootstrap";
-import Amplify from 'aws-amplify';
-import awsconfig from './aws-exports';
-import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
+import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
-Amplify.configure(awsconfig);
-
-function LoginPage() {
-    return (
-        <div className="App">
-            <header className="App-header">
-                <AmplifySignOut />
-                <h2>New Login Page</h2>
-            </header>
-        </div>
-    );
-}
-export default withAuthenticator(LoginPage);
-/*function LoginPage() {
+export default function LoginPage() {
     let history = useHistory();
     return (
         <div className="App">
@@ -29,20 +13,13 @@ export default withAuthenticator(LoginPage);
                 <img src={logo} className="App-logo" alt="logo"/>
             </header>
             <Container>
-<<<<<<< HEAD
-                <img src={logo} className="App-logo" alt="logo" />
-                <div>
-                    <NameForm history={history} />
-=======
                 <div>
                     <NameForm history={history}/>
->>>>>>> 3041a487f236a5921848a256692fd9405653dd6f
                 </div>
             </Container>
         </div>
     );
-}*/
-
+}
 
 export class NameForm extends React.Component {
     constructor(props) {
@@ -55,31 +32,22 @@ export class NameForm extends React.Component {
 
     _handleUpdate = (evt) => {
         const { name, value } = evt.target;
-
+    
         //this code is really nifty, it dynamically sets the input field with "name" to the corresponding value,
         //so it can update any of: email, password, confirmedPassword, errored... 
         this.setState({ [name]: value }, () => {
-            console.log("this.state", this.state);
+          console.log("this.state", this.state);
         });
-    };
+      };
 
     _handleSubmit = (evt) => {
         this.props.history.push('/search')
-<<<<<<< HEAD
-
-        API.get('flaskapi', '/api/login/username=' + this.state.username + ',password=' + this.state.password)
-            .then((response) => console.log(response))
-
-        API.post('flaskapi', '/api/').then((response) => console.log(response))
-
-=======
-
+        
         // API.get('flaskapi', '/api/login/username=' + this.state.username + ',password=' + this.state.password)
         //     .then((response) => console.log(response))
-
+        
         API.post('flaskapi', '/api/').then((response) => console.log(response))
-
->>>>>>> 3041a487f236a5921848a256692fd9405653dd6f
+        
         evt.preventDefault();
     };
 
@@ -90,28 +58,6 @@ export class NameForm extends React.Component {
 
     render() {
         return (
-<<<<<<< HEAD
-            <div>
-                <Form>
-                    <div>
-                        <label>
-                            Username: &nbsp;
-                            <Input name="username" type="text" value={this.state.username} onChange={this._handleUpdate}
-                            />
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            Password: &nbsp;
-                            <Input name="password" type="password" value={this.state.password} onChange={this._handleUpdate}
-                            />
-                        </label>
-                    </div>
-                    <Button onClick={this._handleSubmit}>Login</Button>
-                </Form>
-                <Button onClick={this._handleCreateAccount}>Sign up</Button>
-            </div>
-=======
             <Container>
                     <Form>
                         <Form.Group as={Row} className="mb-3 justify-content-center">
@@ -139,7 +85,6 @@ export class NameForm extends React.Component {
                 <div>Don't have an account?</div>
                 <Button onClick = {this._handleCreateAccount}>Sign up</Button>
             </Container>
->>>>>>> 3041a487f236a5921848a256692fd9405653dd6f
         );
     }
 }
@@ -152,4 +97,3 @@ const Input = styled.input`
 const P = styled.p`
   line-height:0.2;
 `;
-

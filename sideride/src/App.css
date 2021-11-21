@@ -17,7 +17,7 @@ body {
   color: white;
 }
 
-.cool-accordion{
+.accordionnonretard {
   color: black;
   max-width:720px;
   margin:auto;
@@ -40,10 +40,4 @@ body {
 
 .App-link {
   color: #61dafb;
-}
-
-amplify-sign-out {
-  position: absolute;
-        top: 0px;
-        right: 0px;
 }
