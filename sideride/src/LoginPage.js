@@ -28,7 +28,6 @@ export class NameForm extends React.Component {
             username: '',
             password: ''
         };
-
     }
 
     _handleUpdate = (evt) => {
@@ -47,7 +46,7 @@ export class NameForm extends React.Component {
         // API.get('flaskapi', '/api/login/username=' + this.state.username + ',password=' + this.state.password)
         //     .then((response) => console.log(response))
         
-        API.post('flaskapi', '/api/').then((response) => console.log(response) )
+        API.post('flaskapi', '/api/').then((response) => console.log(response))
         
         evt.preventDefault();
     };
@@ -82,7 +81,7 @@ export class NameForm extends React.Component {
                             </Col>
                         </Form.Group>
                     </Form>
-                <Button onClick = {this._handleCreateAccount} className="mb-2">Log in</Button>
+                <Button onClick = {this._handleSubmit} className="mb-2">Log in</Button>
                 <div>Don't have an account?</div>
                 <Button onClick = {this._handleCreateAccount}>Sign up</Button>
             </Container>

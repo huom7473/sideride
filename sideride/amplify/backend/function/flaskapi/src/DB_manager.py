@@ -6,10 +6,10 @@ from flask import json, jsonify
 CONN_FAILURE = "Connection failed"
 CONN_SUCCESS = "Connection established"
 
-default_config =     {
+default_config = {
     'user': 'SideRideProject',
     'password': 'SideRideProject130*',
-    'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
+    'host': 'https://cors-anywhere.herokuapp.com/database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
     'database': 'SideRideSchema',
     'raise_on_warnings': True
 }
