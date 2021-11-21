@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 mysql = "*"
+aws-wsgi = "*"
 
 [dev-packages]
 

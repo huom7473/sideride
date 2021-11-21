@@ -15,7 +15,7 @@ function SearchPage() {
     return (
         <div className="App">
             <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
+                <img src={logo} className="App-logo" alt="logo"/>
             </header>
             <AmplifySignOut style={{ width: '10px' }} />
             <Container>
@@ -51,13 +51,13 @@ export class Selection extends React.Component {
     };
 
     _handleFindRide = (evt) => {
-        //this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
+        this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
         API.get('flaskapi', '/api/find')
             .then((response) => console.log(response))
         evt.preventDefault();
     };
     _handleCreateRide = (evt) => {
-        //this.props.history.push('/createride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
+        this.props.history.push('/createride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
         API.get('flaskapi', '/api/createride/from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date)
             .then((response) => console.log(response))
         evt.preventDefault();
