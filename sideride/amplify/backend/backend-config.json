@@ -23,7 +23,7 @@
     }
   },
   "auth": {
-    "sideridesideride6d205338": {
+    "sideridesideridef928ede5": {
       "service": "Cognito",
       "serviceType": "imported",
       "providerPlugin": "awscloudformation",
