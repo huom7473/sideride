@@ -6,6 +6,11 @@ body {
   background-color: #373d48 !important;
 }
 
+.accordion-body{
+  background-color: #373d48 !important;
+  color:white !important;
+}
+
 .accordion-button::after {
   filter: invert(1);
 }

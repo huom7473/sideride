@@ -4,6 +4,7 @@ import { useHistory } from "react-router"
 import { API } from 'aws-amplify'
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import Amplify from 'aws-amplify';
+import { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
 
@@ -35,7 +36,14 @@ function SearchPage() {
 export class Selection extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { from: '', to: '', date: '' };
+        this.state = { from: '', to: '', date: '', info: {} };
+    }
+
+    async componentDidMount() {
+        console.log("Selection mounted")
+        const info = await Auth.currentUserInfo()
+        console.log('Returned info: ', info)
+        this.setState({ info: info })
     }
 
     _handleUpdate = (evt) => {
@@ -49,6 +57,7 @@ export class Selection extends React.Component {
     };
 
     _handleFindRide = (evt) => {
+        console.log("Current:", this.state.info.username);
         this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
         API.get('flaskapi', '/api/find')
             .then((response) => console.log(response))

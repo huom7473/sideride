@@ -1,9 +1,9 @@
 import logo from "./logo.svg";
 import React from "react";
 import qs from "qs";
-import { Accordion, Container } from "react-bootstrap";
+import { Button, Accordion, Container } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router"
-
+import { Auth } from 'aws-amplify';
 import styled from 'styled-components';
 
 export default function ResultsPage() {
@@ -101,11 +101,10 @@ class Results extends React.Component {
                 to: this.testing_arr[i],
                 time: 12,
                 price: 20,
+                seats: 4,
                 info: "More Detailed information"
             });
         }
-
-
     }
 
     render() {
@@ -117,10 +116,9 @@ class Results extends React.Component {
                 </p>
                 <div>
                     <Accordion defaultActiveKey="0" className="cool-accordion">
-                        {this.state.rides.map((it, index) => <Accordion.Item eventKey={index}>{it.render()}</Accordion.Item>)}
+                        {this.state.rides.map((it, index) => <Accordion.Item key={index} eventKey={index}>{it.render()}</Accordion.Item>)}
                     </Accordion>
                 </div>
-
             </div>
 
         );
@@ -128,7 +126,22 @@ class Results extends React.Component {
 }
 
 class RideEntry extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            info: {}
+        };
+
+    }
+
+    _handleBookRide = (evt) => {
+        //TODO: Backend call to 1) decrement ride seat count by 1 2) Update driver's list of carpoolers
+        console.log(this.state.info.username);
+    };
+
     render() {
+        //note: ideally this is in the results class and it passes info to rideentry children, not sure how that should be done yet
+        const info = Auth.currentUserInfo().then(res => this.state = { info: res })
         return (
             <>
                 <Accordion.Header>
@@ -155,7 +168,14 @@ class RideEntry extends React.Component {
                     </AccordionContent>
                 </Accordion.Header>
                 <Accordion.Body>
-                    {this.props.info}
+                    <AccordionBody>
+                        <DetailContainer>
+                            Seats left: {this.props.seats}
+                        </DetailContainer>
+                        <Button onClick={this._handleBookRide}>
+                            Book Seat
+                        </Button>
+                    </AccordionBody>
                 </Accordion.Body>
             </>
         );
@@ -188,4 +208,15 @@ const AccordionContent = styled.div`
     display:flex;
     width:100%;
     color:white;
+`;
+
+
+const AccordionBody = styled.div`
+    display:flex;
+    width:100%;
+`;
+
+const DetailContainer = styled.div`
+    flex:1;
+    text-align:left;
 `;
