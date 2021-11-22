@@ -124,8 +124,6 @@ class Results extends React.Component {
                 info: "More Detailed information"
             });
         }
-
-
     }
 
     render() {
@@ -149,10 +147,22 @@ class Results extends React.Component {
 class RideEntry extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            info: {}
+        };
+
+    }
+
+    async componentDidMount() {
+        //note: ideally this is in the results class and it passes info to rideentry children, not sure how that should be done yet
+        const info = await Auth.currentUserInfo()
+        console.log('Returned info: ', info)
+        this.setState({ info: info })
     }
 
     _handleBookRide = (evt) => {
         //TODO: Backend call to 1) decrement ride seat count by 1 2) Update driver's list of carpoolers
+        console.log(this.state.info.username);
     };
 
     render() {
@@ -186,7 +196,7 @@ class RideEntry extends React.Component {
                         <DetailContainer>
                             Seats left: {this.props.seats}
                         </DetailContainer>
-                        <Button onClick={this.handleBookRide}>
+                        <Button onClick={this._handleBookRide}>
                             Book Seat
                         </Button>
                     </AccordionBody>
