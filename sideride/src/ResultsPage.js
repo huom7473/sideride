@@ -141,7 +141,7 @@ class Results extends React.Component {
                     Results for rides from {this.state.from} to {this.state.to} on {this.state.date}
                 </p>
                 <div>
-                    <Accordion defaultActiveKey="0" className="accordionnonretard">
+                    <Accordion defaultActiveKey="0" className="cool-accordion">
                         {this.state.rides.map((it, index) => <Accordion.Item eventKey={index}>{it.render()}</Accordion.Item>)}
                     </Accordion>
                 </div>

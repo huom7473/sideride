@@ -4,8 +4,12 @@ import { useHistory } from "react-router"
 import { API } from 'aws-amplify'
 import { Button, Col, Container, Form, FormControl, Row } from "react-bootstrap";
 import styled from "styled-components";
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
 
-export default function SearchPage() {
+Amplify.configure(awsconfig);
+function SearchPage() {
     let history = useHistory();
     return (
         <div className="App">
@@ -95,3 +99,5 @@ export class Selection extends React.Component {
         );
     }
 }
+
+export default withAuthenticator(SearchPage);

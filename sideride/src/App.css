@@ -17,11 +17,17 @@ body {
   color: white;
 }
 
-.accordionnonretard {
+.cool-accordion {
   color: black;
   max-width:720px;
   margin:auto;
 }
+
+amplify-sign-out {
+  position: absolute;
+        top: 0px;
+        right: 0px;
+} 
 
 .App-logo {
   height: 15vmin;
