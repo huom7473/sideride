@@ -5,23 +5,23 @@ import { useHistory, useLocation } from "react-router"
 import qs from "qs";
 
 export default function CreateRidePage() {
-    let history = useHistory();
-    let location = useLocation();
-    return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <div>
-                    <p>
-                        Create a Ride
-                    </p>
-                </div>
-                <div>
-                    <CreateRideMenu history={history} location={location}/>
-                </div>
-            </header>
+  let history = useHistory();
+  let location = useLocation();
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <div>
+          <p>
+            Create a Ride
+          </p>
         </div>
-    );
+        <div>
+          <CreateRideMenu history={history} location={location} />
+        </div>
+      </header>
+    </div>
+  );
 }
 
 
@@ -30,13 +30,13 @@ export class CreateRideMenu extends React.Component {
     super(props);
 
     this.state = {
-        from: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).from,
-        to: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).to,
-        date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
-        time: "",
-        seats: "",
-        price: "",
-        errored: false,
+      from: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).from,
+      to: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).to,
+      date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
+      time: "",
+      seats: "",
+      price: "",
+      errored: false,
     };
   }
 
@@ -58,7 +58,7 @@ export class CreateRideMenu extends React.Component {
 
       this.props.history.push('/results');
     } else {
-      this.setState({ errored: true });
+      alert("Please fill in all required fields!");
     }
   };
 
@@ -80,31 +80,31 @@ export class CreateRideMenu extends React.Component {
             <Input name="seats" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <label>Price:</label>
             <Input name="price" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <Button onClick={this._handleSubmit}>Create Ride</Button>
+            <Button type="button" onClick={this._handleSubmit}>Create Ride</Button>
           </Form>
 
         </Container>
       </>
     );
-  }; 
-}; 
+  };
+};
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
   width: 100%;
-`; 
+`;
 
 const Form = styled.form`
   width: 600px;
   height: 500px;
   background-color: lightblue;
-`; 
+`;
 
 const Input = styled.input`
   outline: ${(props) => (props.errored ? "red" : "none")};
-`; 
+`;
 
 const Button = styled.button`
   background-color: lightblue;

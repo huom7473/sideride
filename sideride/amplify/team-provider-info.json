@@ -17,6 +17,14 @@
           "deploymentBucketName": "amplify-amplify067eadd867394-staging-224446-deployment",
           "s3Key": "amplify-builds/flaskapi-6e6d7a55486d42572f48-build.zip"
         }
+      },
+      "auth": {
+        "sideridesideride6d205338": {
+          "userPoolId": "us-east-2_YN249aV7M",
+          "userPoolName": "sideride-userpool",
+          "webClientId": "288b6cvqt0kqgct2hv9st3quko",
+          "nativeClientId": "288b6cvqt0kqgct2hv9st3quko"
+        }
       }
     }
   }
