@@ -21,5 +21,14 @@
         }
       ]
     }
+  },
+  "auth": {
+    "sideridesideride6d205338": {
+      "service": "Cognito",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
   }
 }

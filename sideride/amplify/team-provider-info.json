@@ -19,7 +19,12 @@
         }
       },
       "auth": {
-        "sideridesideride6d541c87": {}
+        "sideridesideride6d205338": {
+          "userPoolId": "us-east-2_YN249aV7M",
+          "userPoolName": "sideride-userpool",
+          "webClientId": "288b6cvqt0kqgct2hv9st3quko",
+          "nativeClientId": "288b6cvqt0kqgct2hv9st3quko"
+        }
       }
     }
   }

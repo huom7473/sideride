@@ -6,25 +6,6 @@ import { useHistory, useLocation } from "react-router"
 
 import styled from 'styled-components';
 
-const List = styled.div`
-  display: flex;
-  justify-content: center; // 3
-  flex-flow: column wrap; // 4
-`;
-
-const Card = styled.div`
-  background: #36393e;
-  margin: 10px;
-  height: 50px;
-  width: 400px;
-  border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-flow: column; // 5 
-  justify-content: center;
-  align-items: center;
-`;
-
 export default function ResultsPage() {
     let history = useHistory();
     let location = useLocation();
@@ -128,12 +109,6 @@ class Results extends React.Component {
     }
 
     render() {
-        var test_guy = new RideEntry({
-            id: 333,
-            from: "UCLA",
-            to: "Test loc",
-            info: "More Detailed information"
-        });
         console.log(this.state.rides);
         return (
             <div>
@@ -153,9 +128,6 @@ class Results extends React.Component {
 }
 
 class RideEntry extends React.Component {
-    constructor(props) {
-        super(props);
-    }
     render() {
         return (
             <>

@@ -2,8 +2,7 @@ import logo from "./logo.svg";
 import React from "react";
 import { useHistory } from "react-router"
 import { API } from 'aws-amplify'
-import { Button, Col, Container, Form, FormControl, Row } from "react-bootstrap";
-import styled from "styled-components";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
