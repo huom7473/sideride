@@ -135,7 +135,7 @@ class Results extends React.Component {
                 </p>
                 <div>
                     <Accordion defaultActiveKey="0" className="cool-accordion">
-                        {this.state.rides.map((it, index) => <Accordion.Item eventKey={index}>{it.render()}</Accordion.Item>)}
+                        {this.state.rides.map((it, index) => <Accordion.Item key={index} eventKey={index}>{it.render()}</Accordion.Item>)}
                     </Accordion>
                 </div>
             </div>
@@ -153,19 +153,14 @@ class RideEntry extends React.Component {
 
     }
 
-    async componentDidMount() {
-        //note: ideally this is in the results class and it passes info to rideentry children, not sure how that should be done yet
-        const info = await Auth.currentUserInfo()
-        console.log('Returned info: ', info)
-        this.setState({ info: info })
-    }
-
     _handleBookRide = (evt) => {
         //TODO: Backend call to 1) decrement ride seat count by 1 2) Update driver's list of carpoolers
         console.log(this.state.info.username);
     };
 
     render() {
+        //note: ideally this is in the results class and it passes info to rideentry children, not sure how that should be done yet
+        const info = Auth.currentUserInfo().then(res => this.state = { info: res })
         return (
             <>
                 <Accordion.Header>

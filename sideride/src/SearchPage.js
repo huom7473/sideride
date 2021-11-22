@@ -41,6 +41,7 @@ export class Selection extends React.Component {
     }
 
     async componentDidMount() {
+        console.log("Selection mounted")
         const info = await Auth.currentUserInfo()
         console.log('Returned info: ', info)
         this.setState({ info: info })
