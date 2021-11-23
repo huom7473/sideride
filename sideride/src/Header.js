@@ -9,9 +9,6 @@ import { useHistory } from "react-router";
 
 Amplify.configure(awsconfig);
 
-
-
-
 const Header = () => {
     const history = useHistory();
 
