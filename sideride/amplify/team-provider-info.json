@@ -15,7 +15,15 @@
       "function": {
         "flaskapi": {
           "deploymentBucketName": "amplify-amplify067eadd867394-staging-224446-deployment",
-          "s3Key": "amplify-builds/flaskapi-46686b6f7748674a3148-build.zip"
+          "s3Key": "amplify-builds/flaskapi-73314c48506e47346b58-build.zip"
+        }
+      },
+      "auth": {
+        "sideridesideridef928ede5": {
+          "userPoolId": "us-east-2_YN249aV7M",
+          "userPoolName": "sideride-userpool",
+          "webClientId": "288b6cvqt0kqgct2hv9st3quko",
+          "nativeClientId": "288b6cvqt0kqgct2hv9st3quko"
         }
       }
     }

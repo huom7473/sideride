@@ -10,6 +10,8 @@ src = {editable = true, path = "./src"}
 flask = "*"
 aws-wsgi = "*"
 flask-cors = "*"
+mysql-connector = "*"
+mysql = "*"
 
 [requires]
 python_version = "3.9"
