@@ -1,19 +1,18 @@
-import logo from "./logo.svg";
 import React from "react";
 import qs from "qs";
 import { Button, Accordion, Container } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router"
 import { Auth } from 'aws-amplify';
 import styled from 'styled-components';
+import Header from './Header';
+
 
 export default function ResultsPage() {
     let history = useHistory();
     let location = useLocation();
     return (
         <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-            </header>
+            {Header()}
             <Container>
                 <div>
                     <Selection history={history} location={location} />

@@ -2,6 +2,12 @@ body {
   background-color: #282c34 !important;
 }
 
+:root {
+  --amplify-primary-color: #0e6efb;
+  --amplify-primary-tint: #ff7359;
+  --amplify-primary-shade: #e0573e;
+}
+
 .accordion-button{
   background-color: #373d48 !important;
 }
@@ -28,11 +34,7 @@ body {
   margin:auto;
 }
 
-amplify-sign-out {
-  position: absolute;
-        top: 0px;
-        right: 0px;
-} 
+
 
 .App-logo {
   height: 15vmin;
@@ -42,9 +44,10 @@ amplify-sign-out {
 .App-header {
   background-color: #282c34;
   display: flex;
-  flex-direction: column;
+  width:100%;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   font-size: calc(10px + 2vmin);
   color: white;
 }

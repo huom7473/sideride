@@ -1,6 +1,6 @@
-import logo from "./logo.svg";
 import React from "react";
 import styled from "styled-components";
+import Header from "./Header";
 import { useHistory, useLocation } from "react-router"
 import qs from "qs";
 
@@ -9,17 +9,15 @@ export default function CreateRidePage() {
   let location = useLocation();
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <div>
-          <p>
-            Create a Ride
-          </p>
-        </div>
-        <div>
-          <CreateRideMenu history={history} location={location} />
-        </div>
-      </header>
+      {Header()}
+      <div>
+        <p>
+          Create a Ride
+        </p>
+      </div>
+      <div>
+        <CreateRideMenu history={history} location={location} />
+      </div>
     </div>
   );
 }

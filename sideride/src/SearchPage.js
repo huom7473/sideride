@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import React from "react";
 import { useHistory } from "react-router"
 import { API } from 'aws-amplify'
@@ -7,16 +6,18 @@ import Amplify from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
-
+import styled from 'styled-components';
+import Header from './Header';
 Amplify.configure(awsconfig);
+
+
+
 function SearchPage() {
     let history = useHistory();
     return (
         <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-            </header>
-            <AmplifySignOut />
+            {Header()}
+
             <Container>
                 <div>
                     <p>
