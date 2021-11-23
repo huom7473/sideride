@@ -5,15 +5,20 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import Amplify from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
+import { AddressSearch } from "./AddressSearch";
+import {useLoadScript} from "@react-google-maps/api";
 import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
-import styled from 'styled-components';
 import Header from './Header';
+
 Amplify.configure(awsconfig);
-
-
+const libraries = ["places"];
 
 function SearchPage() {
     let history = useHistory();
+    const {isLoaded, loadError} = useLoadScript({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+        libraries: libraries
+    })
     return (
         <div className="App">
             {Header()}
@@ -25,7 +30,7 @@ function SearchPage() {
                     </p>
                 </div>
                 <div>
-                    <Selection history={history} />
+                    <Selection isLoaded={isLoaded} loadError={loadError} history={history} />
                 </div>
             </Container>
         </div>
@@ -41,9 +46,7 @@ export class Selection extends React.Component {
     }
 
     async componentDidMount() {
-        console.log("Selection mounted")
         const info = await Auth.currentUserInfo()
-        console.log('Returned info: ', info)
         this.setState({ info: info })
     }
 
@@ -58,12 +61,12 @@ export class Selection extends React.Component {
     };
 
     _handleFindRide = (evt) => {
-        console.log("Current:", this.state.info.username);
         this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
-        API.get('flaskapi', '/api/find')
+        API.get('flaskapi', '/api/find/test')
             .then((response) => console.log(response))
         evt.preventDefault();
     };
+
     _handleCreateRide = (evt) => {
         this.props.history.push('/createride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
         API.get('flaskapi', '/api/createride/from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date)
@@ -71,26 +74,28 @@ export class Selection extends React.Component {
         evt.preventDefault();
     };
 
+    _handleToLatLong = ({lat, lng, description}) => {
+        this.setState({toCoord: {lat, lng}, to: description});
+    };
+
+    _handleFromLatLong = ({lat, lng, description}) => {
+        this.setState({fromCoord: {lat, lng}, from: description});
+    };
+
     render() {
+        if (!this.props.isLoaded) return "loading";
+        else if (this.props.loadError) return "load error";
         return (
             <Container>
                 <Form>
                     <Form.Group as={Row} className="mb-3">
                         <Form.Label column sm={"auto"}>From:</Form.Label>
                         <Col>
-                            <Form.Control name="from"
-                                type="text"
-                                value={this.state.from}
-                                onChange={this._handleUpdate}
-                                placeholder="UCLA" />
+                            <AddressSearch select={this._handleToLatLong}/>
                         </Col>
                         <Form.Label column sm={"auto"}>To:</Form.Label>
                         <Col>
-                            <Form.Control name="to"
-                                type="text"
-                                value={this.state.to}
-                                onChange={this._handleUpdate}
-                                placeholder="Westwood" />
+                            <AddressSearch select={this._handleFromLatLong}/>
                         </Col>
                         <Form.Label column sm={"auto"}>Date:</Form.Label>
                         <Col>
