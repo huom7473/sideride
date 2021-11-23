@@ -14,7 +14,7 @@ BASE_ROUTE = "/api/"
 @app.route(BASE_ROUTE + 'login/<arg>', methods=['POST', 'GET'])
 def base_route(arg):
 
-    params =  dict(x.split("=") for x in arg.split(","))
+    params =  dict(x.split("=") for x in arg.split("&"))
 
     if request.method == 'GET':
         return params
@@ -28,14 +28,13 @@ def base():
     if request.method == 'POST': return {'arg': "wooooo"}
 
 
-@app.route(BASE_ROUTE + 'find')
-def find():
-    passed_params = request.args.get('from')
-    return {'arg': passed_params}
+@app.route(BASE_ROUTE + 'find/<username>')
+def find(username):
+    return {'arg': f"trying to find rides for {username}"}
 
-@app.route(BASE_ROUTE + '/createride/<arg>', methods = ['POST', 'GET'])
+@app.route(BASE_ROUTE + 'createride/<arg>', methods = ['POST', 'GET'])
 def createride(arg):
-    params =  dict(x.split("=") for x in arg.split(","))
+    params =  dict(x.split("=") for x in arg.split("&"))
 
     db = DB_manager.DatabaseHandler()
     if db.connect_to_db() == db.CONN_FAILURE:

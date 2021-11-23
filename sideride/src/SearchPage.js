@@ -62,7 +62,7 @@ export class Selection extends React.Component {
 
     _handleFindRide = (evt) => {
         this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
-        API.get('flaskapi', '/api/find/test')
+        API.get('flaskapi', '/api/find/' + this.state.info.username)
             .then((response) => console.log(response))
         evt.preventDefault();
     };
