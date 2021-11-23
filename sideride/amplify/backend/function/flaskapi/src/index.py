@@ -32,18 +32,23 @@ def base():
 def find(username):
     return {'arg': f"trying to find rides for {username}"}
 
-@app.route(BASE_ROUTE + 'createride/<arg>', methods = ['POST', 'GET'])
-def createride(arg):
-    params =  dict(x.split("=") for x in arg.split("&"))
+@app.route(BASE_ROUTE + 'createride', methods = ['POST', 'GET'])
+def createride():
+    #params =  dict(x.split("=") for x in request.arg.split("&"))
 
-    db = DB_manager.DatabaseHandler()
-    if db.connect_to_db() == db.CONN_FAILURE:
-        return {'msg':'Error conneting to database'}
+    _from  = request.args.get('from', None)
+    _to = request.args.get('to', None)
+    _date = request.args.get('date', None)
+
+    # db = DB_manager.DatabaseHandler()
+    # if db.connect_to_db() == db.CONN_FAILURE:
+    #     return {'msg':'Error conneting to database'}
     
-    if db.add_ride('0',start=params['from'],stop=params['to'],date=params['date']):
-        return {'msg': 'Ride added to database'}
-    else:
-        return {'msg':'Error with adding ride to database'}
+    # if db.add_ride('0',start=params['from'],stop=params['to'],date=params['date']):
+    #     return {'msg': 'Ride added to database'}
+    # else:
+    #     return {'msg':'Error with adding ride to database'}
+    return {'arg': f"trying to find rides for {_from},{_to}"}
 
 def handler(event, context):
     return awsgi.response(app, event, context)
