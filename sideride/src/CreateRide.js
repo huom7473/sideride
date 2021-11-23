@@ -52,7 +52,18 @@ export class CreateRideMenu extends React.Component {
     const { from, to, date, time, seats, price } = this.state;
 
     if (from !== "" && to !== "" && date !== "" && time !== "" && seats !== "" && price !== "") {
-      //post to backend
+    // actual call to add ride to DB 
+    /* TODO: We're missing 2 main sets of state variables needed to create ride
+
+        Need lat/long for both start(from) and stop(to), how to get from location names? 
+
+        Need access to Driver Profile info (i.e DL #, license plate, car model)
+    
+    API.get('flaskapi', '/api/addride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date
+    + 
+    )
+
+    */
 
       this.props.history.push('/results');
     } else {
