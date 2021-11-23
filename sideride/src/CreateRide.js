@@ -6,6 +6,10 @@ import { useLoadScript } from "@react-google-maps/api";
 import { Button } from "react-bootstrap";
 import { AddressSearch } from "./AddressSearch";
 
+import { API } from 'aws-amplify'
+//import { Auth } from 'aws-amplify';
+//import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
+
 const libraries = ["places"];
 
 export default function CreateRidePage() {
@@ -47,10 +51,15 @@ export class CreateRideMenu extends React.Component {
       make: "",
       model: "",
       plate: "",
+      //info: {},
       errored: false,
     };
   }
 
+//   async componentDidMount() {
+//     const info = await Auth.currentUserInfo()
+//     this.setState({ info: info })
+//     }
   _handleUpdate = (evt) => {
     const { name, value } = evt.target;
 
@@ -75,17 +84,12 @@ export class CreateRideMenu extends React.Component {
 
     if (from !== "" && to !== "" && date !== "" && time !== "" && seats !== "" && price !== "") {
       // actual call to add ride to DB 
-      /* TODO: We're missing 2 main sets of state variables needed to create ride
-  
-          Need lat/long for both start(from) and stop(to), how to get from location names? 
-  
-          Need access to Driver Profile info (i.e DL #, license plate, car model)
-      
       API.get('flaskapi', '/api/addride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date
-      + 
-      )
+      + "&fromLat=" + this.state.fromCoord.lat + "&fromLng=" + this.state.fromCoord.lng
+      + "&toLat=" + this.state.toCoord.lat + "&toLng=" + this.state.toCoord.lng + "&time=" + this.state.time + 
+      "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" + 
+      this.state.model + "&plate=" + this.state.plate).then((response) => console.log(response))
   
-      */
 
       this.props.history.push('/results');
     } else {
@@ -168,3 +172,5 @@ const Label = styled.label`
 const Input = styled.input`
   outline: ${(props) => (props.errored ? "red" : "none")};
 `;
+
+//export default withAuthenticator(CreateRidePage);

@@ -58,9 +58,7 @@ class TestDBConnection(unittest.TestCase):
         sql_db.connect_to_db()
 
         # Now try inserting a row and check response from DatabaseHandler 
-        num, start, stop, date = '5', 'Santa Fe', 'ABQ', '2021-10-09'
-
-        self.assertTrue(sql_db.add_ride(num, start, stop, date))
+        # TODO 
 
 
 if __name__ == '__main__':

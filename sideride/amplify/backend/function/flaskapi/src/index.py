@@ -2,7 +2,8 @@ import json
 from flask import Flask, jsonify, request
 import awsgi
 from flask_cors import CORS
-import DB_manager
+import DB_manager as dm
+import Ride_manager as rm
 
 
 app = Flask(__name__)
@@ -19,18 +20,29 @@ def find(username):
 # Add ride to database
 @app.route(BASE_ROUTE + 'addride')
 def addride():
-    _id = request.args.get('id', None)
-    _start  = request.args.get('start', None)
-    _stop = request.args.get('stop', None)
-    _start_coord = request.args.get('start_coord', None)
-    _stop_coord = request.args.get('stop_coord', None)
-    _car = request.args.get('car_model', None) 
-    _license_plate = request.args.get('license_plate', None)
-    _driver_id = request.args.get('driver_id', None)
-    _date = request.args.get('date', None)
 
-    # TODO: add seats, price variables and deal with DATETIME conversion for SQL table 
+    # First create a Ride object with the passed in args 
+    # NOTE: we format the date into an appropriate DATETIME string for SQL
+    try:
+        ride = rm.Ride(request.args) 
+        ride.formatDate()
+    except:
+        return {'Backend error': "Failed to create Ride instance"}
 
+    # Then establish connection to DB 
+    try:
+        db_handle = dm.Database() 
+        db_handle.connect_to_db()
+        #return {'params': ride.getAll()}       # a test to see permuted args on console
+    except:
+        return {'Backend error': 'Failed to connect to DB'}
+
+    # Then use db_handle to add the ride to the DB
+    insertion = db_handle.add_ride(ride.getAll())
+    if insertion:
+        return {'SUCCESS': 'Added ride to DB'}
+    else:
+        return {'FAILURE': 'Failed to add ride to DB'}
 
 
 
@@ -42,14 +54,7 @@ def createride():
     _to = request.args.get('to', None)
     _date = request.args.get('date', None)
 
-    # db = DB_manager.DatabaseHandler()
-    # if db.connect_to_db() == db.CONN_FAILURE:
-    #     return {'msg':'Error conneting to database'}
-    
-    # if db.add_ride('0',start=params['from'],stop=params['to'],date=params['date']):
-    #     return {'msg': 'Ride added to database'}
-    # else:
-    #     return {'msg':'Error with adding ride to database'}
+
     return {'arg': f"trying to find rides for {_from},{_to}"}
 
 def handler(event, context):

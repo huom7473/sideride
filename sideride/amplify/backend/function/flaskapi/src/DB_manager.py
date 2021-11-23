@@ -1,20 +1,23 @@
 from datetime import datetime, date, timedelta
 import mysql.connector as ms
 from flask import json, jsonify
+from Ride_manager import *
 
 # Static global 
 CONN_FAILURE = "Connection failed"
 CONN_SUCCESS = "Connection established"
 
+# for CORS: https://cors-anywhere.herokuapp.com/ before the hostname
+
 default_config = {
     'user': 'SideRideProject',
     'password': 'SideRideProject130*',
-    'host': 'https://cors-anywhere.herokuapp.com/database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
+    'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
     'database': 'SideRideSchema',
     'raise_on_warnings': True
 }
 
-class DatabaseHandler:
+class Database:
     """
     A class used to interact with the backend database and serve results to the frontend
 
@@ -89,44 +92,63 @@ class DatabaseHandler:
         except:
             return CONN_FAILURE
     
-    def add_ride(self, id:str, start:str, stop:str, date:str) -> bool:
+    def add_ride(self, params) -> bool:
         """
-        Adds the specified ride to the Rides table in the backend DB
+        Adds the specified ride with params to the Rides table in the backend DB
 
         Returns True if ride was succesfully added, False if not 
 
         Parameters
-        --------
-
-        id : str
-            A unique id that identifies the Driver object responsible for this ride 
+        -------- 
         
-        start : str
+        from : str
             The starting location for the trip
         
-        stop : str
+        to : str
             The ending location for the trip
         
         date : 
-            The date (YYYY-MM-DD) for which the trip is scheduled
+            The date, in DATETIME formate (YYYY-MM-DD HH:MM:SS) for which the trip is scheduled
 
         """
         insert_stmt = (
-            "INSERT INTO Rides (driver_id, start, stop, date) "
-            "VALUES (%s, %s, %s, %s)"
+            "INSERT INTO Rides "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         )
         
-        params = (id, start, stop, date)
+        values = (
+            params['from'], params['to'], params['fromLat'], params['fromLng'],
+            params['make'], params['plate'], params['datetime'], 
+            params['price'], params['seats'], params['model']
+            )
 
         # This catches improper insertions 
         try:
-            self.cursor.execute(insert_stmt,params)
+            self.cursor.execute(insert_stmt,values)
             self.connection.commit()
             return True
         except:
             self.cursor.fetchwarnings()
             return False
     
+    def add_ride2(self) -> bool:
+
+        insert_stmt = (
+            "INSERT INTO tester "
+            "VALUES (%s, %s, %s)"
+        )
+        
+        values = ('103', 'LA', '')
+
+        # This catches improper insertions 
+        try:
+            self.cursor.execute(insert_stmt,values)
+            self.connection.commit()
+            return True
+        except:
+            print(self.cursor.fetchwarnings())
+            return False
+
     def delete_ride(self, id:str) -> bool:
         """
         Removes the given ride from the Rides table 
@@ -187,4 +209,21 @@ class DatabaseHandler:
         # TODO: So '2015-9-22' will come back as datetime.date(2015,9,22) so convert prior to displaying
         return jsonify(results)
         
-    
+params = {'from':'Los Angeles', 'to':'San Diego', 'fromLat': '12.12', 'fromLng': '54.2', 
+'make':'toyota', 'plate':'HKG342', 'date':'2021-21-11 12:00:00', 'price':'4', 'seats':'5', 'model':'blah'
+}
+
+
+db_handle = Database()
+y = db_handle.connect_to_db()
+
+if y == CONN_FAILURE:
+    print("failed to connect")
+
+
+values = {'id':'1', 'seats': "5", 'to': "Los Angeles"}
+
+x = db_handle.add_ride2()
+
+if x: print("inserted!")
+else: print("failed")
