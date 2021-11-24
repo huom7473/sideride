@@ -5,6 +5,7 @@ import { useHistory, useLocation } from "react-router"
 import { Auth } from 'aws-amplify';
 import styled from 'styled-components';
 import Header from './Header';
+import { API } from 'aws-amplify'
 
 
 export default function ResultsPage() {
@@ -92,6 +93,9 @@ class Results extends React.Component {
             rides: []
         };
         this.testing_arr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+        
+        // dummy API call to fetch query results from DB 
+        API.get('flaskapi', '/api/tygan').then((response) => console.log(response))
 
         for (var i = 0; i < this.testing_arr.length; i++) {
             this.state.rides[i] = new RideEntry({

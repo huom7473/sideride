@@ -176,7 +176,7 @@ class Database:
         except:
             return False
 
-    def find_rides(self, params:dict) -> dict:
+    def find_rides(self) -> dict:
         """
         Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
@@ -191,14 +191,27 @@ class Database:
             The user-specified set of params on which to query for
         """
         query= (
-            "SELECT * FROM Rides WHERE date = %s"
+            """SELECT *, 
+                (
+                3959 * acos (
+                cos ( radians(37.2431) )
+                * cos( radians( fromLat ) )
+                * cos( radians( fromLng ) - radians(-115.793))
+                + sin ( radians(37.2431) )
+                * sin( radians( fromLat ) ))
+                ) AS distance,
+                DATEDIFF(date, '2021-11-23') AS timeDelta
+            FROM Rides
+            HAVING timeDelta >= 0 AND distance < 100
+            ORDER BY timeDelta, distance
+            LIMIT 0 , 20"""
         )
-
+        
         try:
-            self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+            self.cursor.execute(query)     # must pass params as tuples, hence (x,) format
             rows = self.cursor.fetchall()
         except:
-            return []
+            return ["hi"]       # means query failed
 
         # Now convert SQL output into JSON for frontend 
         results = []
@@ -207,25 +220,23 @@ class Database:
         for record in rows:
             results.append(dict(zip(headers,record)))
         
-        # NOTE: 'date' return as datetime.date object
-        # TODO: So '2015-9-22' will come back as datetime.date(2015,9,22) so convert prior to displaying
-        return jsonify(results)
+
+        return results      # empty list means no rows match query
         
-params = {'from':'Los Angeles', 'to':'San Diego', 'fromLat': '12.12', 'fromLng': '54.2', 
-'make':'toyota', 'plate':'HKG342', 'date':'2021-21-11 12:00:00', 'price':'4', 'seats':'5', 'model':'blah'
-}
+# params = {'from':'Los Angeles', 'to':'San Diego', 'fromLat': '12.12', 'fromLng': '54.2', 
+# 'make':'toyota', 'plate':'HKG342', 'date':'2021-21-11 12:00:00', 'price':'4', 'seats':'5', 'model':'blah'
+# }
 
 
-db_handle = Database()
-y = db_handle.connect_to_db()
+# db_handle = Database()
+# y = db_handle.connect_to_db()
 
-if y == CONN_FAILURE:
-    print("failed to connect")
+# if y == CONN_FAILURE:
+#     print("failed to connect")
 
 
-values = {'id':'1', 'seats': "5", 'to': "Los Angeles"}
+# values = {'id':'1', 'seats': "5", 'to': "Los Angeles"}
 
-x = db_handle.add_ride2()
+# x = db_handle.find_rides(params)
 
-if x: print("inserted!")
-else: print("failed")
+# print(x)

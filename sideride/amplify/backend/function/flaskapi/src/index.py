@@ -16,6 +16,18 @@ BASE_ROUTE = "/api/"
 def find(username):
     return {'arg': f"trying to find rides for {username}"}
 
+# Test route for Tygan
+@app.route(BASE_ROUTE + 'tygan')
+def get_prepared_query_results():
+    # Establish connection to DB 
+    try:
+        db_handle = dm.Database() 
+        db_handle.connect_to_db()
+    except:
+        return {'Backend error': 'Failed to connect to DB'}
+    
+    # Grab prepared results from DB using handle
+    return {'Query results': db_handle.find_rides()}
 
 # Add ride to database
 @app.route(BASE_ROUTE + 'addride')
