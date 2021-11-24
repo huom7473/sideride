@@ -27,7 +27,7 @@ def get_prepared_query_results():
         return {'Backend error': 'Failed to connect to DB'}
     
     # Grab prepared results from DB using handle
-    return {'Query results': db_handle.find_rides()}
+    return {'Query results': db_handle.find_rides_tygan()}
 
 # Add ride to database
 @app.route(BASE_ROUTE + 'addride')
@@ -55,6 +55,27 @@ def addride():
         return {'SUCCESS': 'Added ride to DB'}
     else:
         return {'FAILURE': ride.getAll()}
+
+
+@app.route(BASE_ROUTE + 'findrides')
+def findrides():
+    # Call the DB search query using passed in params 
+    
+    # First establish connection to DB 
+    try:
+        db_handle = dm.Database() 
+        db_handle.connect_to_db()
+    except:
+        return {'Backend error': 'Failed to connect to DB'}
+    
+    # Query the MasterRides table using given args
+    try:
+        query_results = db_handle.find_rides(dict(request.args))
+    except:
+        return {'FAILURE': 'Failed to query DB'}
+
+    # Return results back to frontend
+    return {'Query results': query_results}
 
 
 

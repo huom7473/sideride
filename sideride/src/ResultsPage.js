@@ -109,6 +109,12 @@ class Results extends React.Component {
 
     componentDidMount() {
         let results_arr = {};
+        
+        API.get('flaskapi', '/api/findrides?fromLat=' + this.state.fromlat + '&fromLng=' +
+        this.state.fromlng + "&date=" + this.state.date).then((response) => console.log("anthony",response))
+        
+        
+        
         API.get('flaskapi', '/api/tygan').then((response) => {
             console.log("response:", response);
             results_arr = response["Query results"];

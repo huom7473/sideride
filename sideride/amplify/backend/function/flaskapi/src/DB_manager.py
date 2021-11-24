@@ -112,8 +112,8 @@ class Database:
 
         """
         insert_stmt = (
-            "INSERT INTO Rides "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            "INSERT INTO MasterRides "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)"
         )
         
         values = (
@@ -129,27 +129,9 @@ class Database:
             self.connection.commit()
             return True
         except:
-            self.cursor.fetchwarnings()
+            error_msg = self.cursor._last_executed
             return False
     
-    def add_ride2(self) -> bool:
-        # works even though table expects non-string inputs
-        # and have verified we can query based on ints, dates, etc. 
-        insert_stmt = (
-            "INSERT INTO tester "
-            "VALUES (%s, %s, %s, %s, %s, %s)"
-        )
-        
-        values = ('1', 'LA', '12', '2021-11-21 12:00:00', '12.3', 123)
-
-        # This catches improper insertions 
-        try:
-            self.cursor.execute(insert_stmt,values)
-            self.connection.commit()
-            return True
-        except:
-            print(self.cursor.fetchwarnings())
-            return False
 
     def delete_ride(self, id:str) -> bool:
         """
@@ -176,7 +158,7 @@ class Database:
         except:
             return False
 
-    def find_rides(self) -> dict:
+    def find_rides_tygan(self) -> dict:
         """
         Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
@@ -201,7 +183,7 @@ class Database:
                 * sin( radians( fromLat ) ))
                 ) AS distance,
                 DATEDIFF(date, '2021-11-23') AS timeDelta
-            FROM Rides
+            FROM MasterRides
             HAVING timeDelta >= 0 AND distance < 100
             ORDER BY timeDelta, distance
             LIMIT 0 , 20"""
@@ -211,7 +193,7 @@ class Database:
             self.cursor.execute(query)     # must pass params as tuples, hence (x,) format
             rows = self.cursor.fetchall()
         except:
-            return ["hi"]       # means query failed
+            return ["hi"]
 
         # Now convert SQL output into JSON for frontend 
         results = []
@@ -221,8 +203,66 @@ class Database:
             results.append(dict(zip(headers,record)))
         
 
-        return results      # empty list means no rows match query
+        return results
+    
+    def find_rides(self, params) -> dict:
+        """
+        Currently fetches all rides that occur on the specified date from the database
+        Converts result into JSON format for easy processing in front end
+        Returns an empty list if no rides found for the given date 
+
+
+        Parameters
+        --------
+
+        params : dict
+            The user-specified set of params on which to query for
+        """
         
+        query= (
+            """SELECT *, 
+                    (
+                    3959 * acos (
+                    cos ( radians(%(fromLat)s) )
+                    * cos( radians( fromLat ) )
+                    * cos( radians( fromLng ) - radians(%(fromLng)s))
+                    + sin ( radians(%(fromLat)s) )
+                    * sin( radians( fromLat ) ))
+                    ) AS distance,
+                    DATEDIFF(date, %(date)s) AS timeDelta
+                FROM MasterRides
+                HAVING distance < 35 AND timeDelta >= 0 AND seats > 0
+                ORDER BY timeDelta, distance
+                LIMIT 0 , 20"""
+        )
+
+        
+        try:
+            self.cursor.execute(query, params)     # must pass params as tuples, hence (x,) format
+            rows = self.cursor.fetchall()
+        except:
+            return ["hi"]
+
+        # Now convert SQL output into JSON for frontend 
+        results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rows:
+            results.append(dict(zip(headers,record)))
+        
+
+        return self.format_results(results)
+    
+    def format_results(self, results):
+        #separates datetime objects into date and time key values
+        for result in results:
+            dtime = result['date']
+            result.pop('date')
+            result['date'] = dtime.strftime('%Y-%m-%d')
+            result['time'] = dtime.strftime('%H:%M:%S')
+        
+        return results
+
 # params = {'from':'Los Angeles', 'to':'San Diego', 'fromLat': '12.12', 'fromLng': '54.2', 
 # 'make':'toyota', 'plate':'HKG342', 'date':'2021-21-11 12:00:00', 'price':'4', 'seats':'5', 'model':'blah'
 # }
