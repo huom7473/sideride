@@ -7,12 +7,12 @@ import { Button } from "react-bootstrap";
 import { AddressSearch } from "./AddressSearch";
 
 import { API } from 'aws-amplify'
-//import { Auth } from 'aws-amplify';
-//import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
+import { Auth } from 'aws-amplify';
+import { withAuthenticator } from '@aws-amplify/ui-react';
 
 const libraries = ["places"];
 
-export default function CreateRidePage() {
+function CreateRidePage() {
   let history = useHistory();
   let location = useLocation();
   const { isLoaded, loadError } = useLoadScript({
@@ -51,20 +51,17 @@ export class CreateRideMenu extends React.Component {
       make: "",
       model: "",
       plate: "",
-      //info: {},
+      info: {},
       errored: false,
     };
   }
 
-//   async componentDidMount() {
-//     const info = await Auth.currentUserInfo()
-//     this.setState({ info: info })
-//     }
+  async componentDidMount() {
+    const info = await Auth.currentUserInfo()
+    this.setState({ info: info })
+  }
   _handleUpdate = (evt) => {
     const { name, value } = evt.target;
-
-    //this code is really nifty, it dynamically sets the input field with "name" to the corresponding value,
-    //so it can update any of: email, password, confirmedPassword, errored... 
     this.setState({ [name]: value }, () => {
       console.log("this.state", this.state);
     });
@@ -81,15 +78,16 @@ export class CreateRideMenu extends React.Component {
   _handleSubmit = () => {
     const { from, to, date, time, seats, price } = this.state;
     console.log(this.state);
+    console.log("Current user name is ", this.state.info.username);
 
     if (from !== "" && to !== "" && date !== "" && time !== "" && seats !== "" && price !== "") {
       // actual call to add ride to DB 
       API.get('flaskapi', '/api/addride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date
-      + "&fromLat=" + this.state.fromCoord.lat + "&fromLng=" + this.state.fromCoord.lng
-      + "&toLat=" + this.state.toCoord.lat + "&toLng=" + this.state.toCoord.lng + "&time=" + this.state.time + 
-      "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" + 
-      this.state.model + "&plate=" + this.state.plate).then((response) => console.log(response))
-  
+        + "&fromLat=" + this.state.fromCoord.lat + "&fromLng=" + this.state.fromCoord.lng
+        + "&toLat=" + this.state.toCoord.lat + "&toLng=" + this.state.toCoord.lng + "&time=" + this.state.time +
+        "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" +
+        this.state.model + "&plate=" + this.state.plate).then((response) => console.log(response))
+
 
       this.props.history.push('/results');
     } else {
@@ -173,4 +171,4 @@ const Input = styled.input`
   outline: ${(props) => (props.errored ? "red" : "none")};
 `;
 
-//export default withAuthenticator(CreateRidePage);
+export default withAuthenticator(CreateRidePage);

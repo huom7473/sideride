@@ -6,8 +6,8 @@ import Amplify from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { AddressSearch } from "./AddressSearch";
-import {useLoadScript} from "@react-google-maps/api";
-import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
+import { useLoadScript } from "@react-google-maps/api";
+import { withAuthenticator } from '@aws-amplify/ui-react';
 import Header from './Header';
 
 Amplify.configure(awsconfig);
@@ -15,7 +15,7 @@ const libraries = ["places"];
 
 function SearchPage() {
     let history = useHistory();
-    const {isLoaded, loadError} = useLoadScript({
+    const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries: libraries
     })
@@ -69,20 +69,20 @@ export class Selection extends React.Component {
 
     _handleCreateRide = (evt) => {
         this.props.history.push('/createride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
-        
+
         //API Test
         API.get('flaskapi', '/api/createride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date)
             .then((response) => console.log(response))
-        
+
         evt.preventDefault();
     };
 
-    _handleToLatLong = ({lat, lng, description}) => {
-        this.setState({toCoord: {lat, lng}, to: description});
+    _handleToLatLong = ({ lat, lng, description }) => {
+        this.setState({ toCoord: { lat, lng }, to: description });
     };
 
-    _handleFromLatLong = ({lat, lng, description}) => {
-        this.setState({fromCoord: {lat, lng}, from: description});
+    _handleFromLatLong = ({ lat, lng, description }) => {
+        this.setState({ fromCoord: { lat, lng }, from: description });
     };
 
     render() {
@@ -94,11 +94,11 @@ export class Selection extends React.Component {
                     <Form.Group as={Row} className="mb-3">
                         <Form.Label column sm={"auto"}>From:</Form.Label>
                         <Col>
-                            <AddressSearch select={this._handleToLatLong}/>
+                            <AddressSearch select={this._handleToLatLong} />
                         </Col>
                         <Form.Label column sm={"auto"}>To:</Form.Label>
                         <Col>
-                            <AddressSearch select={this._handleFromLatLong}/>
+                            <AddressSearch select={this._handleFromLatLong} />
                         </Col>
                         <Form.Label column sm={"auto"}>Date:</Form.Label>
                         <Col>
