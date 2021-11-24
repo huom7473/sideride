@@ -55,7 +55,7 @@ def createride():
     _date = request.args.get('date', None)
 
 
-    return {'arg': f"trying to find rides for {_from},{_to}"}
+    return {'arg': f"creating rides for {_from},{_to}"}
 
 def handler(event, context):
     return awsgi.response(app, event, context)

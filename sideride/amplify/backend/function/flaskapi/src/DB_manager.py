@@ -121,6 +121,8 @@ class Database:
             params['make'], params['plate'], params['datetime'], 
             params['price'], params['seats'], params['model']
             )
+        
+        
 
         # This catches improper insertions 
         try:
@@ -132,13 +134,14 @@ class Database:
             return False
     
     def add_ride2(self) -> bool:
-
+        # works even though table expects non-string inputs
+        # and have verified we can query based on ints, dates, etc. 
         insert_stmt = (
             "INSERT INTO tester "
-            "VALUES (%s, %s, %s)"
+            "VALUES (%s, %s, %s, %s, %s, %s)"
         )
         
-        values = ('103', 'LA', '')
+        values = ('1', 'LA', '12', '2021-11-21 12:00:00', '12.3', 123)
 
         # This catches improper insertions 
         try:
