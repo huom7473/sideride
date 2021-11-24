@@ -108,19 +108,19 @@ export class CreateRideMenu extends React.Component {
             <Label>Destination:</Label>
             <AddressSearch select={this._handleToLatLong} /><br></br>
             <Label>Date:</Label>
-            <Input name="date" value={this.state.date} type="date" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="date" value={this.state.date} type="date" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Time:</Label>
-            <Input name="time" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="time" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Seats:</Label>
-            <Input name="seats" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="seats" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Price:</Label>
-            <Input name="price" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="price" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Vehicle Make:</Label>
-            <Input name="make" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="make" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Vehicle Model:</Label>
-            <Input name="model" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="model" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>License Plate:</Label>
-            <Input name="plate" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="plate" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Button type="button" onClick={this._handleSubmit}>Create Ride</Button>
           </Form>
         </Container>

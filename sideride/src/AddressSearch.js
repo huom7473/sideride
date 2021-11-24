@@ -1,5 +1,4 @@
 import React from "react";
-import { useLoadScript } from "@react-google-maps/api";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { Combobox, ComboboxInput, ComboboxPopover, ComboboxList, ComboboxOption } from "@reach/combobox";
 import "@reach/combobox/styles.css";
@@ -33,7 +32,7 @@ export function AddressSearch({ select }) {
 
     return (<div className="search1">
         <Combobox onSelect={handleSelect} aria-labelledby="searchbox" onKeyPress={handleKeyPress}>
-            <ComboboxInput value={value} onChange={handleInput} disabled={!ready} placeholder="Search for a place..." />
+            <ComboboxInput value={value} onChange={handleInput} disabled={!ready} placeholder="Search for a place..." className="form-control"/>
             <ComboboxPopover className="suggestions">
                 <ComboboxList>
                     {status === "OK" &&
