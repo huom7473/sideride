@@ -113,17 +113,16 @@ class Database:
         """
         insert_stmt = (
             "INSERT INTO Rides "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         )
         
         values = (
-            params['from'], params['to'], params['fromLat'], params['fromLng'],
+            params['user'], params['from'], params['to'], params['fromLat'], params['fromLng'],
             params['make'], params['plate'], params['datetime'], 
             params['price'], params['seats'], params['model']
             )
         
-        
-
+    
         # This catches improper insertions 
         try:
             self.cursor.execute(insert_stmt,values)

@@ -42,7 +42,7 @@ def addride():
     if insertion:
         return {'SUCCESS': 'Added ride to DB'}
     else:
-        return {'FAILURE': 'Failed to add ride to DB'}
+        return {'FAILURE': ride.getAll()}
 
 
 
