@@ -61,9 +61,16 @@ export class Selection extends React.Component {
     };
 
     _handleFindRide = (evt) => {
-        this.props.history.push('/results?fromlat=' + this.state.toCoord.lat + "&fromlng=" + this.state.toCoord.lng + "&date=" + this.state.date);
-  
-        evt.preventDefault();
+        if (this.state.fromCoord == '' || this.state.toCoord == '' || this.state.date == '') {
+            alert("Please fill in all fields!");
+        }
+        else {
+            this.props.history.push('/results?fromlat=' + this.state.toCoord.lat + "&fromlng=" + this.state.toCoord.lng + "&date=" + this.state.date
+                + '&from=' + this.state.from + '&to=' + this.state.to);
+            API.get('flaskapi', '/api/find/' + this.state.info.username)
+                .then((response) => console.log(response))
+            evt.preventDefault();
+        }
     };
 
     _handleCreateRide = (evt) => {

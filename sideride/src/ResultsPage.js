@@ -109,33 +109,54 @@ class Results extends React.Component {
 
     componentDidMount() {
         let results_arr = {};
-        
-        API.get('flaskapi', '/api/findrides?fromLat=' + this.state.fromlat + '&fromLng=' +
-        this.state.fromlng + "&date=" + this.state.date).then((response) => console.log("anthony",response))
-        
-        
-        
-        API.get('flaskapi', '/api/tygan').then((response) => {
-            console.log("response:", response);
-            results_arr = response["Query results"];
-            let temp_rides = []
-            for (var i = 0; i < results_arr.length; i++) {
-                let item = results_arr[i]
-                console.log(item);
-                temp_rides[i] = new RideEntry({
-                    id: i,
-                    from: item["from"],
-                    to: item["to"],
-                    time: item["time"],
-                    price: item["price"],
-                    seats: item["seats"],
-                    info: "Stuff"
-                })
-                console.log(temp_rides)
-            }
-            this.setState({ rides: temp_rides });
 
-        });
+        API.get('flaskapi', '/api/findrides?fromLat=' + this.state.fromlat + '&fromLng=' +
+            this.state.fromlng + "&date=" + this.state.date).then((response) => {
+                console.log("anthony", response)
+                console.log("response:", response);
+                results_arr = response["Query results"];
+                let temp_rides = []
+                for (var i = 0; i < results_arr.length; i++) {
+                    let item = results_arr[i]
+                    temp_rides[i] = new RideEntry({
+                        id: i,
+                        from: item["from"],
+                        to: item["to"],
+                        time: item["time"],
+                        price: item["price"],
+                        seats: item["seats"],
+                        distance: item["distance"],
+                        info: "Stuff"
+                    })
+                    console.log(temp_rides)
+                }
+                this.setState({ rides: temp_rides });
+
+            })
+
+
+        /*
+                API.get('flaskapi', '/api/tygan').then((response) => {
+                    console.log("response:", response);
+                    results_arr = response["Query results"];
+                    let temp_rides = []
+                    for (var i = 0; i < results_arr.length; i++) {
+                        let item = results_arr[i]
+                        console.log(item);
+                        temp_rides[i] = new RideEntry({
+                            id: i,
+                            from: item["from"],
+                            to: item["to"],
+                            time: item["time"],
+                            price: item["price"],
+                            seats: item["seats"],
+                            info: "Stuff"
+                        })
+                        console.log(temp_rides)
+                    }
+                    this.setState({ rides: temp_rides });
+        
+                });*/
     }
 
     render() {
@@ -203,7 +224,12 @@ class RideEntry extends React.Component {
                 <Accordion.Body>
                     <AccordionBody>
                         <DetailContainer>
-                            Seats left: {this.props.seats}
+                            <div>
+                                Seats left: {this.props.seats}
+                            </div>
+                            <div>
+                                Distance from current location: {Math.round(this.props.distance * 100) / 100} miles
+                            </div>
                         </DetailContainer>
                         <Button onClick={this._handleBookRide}>
                             Book Seat
@@ -252,4 +278,9 @@ const AccordionBody = styled.div`
 const DetailContainer = styled.div`
     flex:1;
     text-align:left;
+    display:flex;
+    flex-direction:column;
+    & > * {
+        flex: 1;
+    }
 `;
