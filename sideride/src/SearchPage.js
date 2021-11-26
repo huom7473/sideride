@@ -20,7 +20,6 @@ function SearchPage() {
     return (
         <div className="App">
             {Header()}
-
             <Container>
                 <div>
                     <p>

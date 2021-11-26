@@ -1,6 +1,6 @@
 import React from "react";
 import {API, Auth} from "aws-amplify";
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import {Alert, Button, Col, Container, Form, Row} from "react-bootstrap";
 import {AddressSearch} from "./AddressSearch";
 import qs from "qs";
 
@@ -12,10 +12,13 @@ export default class Selection extends React.Component {
                 from: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).from,
                 to: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).to,
                 date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
+                fromCoord: '',
+                toCoord: '',
+                showAlert: false,
                 info: {}
             };
         } else {
-            this.state = { from: '', to: '', date: '', info: {} };
+            this.state = { from: '', to: '', date: '', fromCoord: '', toCoord: '', showAlert: false, info: {} };
         }
     }
 
@@ -36,7 +39,7 @@ export default class Selection extends React.Component {
 
     _handleFindRide = (evt) => {
         if (this.state.fromCoord === '' || this.state.toCoord === '' || this.state.date === '') {
-            alert("Please fill in all fields!");
+            this.setState({showAlert: true});
         }
         else {
             this.props.history.push('/results?fromlat=' + this.state.toCoord.lat + "&fromlng=" + this.state.toCoord.lng + "&date=" + this.state.date
@@ -70,6 +73,13 @@ export default class Selection extends React.Component {
         else if (this.props.loadError) return "load error";
         return (
             <Container>
+                <Alert className="floating-alert position-fixed"
+                       show={this.state.showAlert}
+                       variant="danger"
+                       onClose={() => {this.setState({showAlert: false})}}
+                       dismissible>
+                    Please enter valid values for all required fields!
+                </Alert>
                 <Form>
                     <Form.Group as={Row} className="mb-3">
                         <Form.Label column sm={"auto"}>From:</Form.Label>
