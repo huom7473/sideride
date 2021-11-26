@@ -6,17 +6,24 @@ import { Auth } from 'aws-amplify';
 import styled from 'styled-components';
 import Header from './Header';
 import { API } from 'aws-amplify'
+import Selection from "./Selection";
+import {useLoadScript} from "@react-google-maps/api";
 
+const libraries = ["places"];
 
 export default function ResultsPage() {
     let history = useHistory();
     let location = useLocation();
+    const { isLoaded, loadError } = useLoadScript({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+        libraries: libraries
+    })
     return (
         <div className="App">
             {Header()}
             <Container>
                 <div>
-                    <Selection history={history} location={location} />
+                    <Selection isLoaded={isLoaded} loadError={loadError} history={history} location={location} />
                 </div>
                 <div>
                     <Results location={location} />
@@ -26,72 +33,16 @@ export default function ResultsPage() {
     );
 }
 
-
-class Selection extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            from: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).from,
-            to: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).to,
-            date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date
-        };
-    }
-
-    _handleUpdate = (evt) => {
-        const { name, value } = evt.target;
-
-        //this code is really nifty, it dynamically sets the input field with "name" to the corresponding value,
-        //so it can update any of: email, password, confirmedPassword, errored... 
-        this.setState({ [name]: value }, () => {
-            console.log("this.state", this.state);
-        });
-    };
-
-    _handleSubmit = (evt) => {
-        alert('From ' + this.state.from + ' to: ' + this.state.to + " on the date of " + this.state.date);
-        this.props.history.push('/results?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date);
-        //Added the below since pages don't reload if you push the same route 
-        window.location.reload(false);
-        evt.preventDefault();
-    };
-
-    render() {
-        return (
-            <form onSubmit={this._handleSubmit}>
-                <div>
-                    <label>
-                        From: &nbsp;
-                        <input name="from" type="text" value={this.state.from} onChange={this._handleUpdate} />
-                        &nbsp;
-                    </label>
-                    <label>
-                        To: &nbsp;
-                        <input name="to" type="text" value={this.state.to} onChange={this._handleUpdate} />
-                    </label>
-                    <label>
-                        Date: &nbsp;
-                        <input name="date" type="date" value={this.state.date} onChange={this._handleUpdate} />
-                        &nbsp;
-                    </label>
-                    <input type="submit" value="Search" />
-                </div>
-            </form>
-
-        );
-    }
-}
-
-
 class Results extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            fromlat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlat,
-            fromlng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlng,
-            date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
+            fromlat: qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).fromlat,
+            fromlng: qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).fromlng,
+            date: qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).date,
             rides: []
-        };
+        }
+
     }
 
     componentDidMount() {
