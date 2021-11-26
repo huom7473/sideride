@@ -3,16 +3,19 @@ import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocom
 import { Combobox, ComboboxInput, ComboboxPopover, ComboboxList, ComboboxOption } from "@reach/combobox";
 import "@reach/combobox/styles.css";
 
-export function AddressSearch({ select }) {
+export function AddressSearch({ select, initialValue }) {
     const { ready, value, suggestions: { status, data }, setValue, clearSuggestions, } = usePlacesAutocomplete({
         requestOptions: {
             location: { lat: () => 34.069, lng: () => -118.445 },
             radius: 100 * 1000,
         },
+        defaultValue: initialValue
     });
+
     const handleInput = (e) => {
         setValue(e.target.value);
     };
+
     const handleSelect = (description) => {
         setValue(description, false);
         clearSuggestions();
