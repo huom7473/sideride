@@ -61,7 +61,7 @@ export class Selection extends React.Component {
     };
 
     _handleFindRide = (evt) => {
-        if (this.state.fromCoord == '' || this.state.toCoord == '' || this.state.date == '') {
+        if (this.state.fromCoord === '' || this.state.toCoord === '' || this.state.date === '') {
             alert("Please fill in all fields!");
         }
         else {

@@ -195,7 +195,7 @@ class RideEntry extends React.Component {
 
     render() {
         //note: ideally this is in the results class and it passes info to rideentry children, not sure how that should be done yet
-        const info = Auth.currentUserInfo().then(res => this.state = { info: res })
+        Auth.currentUserInfo().then(res => this.state = { info: res })
         return (
             <>
                 <Accordion.Header>

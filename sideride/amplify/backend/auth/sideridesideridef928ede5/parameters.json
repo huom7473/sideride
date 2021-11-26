@@ -1,0 +1,20 @@
+{
+  "authSelections": "userPoolOnly",
+  "resourceName": "sideridesideridef928ede5",
+  "serviceType": "imported",
+  "region": "us-east-2",
+  "aliasAttributes": [
+    "email"
+  ],
+  "requiredAttributes": [
+    "email",
+    "phone_number"
+  ],
+  "passwordPolicyMinLength": 8,
+  "passwordPolicyCharacters": [],
+  "mfaConfiguration": "OFF",
+  "autoVerifiedAttributes": [
+    "email"
+  ],
+  "mfaTypes": []
+}
