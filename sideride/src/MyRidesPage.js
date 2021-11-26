@@ -1,45 +1,31 @@
 import React from "react";
-import qs from "qs";
+import styled from "styled-components";
+import Header from "./Header";
 import { Button, Accordion, Container } from "react-bootstrap";
-import { useHistory, useLocation } from "react-router"
 import { Auth } from 'aws-amplify';
-import styled from 'styled-components';
-import Header from './Header';
-import { API } from 'aws-amplify'
-import Selection from "./Selection";
-import { useLoadScript } from "@react-google-maps/api";
+import { withAuthenticator } from '@aws-amplify/ui-react';
 
-const libraries = ["places"];
 
-export default function ResultsPage() {
-    let history = useHistory();
-    let location = useLocation();
-    const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        libraries: libraries
-    })
+function MyRidesPage() {
     return (
         <div className="App">
             {Header()}
-            <Container>
-                <div>
-                    <Selection isLoaded={isLoaded} loadError={loadError} history={history} location={location} />
-                </div>
-                <div>
-                    <Results location={location} />
-                </div>
-            </Container>
+            <div>
+                My Rides
+            </div>
+            <div>
+                <CreateRideMenu />
+            </div>
         </div>
     );
 }
 
-class Results extends React.Component {
+
+
+class CreateRideMenu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            fromlat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlat,
-            fromlng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlng,
-            date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
             rides: []
         };
     }
@@ -47,17 +33,17 @@ class Results extends React.Component {
     componentDidMount() {
         let results_arr = {};
 
+        /*
         API.get('flaskapi', '/api/findrides?fromLat=' + this.state.fromlat + '&fromLng=' +
             this.state.fromlng + "&date=" + this.state.date).then((response) => {
                 console.log("anthony", response)
                 console.log("response:", response);
                 results_arr = response["Query results"];
-                console.log(results_arr)
                 let temp_rides = []
-                for (let i = 0; i < results_arr.length; i++) {
+                for (var i = 0; i < results_arr.length; i++) {
                     let item = results_arr[i]
                     temp_rides[i] = new RideEntry({
-                        id: item["ride_id"],
+                        id: i,
                         from: item["from"],
                         to: item["to"],
                         time: item["time"],
@@ -70,21 +56,30 @@ class Results extends React.Component {
                 }
                 this.setState({ rides: temp_rides });
 
-            })
+            })*/
+
+        //TODO: api call to backend to get associated rides, rather than dummy data below
+        this.testing_arr = ['a', 'b']
+
+        let rides = [];
+        for (var i = 0; i < this.testing_arr.length; i++) {
+            rides[i] = new RideEntry({
+                id: i,
+                from: "UCLA",
+                to: this.testing_arr[i],
+                time: 12,
+                price: 20,
+                seats: 4,
+                info: "More Detailed information"
+            });
+        }
+        this.setState({ rides: rides });
+
     }
 
     render() {
-        console.log(this.state.rides);
-        if (!this.state.rides.length) {
-            return <div>
-                No rides found with the specified parameters.
-            </div>
-        }
         return (
             <div>
-                <p>
-                    Results for rides from {this.state.fromlat}, {this.state.fromlng} on {this.state.date}
-                </p>
                 <div>
                     <Accordion defaultActiveKey="0" className="cool-accordion">
                         {this.state.rides.map((it, index) => <Accordion.Item key={index} eventKey={index}>{it.render()}</Accordion.Item>)}
@@ -100,25 +95,27 @@ class RideEntry extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            info: {}
+            users: []
         };
-
     }
 
-    _handleBookRide = (evt) => {
-        //TODO: Backend call to 1) decrement ride seat count by 1 2) Update driver's list of carpoolers
-        console.log("Ride ID is ", this.props.id);
-        console.log("Username of user is ", this.state.info.username);
-    };
-
     render() {
-        //note: ideally this is in the results class and it passes info to rideentry children, not sure how that should be done yet
-        Auth.currentUserInfo().then(res => this.state = { info: res });
-        let [hours, minutes, seconds] = this.props.time.split(":");
-        const AMPM = hours < 12 ? "AM" : "PM";
-        hours = hours > 12 ? hours - 12 : hours;
 
+        this.testing_arr = ['a', 'b']
+
+        let users = [];
+        for (var i = 0; i < this.testing_arr.length; i++) {
+            users[i] = new UserEntry({
+                id: i,
+                username: this.testing_arr[i],
+                status: "Pending"
+            });
+        }
+        console.log("Users temp ", users)
+        this.state = ({ users: users });
+        console.log("Users ", this.state.users);
         return (
+
             <>
                 <Accordion.Header>
                     <AccordionContent>
@@ -132,10 +129,10 @@ class RideEntry extends React.Component {
                         </PlaceContainer>
                         <TimePriceContainer>
                             <div>
-                                Pickup time:
+                                Pickup from:
                             </div>
                             <div>
-                                {hours}:{minutes}&nbsp;{AMPM}
+                                {this.props.time}
                             </div>
                             <div>
                                 ${this.props.price}
@@ -144,21 +141,48 @@ class RideEntry extends React.Component {
                     </AccordionContent>
                 </Accordion.Header>
                 <Accordion.Body>
-                    <AccordionBody>
-                        <DetailContainer>
-                            <div>
-                                Seats left: {this.props.seats}
-                            </div>
-                            <div>
-                                Distance from current location: {Math.round(this.props.distance * 100) / 100} miles
-                            </div>
-                        </DetailContainer>
-                        <Button onClick={this._handleBookRide}>
-                            Book Seat
-                        </Button>
-                    </AccordionBody>
+
+                    {this.state.users.map((it, index) => <AccordionBody key={index} eventKey={index}>{it.render()}</AccordionBody>)}
+
                 </Accordion.Body>
             </>
+        );
+    }
+}
+
+class UserEntry extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    _handleApprove = (evt) => {
+        alert("Approved user!")
+        //TODO: API call to approve here
+    };
+
+    _handleDeny = (evt) => {
+        alert("Denied user!")
+        //TODO: API call to deny here
+    };
+
+    render() {
+        // dummy API call to fetch query results from DB 
+        return (
+            //This will be an individual user with a username + button to accept them
+            <div>
+                <DetailContainer>
+                    <div>
+                        Username: {this.props.username}
+                    </div>
+                </DetailContainer>
+                <Button onClick={this._handleApprove}>
+                    Approve
+                </Button>
+                <Button onClick={this._handleDeny}>
+                    Deny
+                </Button>
+            </div>
+
         );
     }
 }
@@ -206,3 +230,6 @@ const DetailContainer = styled.div`
         flex: 1;
     }
 `;
+
+
+export default withAuthenticator(MyRidesPage);
