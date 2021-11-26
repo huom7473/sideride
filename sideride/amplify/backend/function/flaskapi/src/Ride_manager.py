@@ -24,7 +24,7 @@ class Ride:
         del self.attributes['time']
 
         # Now construct date and time strings into a DATETIME literal, and insert back in as attribute
-        formatted_date = date_initial + " " + f"{time}:00:00"
+        formatted_date = date_initial + " " + f"{time}:00"
 
         self.attributes['datetime'] = formatted_date
 

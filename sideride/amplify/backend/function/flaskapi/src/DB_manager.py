@@ -172,7 +172,7 @@ class Database:
         params : dict
             The user-specified set of params on which to query for
         """
-        query= (
+        query = (
             """SELECT *, 
                 (
                 3959 * acos (
@@ -280,3 +280,4 @@ class Database:
 # x = db_handle.find_rides(params)
 
 # print(x)
+

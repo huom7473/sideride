@@ -77,8 +77,7 @@ export class CreateRideMenu extends React.Component {
 
   _handleSubmit = () => {
     const { from, to, date, time, seats, price } = this.state;
-    console.log(this.state);
-    console.log("Current user name is ", this.state.info.username);
+    console.log(time);
 
     if (from !== "" && to !== "" && date !== "" && time !== "" && seats !== "" && price !== "") {
       // actual call to add ride to DB 
@@ -110,7 +109,7 @@ export class CreateRideMenu extends React.Component {
             <Label>Date:</Label>
             <Input className="form-control" name="date" value={this.state.date} type="date" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Time:</Label>
-            <Input className="form-control" name="time" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="time" type="time" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Seats:</Label>
             <Input className="form-control" name="seats" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Price:</Label>
