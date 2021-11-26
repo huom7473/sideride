@@ -92,19 +92,6 @@ class Results extends React.Component {
             date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
             rides: []
         };
-        /*this.testing_arr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-
-        for (var i = 1; i < this.testing_arr.length; i++) {
-            this.state.rides[i] = new RideEntry({
-                id: i,
-                from: "UCLA",
-                to: this.testing_arr[i],
-                time: 12,
-                price: 20,
-                seats: 4,
-                info: "More Detailed information"
-            });
-        }*/
     }
 
     componentDidMount() {
@@ -133,30 +120,6 @@ class Results extends React.Component {
                 this.setState({ rides: temp_rides });
 
             })
-
-
-        /*
-                API.get('flaskapi', '/api/tygan').then((response) => {
-                    console.log("response:", response);
-                    results_arr = response["Query results"];
-                    let temp_rides = []
-                    for (var i = 0; i < results_arr.length; i++) {
-                        let item = results_arr[i]
-                        console.log(item);
-                        temp_rides[i] = new RideEntry({
-                            id: i,
-                            from: item["from"],
-                            to: item["to"],
-                            time: item["time"],
-                            price: item["price"],
-                            seats: item["seats"],
-                            info: "Stuff"
-                        })
-                        console.log(temp_rides)
-                    }
-                    this.setState({ rides: temp_rides });
-        
-                });*/
     }
 
     render() {
