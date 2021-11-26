@@ -20,6 +20,10 @@ const Header = () => {
         history.push('/createride');
     }
 
+    const redirectMyRides = () => {
+        history.push('/myrides');
+    }
+
     const signOut = () => {
         try {
             Auth.signOut().then((res) => { history.push('/'); window.location.reload(false) });
@@ -34,7 +38,7 @@ const Header = () => {
             <SideBarContainer>
                 <Button onClick={redirectCreateRide}>Host Ride</Button>
                 <Button onClick={redirectSearch}>Search Rides</Button>
-                <Button>My Rides</Button>
+                <Button onClick={redirectMyRides}>My Rides</Button>
                 <Button onClick={signOut}>Sign Out</Button>
             </SideBarContainer>
         </header>

@@ -1,7 +1,7 @@
 import React from "react";
-import {API, Auth} from "aws-amplify";
-import {Alert, Button, Col, Container, Form, Row} from "react-bootstrap";
-import {AddressSearch} from "./AddressSearch";
+import { API, Auth } from "aws-amplify";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import { AddressSearch } from "./AddressSearch";
 import qs from "qs";
 
 export default class Selection extends React.Component {
@@ -40,21 +40,21 @@ export default class Selection extends React.Component {
 
     _handleFindRide = (evt) => {
         if (this.state.fromCoord === '' || this.state.toCoord === '' || this.state.date === '') {
-            this.setState({showAlert: true});
+            this.setState({ showAlert: true });
             return;
         }
         const initialChosen = new Date(this.state.date);
-        const chosenDate = new Date(initialChosen.getTime() + initialChosen.getTimezoneOffset()*60000);
+        const chosenDate = new Date(initialChosen.getTime() + initialChosen.getTimezoneOffset() * 60000);
         const today = new Date(new Date().toDateString());
         if (chosenDate < today) {
-            this.setState({showDateAlert: true});
+            this.setState({ showDateAlert: true });
             return;
         }
         else {
             this.props.history.push('/results?fromlat=' + this.state.toCoord.lat + "&fromlng=" + this.state.toCoord.lng + "&date=" + this.state.date
                 + '&from=' + this.state.from + '&to=' + this.state.to);
-            API.get('flaskapi ', '/api/find/' + this.state.info.username)
-                .then((response) => console.log(response))
+            //API.get('flaskapi ', '/api/find/' + this.state.info.username)
+            //    .then((response) => console.log(response))
             evt.preventDefault();
         }
     };
@@ -83,40 +83,40 @@ export default class Selection extends React.Component {
         return (
             <Container>
                 <Alert className="floating-alert position-fixed"
-                       show={this.state.showAlert}
-                       variant="danger"
-                       onClose={() => {this.setState({showAlert: false})}}
-                       dismissible>
+                    show={this.state.showAlert}
+                    variant="danger"
+                    onClose={() => { this.setState({ showAlert: false }) }}
+                    dismissible>
                     Please enter valid values for all required fields!
                 </Alert>
                 <Alert className="floating-alert position-fixed"
-                       show={this.state.showDateAlert}
-                       variant="danger"
-                       onClose={() => {this.setState({showDateAlert: false})}}
-                       dismissible>
+                    show={this.state.showDateAlert}
+                    variant="danger"
+                    onClose={() => { this.setState({ showDateAlert: false }) }}
+                    dismissible>
                     Date entered was before today!
                 </Alert>
                 <Form>
                     <Form.Group as={Row} className="mb-3">
                         <Form.Label column sm={"auto"}>From:</Form.Label>
                         <Col>
-                            <AddressSearch select={this._handleToLatLong} initialValue={this.state.to}/>
+                            <AddressSearch select={this._handleToLatLong} initialValue={this.state.to} />
                         </Col>
                         <Form.Label column sm={"auto"}>To:</Form.Label>
                         <Col>
-                            <AddressSearch select={this._handleFromLatLong} initialValue={this.state.from}/>
+                            <AddressSearch select={this._handleFromLatLong} initialValue={this.state.from} />
                         </Col>
                         <Form.Label column sm={"auto"}>Date:</Form.Label>
                         <Col>
                             <Form.Control name="date"
-                                          type="date"
-                                          value={this.state.date}
-                                          onChange={this._handleUpdate} />
+                                type="date"
+                                value={this.state.date}
+                                onChange={this._handleUpdate} />
                         </Col>
                     </Form.Group>
                 </Form>
                 <Button onClick={this._handleCreateRide}
-                        className="me-2">Host a Ride</Button>
+                    className="me-2">Host a Ride</Button>
                 <Button onClick={this._handleFindRide}>Find a Ride</Button>
             </Container>
         );
