@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Header from "./Header";
 import { useHistory, useLocation } from "react-router"
 import { useLoadScript } from "@react-google-maps/api";
-import { Button } from "react-bootstrap";
+import {Alert, Button} from "react-bootstrap";
 import { AddressSearch } from "./AddressSearch";
 
 import { API } from 'aws-amplify'
@@ -52,6 +52,7 @@ export class CreateRideMenu extends React.Component {
       model: "",
       plate: "",
       info: {},
+      showAlert: false,
       errored: false,
     };
   }
@@ -90,7 +91,7 @@ export class CreateRideMenu extends React.Component {
 
       this.props.history.push('/results');
     } else {
-      alert("Please fill in all required fields!");
+      this.setState({showAlert: true});
     }
   };
 
@@ -100,6 +101,13 @@ export class CreateRideMenu extends React.Component {
     else if (this.props.loadError) return "load error";
     return (
       <>
+        <Alert className="floating-alert position-fixed"
+               show={this.state.showAlert}
+               variant="danger"
+               onClose={() => {this.setState({showAlert: false})}}
+               dismissible>
+          Please fill in all required fields!
+        </Alert>
         <Container>
           <Form>
             <Label>Pick-up location:</Label>

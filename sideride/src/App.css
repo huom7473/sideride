@@ -34,8 +34,6 @@ body {
   margin:auto;
 }
 
-
-
 .App-logo {
   height: 15vmin;
   pointer-events: none;
@@ -44,7 +42,7 @@ body {
 .App-header {
   background-color: #282c34;
   display: flex;
-  width:100%;
+  width: 100%;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -54,4 +52,13 @@ body {
 
 .App-link {
   color: #61dafb;
+}
+
+.floating-alert {
+  position: fixed;
+  top: 5%;
+  left: 30%;
+  width: 40%;
+  z-index: 9999;
+  border-radius:5px
 }
