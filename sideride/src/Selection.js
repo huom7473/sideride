@@ -15,10 +15,11 @@ export default class Selection extends React.Component {
                 fromCoord: '',
                 toCoord: '',
                 showAlert: false,
+                showDateAlert: false,
                 info: {}
             };
         } else {
-            this.state = { from: '', to: '', date: '', fromCoord: '', toCoord: '', showAlert: false, info: {} };
+            this.state = { from: '', to: '', date: '', fromCoord: '', toCoord: '', showAlert: false, showDateAlert: false, info: {} };
         }
     }
 
@@ -40,11 +41,19 @@ export default class Selection extends React.Component {
     _handleFindRide = (evt) => {
         if (this.state.fromCoord === '' || this.state.toCoord === '' || this.state.date === '') {
             this.setState({showAlert: true});
+            return;
+        }
+        const initialChosen = new Date(this.state.date);
+        const chosenDate = new Date(initialChosen.getTime() + initialChosen.getTimezoneOffset()*60000);
+        const today = new Date(new Date().toDateString());
+        if (chosenDate < today) {
+            this.setState({showDateAlert: true});
+            return;
         }
         else {
             this.props.history.push('/results?fromlat=' + this.state.toCoord.lat + "&fromlng=" + this.state.toCoord.lng + "&date=" + this.state.date
                 + '&from=' + this.state.from + '&to=' + this.state.to);
-            API.get('flaskapi', '/api/find/' + this.state.info.username)
+            API.get('flaskapi ', '/api/find/' + this.state.info.username)
                 .then((response) => console.log(response))
             evt.preventDefault();
         }
@@ -79,6 +88,13 @@ export default class Selection extends React.Component {
                        onClose={() => {this.setState({showAlert: false})}}
                        dismissible>
                     Please enter valid values for all required fields!
+                </Alert>
+                <Alert className="floating-alert position-fixed"
+                       show={this.state.showDateAlert}
+                       variant="danger"
+                       onClose={() => {this.setState({showDateAlert: false})}}
+                       dismissible>
+                    Date entered was before today!
                 </Alert>
                 <Form>
                     <Form.Group as={Row} className="mb-3">
