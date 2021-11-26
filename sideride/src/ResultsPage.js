@@ -113,7 +113,11 @@ class RideEntry extends React.Component {
 
     render() {
         //note: ideally this is in the results class and it passes info to rideentry children, not sure how that should be done yet
-        Auth.currentUserInfo().then(res => this.state = { info: res })
+        Auth.currentUserInfo().then(res => this.state = { info: res });
+        let [ hours, minutes, seconds ] = this.props.time.split(":") ;
+        const AMPM = hours < 12 ? "AM" : "PM";
+        hours = hours > 12 ? hours - 12 : hours;
+
         return (
             <>
                 <Accordion.Header>
@@ -128,10 +132,10 @@ class RideEntry extends React.Component {
                         </PlaceContainer>
                         <TimePriceContainer>
                             <div>
-                                Pickup from:
+                                Pickup time:
                             </div>
                             <div>
-                                {this.props.time}
+                                {hours}:{minutes}&nbsp;{AMPM}
                             </div>
                             <div>
                                 ${this.props.price}
