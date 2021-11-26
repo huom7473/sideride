@@ -113,7 +113,7 @@ export class CreateRideMenu extends React.Component {
             <Label>Seats:</Label>
             <Input className="form-control" name="seats" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Price:</Label>
-            <Input className="form-control" name="price" onChange={this._handleUpdate} errored={errored}></Input><br></br>
+            <Input className="form-control" name="price" type="number" onChange={this._handleUpdate} errored={errored} step="0.01"></Input><br></br>
             <Label>Vehicle Make:</Label>
             <Input className="form-control" name="make" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>Vehicle Model:</Label>

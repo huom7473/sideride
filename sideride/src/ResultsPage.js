@@ -102,8 +102,9 @@ class Results extends React.Component {
                 console.log("anthony", response)
                 console.log("response:", response);
                 results_arr = response["Query results"];
+                console.log(results_arr)
                 let temp_rides = []
-                for (var i = 0; i < results_arr.length; i++) {
+                for (let i = 0; i < results_arr.length; i++) {
                     let item = results_arr[i]
                     temp_rides[i] = new RideEntry({
                         id: i,
@@ -123,9 +124,12 @@ class Results extends React.Component {
     }
 
     render() {
-        // dummy API call to fetch query results from DB 
-
         console.log(this.state.rides);
+        if (!this.state.rides.length) {
+            return <div>
+                No rides found with the specified parameters.
+            </div>
+        }
         return (
             <div>
                 <p>
