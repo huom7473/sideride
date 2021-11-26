@@ -193,7 +193,7 @@ class Database:
             self.cursor.execute(query)     # must pass params as tuples, hence (x,) format
             rows = self.cursor.fetchall()
         except:
-            return ["hi"]
+            return []
 
         # Now convert SQL output into JSON for frontend 
         results = []
@@ -241,7 +241,7 @@ class Database:
             self.cursor.execute(query, params)     # must pass params as tuples, hence (x,) format
             rows = self.cursor.fetchall()
         except:
-            return ["hi"]
+            return []
 
         # Now convert SQL output into JSON for frontend 
         results = []
