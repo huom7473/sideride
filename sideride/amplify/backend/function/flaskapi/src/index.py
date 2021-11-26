@@ -12,22 +12,22 @@ CORS(app)
 BASE_ROUTE = "/api/"
 
 
-@app.route(BASE_ROUTE + 'find/<username>')
-def find(username):
-    return {'arg': f"trying to find rides for {username}"}
+# @app.route(BASE_ROUTE + 'find/<username>')
+# def find(username):
+#     return {'arg': f"trying to find rides for {username}"}
 
 # Test route for Tygan
-@app.route(BASE_ROUTE + 'tygan')
-def get_prepared_query_results():
-    # Establish connection to DB 
-    try:
-        db_handle = dm.Database() 
-        db_handle.connect_to_db()
-    except:
-        return {'Backend error': 'Failed to connect to DB'}
+# @app.route(BASE_ROUTE + 'tygan')
+# def get_prepared_query_results():
+#     # Establish connection to DB 
+#     try:
+#         db_handle = dm.Database() 
+#         db_handle.connect_to_db()
+#     except:
+#         return {'Backend error': 'Failed to connect to DB'}
     
-    # Grab prepared results from DB using handle
-    return {'Query results': db_handle.find_rides_tygan()}
+#     # Grab prepared results from DB using handle
+#     return {'Query results': db_handle.find_rides_tygan()}
 
 # Add ride to database
 @app.route(BASE_ROUTE + 'addride')
@@ -49,9 +49,11 @@ def addride():
     except:
         return {'Backend error': 'Failed to connect to DB'}
 
-    # Then use db_handle to add the ride to the DB
-    insertion = db_handle.add_ride(ride.getAll())
-    if insertion:
+    # Then use db_handle to add the ride to the DB in MasterRides table
+    creation = db_handle.create_ride(ride)
+    if creation:
+        # Also update our Riders table with this driver's newly added ride
+        db_handle.add_driver(ride)
         return {'SUCCESS': 'Added ride to DB'}
     else:
         return {'FAILURE': ride.getAll()}

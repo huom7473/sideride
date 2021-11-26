@@ -92,9 +92,9 @@ class Database:
         except:
             return CONN_FAILURE
     
-    def add_ride(self, params) -> bool:
+    def create_ride(self, ride:Ride) -> bool:
         """
-        Adds the specified ride with params to the Rides table in the backend DB
+        Creates the specified ride and adds it to the MasterRides table in the backend DB
 
         Returns True if ride was succesfully added, False if not 
 
@@ -111,18 +111,48 @@ class Database:
             The date, in DATETIME formate (YYYY-MM-DD HH:MM:SS) for which the trip is scheduled
 
         """
+
+        params = ride.getAll()
+        
         insert_stmt = (
             "INSERT INTO MasterRides "
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)"
         )
         
         values = (
-            params['user'], params['from'], params['to'], params['fromLat'], params['fromLng'],
+            params['driver'], params['from'], params['to'], params['fromLat'], params['fromLng'],
             params['make'], params['plate'], params['datetime'], 
             params['price'], params['seats'], params['model']
             )
         
+        # This catches improper insertions 
+        try:
+            self.cursor.execute(insert_stmt,values)
+            id = self.cursor.lastrowid
+            ride.set_ride_id(id)
+            self.connection.commit()
+            return True
+        except:
+            error_msg = self.cursor._last_executed
+            return False
     
+    def add_driver(self, ride:Ride):
+        """
+            Add the driver to the secondary Riders table with following schema:
+            
+            ride_id | username | status | is_driver 
+        """
+        params = ride.getAll()
+        id = ride.get_ride_id()
+        insert_stmt = (
+            "INSERT INTO Riders "
+            "VALUES (%s, %s, %s, %s)"
+        )
+        
+        values = (
+            id, params['driver'], 'PENDING', True
+            )
+        
         # This catches improper insertions 
         try:
             self.cursor.execute(insert_stmt,values)
@@ -131,8 +161,22 @@ class Database:
         except:
             error_msg = self.cursor._last_executed
             return False
-    
 
+    def add_rider(self, rider_id, rider_username):
+        """
+            Called from the "book seat" button, add the user to the requested ride 
+
+            Takes in the ride_id and username, adds entry into Riders table
+
+            Returns True on success, False on failure 
+        """
+        # First check that this rider is not already part of the specific ride 
+        # Return False right away if they are 
+
+        # Then add entry to Riders table w/ is_driver = False
+
+        # Then UPDATE MasterRides by decrementing seat count for given ride_id 
+    
     def delete_ride(self, id:str) -> bool:
         """
         Removes the given ride from the Rides table 
@@ -158,52 +202,7 @@ class Database:
         except:
             return False
 
-    def find_rides_tygan(self) -> dict:
-        """
-        Currently fetches all rides that occur on the specified date from the database
-        Converts result into JSON format for easy processing in front end
-        Returns an empty list if no rides found for the given date 
 
-        TODO: Update to handle arbitrary dict of params 
-
-        Parameters
-        --------
-
-        params : dict
-            The user-specified set of params on which to query for
-        """
-        query = (
-            """SELECT *, 
-                (
-                3959 * acos (
-                cos ( radians(37.2431) )
-                * cos( radians( fromLat ) )
-                * cos( radians( fromLng ) - radians(-115.793))
-                + sin ( radians(37.2431) )
-                * sin( radians( fromLat ) ))
-                ) AS distance,
-                DATEDIFF(date, '2021-11-23') AS timeDelta
-            FROM MasterRides
-            HAVING timeDelta >= 0 AND distance < 100
-            ORDER BY timeDelta, distance
-            LIMIT 0 , 20"""
-        )
-        
-        try:
-            self.cursor.execute(query)     # must pass params as tuples, hence (x,) format
-            rows = self.cursor.fetchall()
-        except:
-            return []
-
-        # Now convert SQL output into JSON for frontend 
-        results = []
-        headers = [x[0] for x in self.cursor.description]   # grab column names
-
-        for record in rows:
-            results.append(dict(zip(headers,record)))
-        
-
-        return results
     
     def find_rides(self, params) -> dict:
         """
@@ -262,17 +261,38 @@ class Database:
             result['time'] = dtime.strftime('%H:%M:%S')
         
         return results
+    
+    def test_add(self):
+        query= (
+        """
+            INSERT INTO tester
+            VALUES (7,''wooo', 'test');
+        """
+        )
+
+        try:
+            self.cursor.execute(query)     # must pass params as tuples, hence (x,) format
+            self.connection.commit()
+        except ms.Error as err:
+            if err.errno == 1062:
+                return "duplicate entry can't insert"
+
+            else: return "random error dunno"
+        return id
 
 # params = {'from':'Los Angeles', 'to':'San Diego', 'fromLat': '12.12', 'fromLng': '54.2', 
 # 'make':'toyota', 'plate':'HKG342', 'date':'2021-21-11 12:00:00', 'price':'4', 'seats':'5', 'model':'blah'
 # }
 
 
-# db_handle = Database()
-# y = db_handle.connect_to_db()
+db_handle = Database()
+y = db_handle.connect_to_db()
 
-# if y == CONN_FAILURE:
-#     print("failed to connect")
+if y == CONN_FAILURE:
+    print("failed to connect")
+
+print(db_handle.test_add())
+
 
 
 # values = {'id':'1', 'seats': "5", 'to': "Los Angeles"}
