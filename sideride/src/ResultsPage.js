@@ -58,7 +58,7 @@ class Results extends React.Component {
                 for (let i = 0; i < results_arr.length; i++) {
                     let item = results_arr[i]
                     temp_rides[i] = new RideEntry({
-                        id: i,
+                        id: item["ride_id"],
                         from: item["from"],
                         to: item["to"],
                         time: item["time"],

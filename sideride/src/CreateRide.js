@@ -86,7 +86,7 @@ export class CreateRideMenu extends React.Component {
         + "&fromLat=" + this.state.fromCoord.lat + "&fromLng=" + this.state.fromCoord.lng
         + "&toLat=" + this.state.toCoord.lat + "&toLng=" + this.state.toCoord.lng + "&time=" + this.state.time +
         "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" +
-        this.state.model + "&plate=" + this.state.plate + "&user=" + this.state.info.username).then((response) => console.log(response))
+        this.state.model + "&plate=" + this.state.plate + "&driver=" + this.state.info.username).then((response) => console.log(response))
 
 
       this.props.history.push('/results');

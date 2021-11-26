@@ -1,14 +1,14 @@
-from datetime import datetime, date, timedelta
 
 class Ride:
 
     def __init__(self, params):
         """
-            params is a Multidict passed in from Flask API, holding all attributes consisting of a Ride
+            params is a Multidict passed in from Flask API, holding all attributes consisting of a Ride:
         """
         self.attributes = dict(params)
+        self.driver = params['driver']        # each Ride object's driver 
+        self.ride_id = 0 
     
-
     def formatDate(self):
         """
             Format the given Date and Time strings into a DATETIME object for the DB 
@@ -30,4 +30,15 @@ class Ride:
 
     def getAll(self):
         return self.attributes
+
+    def getDriver(self):
+        return self.driver
+
+    def set_ride_id(self, id):
+        self.ride_id = id
+    
+    def get_ride_id(self):
+        return self.ride_id
+
+
         
