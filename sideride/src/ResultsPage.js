@@ -39,6 +39,8 @@ class Results extends React.Component {
         this.state = {
             fromlat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlat,
             fromlng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlng,
+            //tolat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolat,
+            //tolng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolng,
             date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
             rides: []
         };
@@ -106,9 +108,9 @@ class RideEntry extends React.Component {
     }
 
     _handleBookRide = (evt) => {
-        //TODO: Backend call to 1) decrement ride seat count by 1 2) Update driver's list of carpoolers
         console.log("Ride ID is ", this.props.id);
         console.log("Username of user is ", this.state.info.username);
+
     };
 
     render() {
