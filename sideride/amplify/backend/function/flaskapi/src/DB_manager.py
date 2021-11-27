@@ -186,15 +186,14 @@ class Database:
         try:
             self.cursor.execute(insert_stmt,values)
             self.connection.commit()
-            return True
         except ms.Error as err:
             # Code 1062 = failed insertion due to duplicate primary key
             if err.errno == 1062: return (1062,err.msg)
 
         # Then UPDATE MasterRides by decrementing seat count for given ride_id 
         msg =  self.update_seatCount(ride_id)
-        if msg == True: return True
-        else: return msg
+        if msg == True: return (0,True)
+        else: return (0,msg)
 
     def update_seatCount(self,id):
         """
