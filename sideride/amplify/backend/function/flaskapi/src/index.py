@@ -11,25 +11,8 @@ CORS(app)
 
 BASE_ROUTE = "/api/"
 
-
-# @app.route(BASE_ROUTE + 'find/<username>')
-# def find(username):
-#     return {'arg': f"trying to find rides for {username}"}
-
-# Test route for Tygan
-# @app.route(BASE_ROUTE + 'tygan')
-# def get_prepared_query_results():
-#     # Establish connection to DB 
-#     try:
-#         db_handle = dm.Database() 
-#         db_handle.connect_to_db()
-#     except:
 #         return {'Backend error': 'Failed to connect to DB'}
-    
-#     # Grab prepared results from DB using handle
-#     return {'Query results': db_handle.find_rides_tygan()}
-
-# Add ride to database
+# Create and add ride to database
 @app.route(BASE_ROUTE + 'addride')
 def addride():
 
@@ -82,19 +65,43 @@ def findrides():
     # Return results back to frontend
     return {'Query results': query_results}
 
+@app.route(BASE_ROUTE + 'myrides')
+def myrides():
+    user = dict(request.args)['username']
+        
+    # First establish connection to DB 
+    try:
+        db_handle = dm.Database() 
+        db_handle.connect_to_db()
+    except:
+        return {'Backend error': 'Failed to connect to DB'}
+    
+    # Retreive all rides associated with user 
+    return db_handle.myrides(user)
+    
+@app.route(BASE_ROUTE + 'bookseat')
+def bookseat():
+    user = dict(request.args)['username']
+    id = dict(request.args)['id']
+
+    # First establish connection to DB 
+    try:
+        db_handle = dm.Database() 
+        db_handle.connect_to_db()
+    except:
+        return {'Backend error': 'Failed to connect to DB'}
+    
+    status = db_handle.add_rider(id,user)
+
+    if not status:
+        return {'FAILURE': status}
+    
+    else: return {'SUCCESS': "Updated ride with new rider"}
 
 
-# for testing purposes only 
-@app.route(BASE_ROUTE + 'createride')
-def createride():
-
-    _from  = request.args.get('from', None)
-    _to = request.args.get('to', None)
-    _date = request.args.get('date', None)
-
-
-    return {'arg': f"creating rides for {_from},{_to}"}
 
 def handler(event, context):
     return awsgi.response(app, event, context)
+
+
 

@@ -6,7 +6,6 @@ class Ride:
             params is a Multidict passed in from Flask API, holding all attributes consisting of a Ride:
         """
         self.attributes = dict(params)
-        self.driver = params['driver']        # each Ride object's driver 
         self.ride_id = 0 
     
     def formatDate(self):
@@ -30,9 +29,6 @@ class Ride:
 
     def getAll(self):
         return self.attributes
-
-    def getDriver(self):
-        return self.driver
 
     def set_ride_id(self, id):
         self.ride_id = id

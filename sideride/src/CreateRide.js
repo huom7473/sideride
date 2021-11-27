@@ -88,8 +88,8 @@ export class CreateRideMenu extends React.Component {
         "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" +
         this.state.model + "&plate=" + this.state.plate + "&driver=" + this.state.info.username).then((response) => console.log(response))
 
-
-      this.props.history.push('/results');
+      // TODO: give user alert of succesful add rides
+        this.props.history.push('/');
     } else {
       this.setState({showAlert: true});
     }

@@ -4,7 +4,7 @@ import Header from "./Header";
 import { Button, Accordion, Container } from "react-bootstrap";
 import { Auth } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
-
+import { API } from 'aws-amplify'
 
 function MyRidesPage() {
     return (
@@ -30,9 +30,10 @@ class CreateRideMenu extends React.Component {
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let results_arr = {};
-
+        const info = await Auth.currentUserInfo()
+        this.setState({ info: info })
         /*
         API.get('flaskapi', '/api/findrides?fromLat=' + this.state.fromlat + '&fromLng=' +
             this.state.fromlng + "&date=" + this.state.date).then((response) => {
@@ -60,6 +61,8 @@ class CreateRideMenu extends React.Component {
 
         //TODO: api call to backend to get associated rides, rather than dummy data below
         this.testing_arr = ['a', 'b']
+
+        API.get('flaskapi', '/api/myrides?username=' + this.state.info.username).then((response) => console.log(response))
 
         let rides = [];
         for (var i = 0; i < this.testing_arr.length; i++) {

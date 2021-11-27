@@ -116,13 +116,13 @@ class Database:
         
         insert_stmt = (
             "INSERT INTO MasterRides "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)"
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s)"
         )
         
         values = (
             params['driver'], params['from'], params['to'], params['fromLat'], params['fromLng'],
             params['make'], params['plate'], params['datetime'], 
-            params['price'], params['seats'], params['model']
+            params['price'], params['seats'], params['model'], params['toLat'], params['toLng']
             )
         
         # This catches improper insertions 
@@ -189,7 +189,7 @@ class Database:
             return True
         except ms.Error as err:
             # Code 1062 = failed insertion due to duplicate primary key
-            if err.errno == 1062: return False
+            if err.errno == 1062: return err.msg
 
         # Then UPDATE MasterRides by decrementing seat count for given ride_id 
         msg =  self.update_seatCount(ride_id)
@@ -275,18 +275,18 @@ class Database:
                 + sin ( radians(%(toLat)s) )
                 * sin( radians( toLat ) ))
                 ) AS toDistance,
-                DATEDIFF(date, '2021-11-23') AS timeDelta
-            FROM Rides
-            HAVING fromDistance < 20 AND toDistance < 20 AND timeDelta >= 0
-            ORDER BY timeDelta, fromDistance, toDistance
+                DATEDIFF(date, %(date)s) AS timeDelta
+            FROM MasterRides
+            HAVING fromDistance < 30 AND timeDelta >= 0
+            ORDER BY timeDelta, fromDistance
             LIMIT 0 , 20;"""
         )
         
         try:
             self.cursor.execute(query, params)     # must pass params as tuples, hence (x,) format
             rows = self.cursor.fetchall()
-        except:
-            return []
+        except ms.Error as err:
+            return err.msg
 
         # Now convert SQL output into JSON for frontend 
         results = []
@@ -307,6 +307,57 @@ class Database:
             result['time'] = dtime.strftime('%H:%M:%S')
         
         return results
+
+    def myrides(self, username):
+        """
+            Displays all rides associated with given username 
+        """
+        # First try to grab all riders that are associated with current driver's rides 
+        driver_query = (
+            """SELECT ride_id, username, status FROM Riders
+                WHERE ride_id IN (
+                SELECT ride_id FROM MasterRides
+                WHERE driver_username = %s)
+                AND is_driver = 0"""
+        )
+
+        value = (username,)
+        
+        try:
+            self.cursor.execute(driver_query, value)     # must pass params as tuples, hence (x,) format
+            driver_rows = self.cursor.fetchall()
+        except:
+            return "Failed to execute my rides querys"
+
+        # Convert data into format for frontend
+        driver_results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in driver_rows:
+            driver_results.append(dict(zip(headers,record)))
+
+        # Then execute the query for riders
+
+        rider_query = (
+            """SELECT * FROM MasterRides 
+                INNER JOIN Riders ON
+                MasterRides.ride_id=Riders.ride_id
+                WHERE Riders.username = %s
+                ORDER by MasterRides.date"""
+        )
+
+        self.cursor.execute(rider_query, value)
+        rider_rows = self.cursor.fetchall()
+        
+        # Else convert SQL output into dict for frontend 
+        rider_results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rider_rows:
+            rider_results.append(dict(zip(headers,record)))
+        
+        return {'my_passengers': driver_results, 'rides i am part of': rider_results}
+
     
     def test_add(self):
         query= (
@@ -326,20 +377,18 @@ class Database:
             else: return err.msg
         return id
 
-# params = {'from':'Los Angeles', 'to':'San Diego', 'fromLat': '12.12', 'fromLng': '54.2', 
-# 'make':'toyota', 'plate':'HKG342', 'date':'2021-21-11 12:00:00', 'price':'4', 'seats':'5', 'model':'blah'
-# }
+params = {'from':'Area 51, NV, USA', 'to':'Area 51, NV, USA', 'fromLat': '37.2431', 'fromLng': '-115.793', 
+ 'date':'2021-11-25 12:00:00','toLat': '34.0195', 'toLng': '-118.491'}
 
 
 db_handle = Database()
-y = db_handle.connect_to_db()
+y = db_handle.connect_to_db()s
 
-if y == CONN_FAILURE:
-    print("failed to connect")
+# if y == CONN_FAILURE:
+#     print("failed to connect")
 
-print(db_handle.test_add())
+print(db_handle.find_rides(params))
 
-print(db_handle.cleanup_rides())
 
 
 # values = {'id':'1', 'seats': "5", 'to': "Los Angeles"}
