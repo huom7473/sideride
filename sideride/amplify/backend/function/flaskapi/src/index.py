@@ -53,10 +53,13 @@ def addride():
     creation = db_handle.create_ride(ride)
     if creation:
         # Also update our Riders table with this driver's newly added ride
-        db_handle.add_driver(ride)
-        return {'SUCCESS': 'Added ride to DB'}
+        response = db_handle.add_driver(ride)
+        if response:
+            return {'SUCCESS': 'Added ride to DB'}
+        else:
+            return {'FAILURE': 'Failed to add to secondary Rides table'}
     else:
-        return {'FAILURE': ride.getAll()}
+        return {'FAILURE': 'Failed to add ride to MasterRides table'}
 
 
 @app.route(BASE_ROUTE + 'findrides')
