@@ -54,6 +54,8 @@ class Results extends React.Component {
                 console.log("anthony", response)
                 console.log("response:", response);
                 results_arr = response["Query results"];
+                if (!Array.isArray(results_arr))
+                    return;
                 console.log(results_arr)
                 let temp_rides = []
                 for (let i = 0; i < results_arr.length; i++) {
