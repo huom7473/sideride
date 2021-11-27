@@ -11,7 +11,6 @@ CORS(app)
 
 BASE_ROUTE = "/api/"
 
-#         return {'Backend error': 'Failed to connect to DB'}
 # Create and add ride to database
 @app.route(BASE_ROUTE + 'addride')
 def addride():
@@ -81,7 +80,7 @@ def myrides():
     
 @app.route(BASE_ROUTE + 'bookseat')
 def bookseat():
-    user = dict(request.args)['username']
+    user = dict(request.args)['user']
     id = dict(request.args)['id']
 
     # First establish connection to DB 
@@ -91,9 +90,9 @@ def bookseat():
     except:
         return {'Backend error': 'Failed to connect to DB'}
     
-    status = db_handle.add_rider(id,user)
+    errno, status = db_handle.add_rider(id,user)
 
-    if not status:
+    if errno == 1062:
         return {'FAILURE': status}
     
     else: return {'SUCCESS': "Updated ride with new rider"}

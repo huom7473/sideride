@@ -150,7 +150,7 @@ class Database:
         )
         
         values = (
-            id, params['driver'], 'PENDING', True
+            id, params['driver'], 'ACCEPTED', True
             )
         
         # This catches improper insertions 
@@ -189,7 +189,7 @@ class Database:
             return True
         except ms.Error as err:
             # Code 1062 = failed insertion due to duplicate primary key
-            if err.errno == 1062: return err.msg
+            if err.errno == 1062: return (1062,err.msg)
 
         # Then UPDATE MasterRides by decrementing seat count for given ride_id 
         msg =  self.update_seatCount(ride_id)
@@ -202,11 +202,10 @@ class Database:
         """
 
         update = (
-            "UPDATE MasterRides "
-            "SET seats = seats-1 WHERE ride_id = %s"
+            "UPDATE MasterRides SET seats = seats-1 WHERE ride_id = %s "
         )
 
-        values = (id)
+        values = (id,)
 
         try:
             self.cursor.execute(update,values)
@@ -359,35 +358,21 @@ class Database:
         return {'my_passengers': driver_results, 'rides i am part of': rider_results}
 
     
-    def test_add(self):
-        query= (
-        """
-            INSERT INTO tester
-            VALUES (7,'wooo', 'test');
-        """
-        )
 
-        try:
-            self.cursor.execute(query)     # must pass params as tuples, hence (x,) format
-            self.connection.commit()
-        except ms.Error as err:
-            if err.errno == 1062:
-                return "duplicate entry can't insert"
-
-            else: return err.msg
-        return id
-
-params = {'from':'Area 51, NV, USA', 'to':'Area 51, NV, USA', 'fromLat': '37.2431', 'fromLng': '-115.793', 
- 'date':'2021-11-25 12:00:00','toLat': '34.0195', 'toLng': '-118.491'}
+# params = {'from':'Area 51, NV, USA', 'to':'Area 51, NV, USA', 'fromLat': '37.2431', 'fromLng': '-115.793', 
+#  'date':'2021-11-25 12:00:00','toLat': '34.0195', 'toLng': '-118.491'}
 
 
-db_handle = Database()
-y = db_handle.connect_to_db()
+# db_handle = Database()
+# y = db_handle.connect_to_db()
 
 # if y == CONN_FAILURE:
 #     print("failed to connect")
 
-print(db_handle.find_rides(params))
+# print(db_handle.add_rider('22','kuroodi'))
+# print(db_handle.update_seatCount('22'))
+
+# print(db_handle.find_rides(params))
 
 
 

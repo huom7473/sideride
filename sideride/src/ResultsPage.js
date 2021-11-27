@@ -110,9 +110,9 @@ class RideEntry extends React.Component {
     }
 
     _handleBookRide = (evt) => {
-        console.log("Ride ID is ", this.props.id);
-        console.log("Username of user is ", this.state.info.username);
-
+        //console.log("Ride ID is ", this.props.id);
+        //console.log("Username of user is ", this.state.info.username);
+        API.get('flaskapi', '/api/bookseat?id=' + this.props.id + "&user=" + this.state.info.username).then((response) => console.log(response))
     };
 
     render() {
