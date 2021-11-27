@@ -162,7 +162,7 @@ class Database:
             error_msg = self.cursor._last_executed
             return False
 
-    def add_rider(self, rider_id, rider_username):
+    def add_rider(self, ride_id, rider_username):
         """
             Called from the "book seat" button, add the user to the requested ride 
 
@@ -172,35 +172,74 @@ class Database:
         """
         # First check that this rider is not already part of the specific ride 
         # Return False right away if they are 
+        # Otherwise add entry 
 
-        # Then add entry to Riders table w/ is_driver = False
+        insert_stmt = (
+            "INSERT INTO Riders "
+            "VALUES (%s, %s, %s, %s)"
+        )
+        
+        values = (
+            ride_id, rider_username, 'PENDING', False
+            )
+        
+        try:
+            self.cursor.execute(insert_stmt,values)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            # Code 1062 = failed insertion due to duplicate primary key
+            if err.errno == 1062: return False
 
         # Then UPDATE MasterRides by decrementing seat count for given ride_id 
-    
-    def delete_ride(self, id:str) -> bool:
-        """
-        Removes the given ride from the Rides table 
+        msg =  self.update_seatCount(ride_id)
+        if msg == True: return True
+        else: return msg
 
-        Returns True upon successful deletion, False otherwise 
+    def update_seatCount(self,id):
+        """
+            Decrements seat count for given ride id
+        """
+
+        update = (
+            "UPDATE MasterRides "
+            "SET seats = seats-1 WHERE ride_id = %s"
+        )
+
+        values = (id)
+
+        try:
+            self.cursor.execute(update,values)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            return err.msg
+    
+    
+    def cleanup_rides(self) -> None:
+        """
+        Removes all entries from MasterRides with trip start dates that occur before current date  
 
         Parameters
         ----------
 
-        id : str
-            The unique identifier for this ride 
-
         """
-        query = (
-            " DELETE FROM Rides WHERE driver_id = %s"
-        )
-        params = (id,)
+        queryA = ("""SET SQL_SAFE_UPDATES = 0""")
+        queryB = ("""DELETE FROM MasterRides WHERE date < curdate()""")
+        queryC = ("""SET SQL_SAFE_UPDATES = 1""")
+        
 
         try:
-            self.cursor.execute(query,params)
+            self.cursor.execute(queryA)
+            self.cursor.execute(queryB)
+            self.cursor.execute(queryC)
             self.connection.commit()
             return True
-        except:
-            return False
+        except ms.Error as err:
+            # Error code for attempting an unsafe update 
+            if err.errno == 1175:
+                return err.msg
+            else: return err.msg
 
 
     
@@ -218,23 +257,30 @@ class Database:
             The user-specified set of params on which to query for
         """
         
-        query= (
+        query = (
             """SELECT *, 
-                    (
-                    3959 * acos (
-                    cos ( radians(%(fromLat)s) )
-                    * cos( radians( fromLat ) )
-                    * cos( radians( fromLng ) - radians(%(fromLng)s))
-                    + sin ( radians(%(fromLat)s) )
-                    * sin( radians( fromLat ) ))
-                    ) AS distance,
-                    DATEDIFF(date, %(date)s) AS timeDelta
-                FROM MasterRides
-                HAVING distance < 35 AND timeDelta >= 0 AND seats > 0
-                ORDER BY timeDelta, distance
-                LIMIT 0 , 20"""
+                (
+                3959 * acos (
+                cos ( radians(%(fromLat)s) )
+                * cos( radians( fromLat ) )
+                * cos( radians( fromLng ) - radians(%(fromLng)s))
+                + sin ( radians(%(fromLat)s) )
+                * sin( radians( fromLat ) ))
+                ) AS fromDistance,
+                (
+                3959 * acos (
+                cos ( radians(%(toLat)s) )
+                * cos( radians( toLat ) )
+                * cos( radians( toLng ) - radians(%(toLng)s)
+                + sin ( radians(%(toLat)s) )
+                * sin( radians( toLat ) ))
+                ) AS toDistance,
+                DATEDIFF(date, '2021-11-23') AS timeDelta
+            FROM Rides
+            HAVING fromDistance < 20 AND toDistance < 20 AND timeDelta >= 0
+            ORDER BY timeDelta, fromDistance, toDistance
+            LIMIT 0 , 20;"""
         )
-
         
         try:
             self.cursor.execute(query, params)     # must pass params as tuples, hence (x,) format
@@ -266,7 +312,7 @@ class Database:
         query= (
         """
             INSERT INTO tester
-            VALUES (7,''wooo', 'test');
+            VALUES (7,'wooo', 'test');
         """
         )
 
@@ -277,7 +323,7 @@ class Database:
             if err.errno == 1062:
                 return "duplicate entry can't insert"
 
-            else: return "random error dunno"
+            else: return err.msg
         return id
 
 # params = {'from':'Los Angeles', 'to':'San Diego', 'fromLat': '12.12', 'fromLng': '54.2', 
@@ -293,6 +339,7 @@ if y == CONN_FAILURE:
 
 print(db_handle.test_add())
 
+print(db_handle.cleanup_rides())
 
 
 # values = {'id':'1', 'seats': "5", 'to': "Los Angeles"}
