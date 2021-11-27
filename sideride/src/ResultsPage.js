@@ -39,8 +39,8 @@ class Results extends React.Component {
         this.state = {
             fromlat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlat,
             fromlng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlng,
-            //tolat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolat,
-            //tolng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolng,
+            tolat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolat,
+            tolng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolng,
             date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
             rides: []
         };
@@ -50,7 +50,7 @@ class Results extends React.Component {
         let results_arr = {};
 
         API.get('flaskapi', '/api/findrides?fromLat=' + this.state.fromlat + '&fromLng=' +
-            this.state.fromlng + "&date=" + this.state.date).then((response) => {
+            this.state.fromlng + "&toLat=" + this.state.tolat + "&toLng=" + this.state.tolng + "&date=" + this.state.date).then((response) => {
                 console.log("anthony", response)
                 console.log("response:", response);
                 results_arr = response["Query results"];

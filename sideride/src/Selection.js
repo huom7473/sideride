@@ -8,16 +8,22 @@ export default class Selection extends React.Component {
     constructor(props) {
         super(props);
         if (this.props.location !== undefined) {
+            console.log(this.props.location)
+            let fromlat = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlat;
+            let fromlng = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).fromlng;
+            let tolat = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolat;
+            let tolng = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolng;
             this.state = {
                 from: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).from,
                 to: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).to,
                 date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
-                fromCoord: '',
-                toCoord: '',
+                fromCoord: { lat: fromlat, lng: fromlng },
+                toCoord: { lat: tolat, lng: tolng },
                 showAlert: false,
                 showDateAlert: false,
                 info: {}
             };
+            console.log(this.state.fromCoord)
         } else {
             this.state = { from: '', to: '', date: '', fromCoord: '', toCoord: '', showAlert: false, showDateAlert: false, info: {} };
         }
@@ -51,8 +57,9 @@ export default class Selection extends React.Component {
             return;
         }
         else {
-            this.props.history.push('/results?fromlat=' + this.state.toCoord.lat + "&fromlng=" + this.state.toCoord.lng + "&date=" + this.state.date
-                + '&from=' + this.state.from + '&to=' + this.state.to);
+            this.props.history.push('/results?fromlat=' + this.state.fromCoord.lat + "&fromlng=" + this.state.fromCoord.lng + "&date=" + this.state.date
+                + "&tolat=" + this.state.toCoord.lat + "&tolng=" + this.state.toCoord.lng + '&from=' + this.state.from + '&to=' + this.state.to);
+            window.location.reload(false);
             //API.get('flaskapi ', '/api/find/' + this.state.info.username)
             //    .then((response) => console.log(response))
             evt.preventDefault();
@@ -100,11 +107,11 @@ export default class Selection extends React.Component {
                     <Form.Group as={Row} className="mb-3">
                         <Form.Label column sm={"auto"}>From:</Form.Label>
                         <Col>
-                            <AddressSearch select={this._handleToLatLong} initialValue={this.state.to} />
+                            <AddressSearch select={this._handleFromLatLong} initialValue={this.state.from} />
                         </Col>
                         <Form.Label column sm={"auto"}>To:</Form.Label>
                         <Col>
-                            <AddressSearch select={this._handleFromLatLong} initialValue={this.state.from} />
+                            <AddressSearch select={this._handleToLatLong} initialValue={this.state.to} />
                         </Col>
                         <Form.Label column sm={"auto"}>Date:</Form.Label>
                         <Col>
