@@ -271,15 +271,15 @@ class Database:
                 3959 * acos (
                 cos ( radians(%(toLat)s) )
                 * cos( radians( toLat ) )
-                * cos( radians( toLng ) - radians(%(toLng)s)
+                * cos( radians( toLng ) - radians(%(toLng)s))
                 + sin ( radians(%(toLat)s) )
                 * sin( radians( toLat ) ))
                 ) AS toDistance,
                 DATEDIFF(date, %(date)s) AS timeDelta
             FROM MasterRides
-            HAVING fromDistance < 30 AND timeDelta >= 0
-            ORDER BY timeDelta, fromDistance
-            LIMIT 0 , 20;"""
+            HAVING fromDistance < 20 AND toDistance < 20 AND timeDelta >= 0
+            ORDER BY timeDelta, fromDistance, toDistance
+            LIMIT 0 , 20"""
         )
         
         try:
@@ -382,7 +382,7 @@ params = {'from':'Area 51, NV, USA', 'to':'Area 51, NV, USA', 'fromLat': '37.243
 
 
 db_handle = Database()
-y = db_handle.connect_to_db()s
+y = db_handle.connect_to_db()
 
 # if y == CONN_FAILURE:
 #     print("failed to connect")

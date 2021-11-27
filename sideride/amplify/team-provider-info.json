@@ -15,7 +15,7 @@
       "function": {
         "flaskapi": {
           "deploymentBucketName": "amplify-amplify067eadd867394-staging-224446-deployment",
-          "s3Key": "amplify-builds/flaskapi-722b37777448676a2b71-build.zip"
+          "s3Key": "amplify-builds/flaskapi-6f5a5753754971425356-build.zip"
         }
       },
       "auth": {
