@@ -60,23 +60,69 @@ class CreateRideMenu extends React.Component {
             })*/
 
         //TODO: api call to backend to get associated rides, rather than dummy data below
-        this.testing_arr = ['a', 'b']
 
-        API.get('flaskapi', '/api/myrides?username=' + this.state.info.username).then((response) => console.log(response))
 
-        let rides = [];
-        for (var i = 0; i < this.testing_arr.length; i++) {
-            rides[i] = new RideEntry({
-                id: i,
-                from: "UCLA",
-                to: this.testing_arr[i],
-                time: 12,
-                price: 20,
-                seats: 4,
-                info: "More Detailed information"
-            });
-        }
-        this.setState({ rides: rides });
+        API.get('flaskapi', '/api/myrides?username=' + this.state.info.username).then((response) => {
+            console.log(response);
+            console.log(response["rides i am part of"]);
+            let rides_response = response["rides i am part of"];
+            let passengers_response = response["my_passengers"];
+            let rides = [];
+            for (var i = 0; i < rides_response.length; i++) {
+                //If user is the driver of the ride
+                if (rides_response[i]["driver_username"] == this.state.info.username) {
+                    let passengers = [];
+                    for (var j = 0; j < passengers_response.length; j++) {
+                        if (passengers_response[j]["ride_id"] === rides_response[i]["ride_id"]) {
+                            passengers.push(passengers_response[j]);
+                        }
+                    }
+                    rides[i] = new DriverEntry({
+                        id: rides_response[i]["ride_id"],
+                        from: rides_response[i]["from"],
+                        to: rides_response[i]["to"],
+                        time: rides_response[i]["date"],
+                        price: rides_response[i]["price"],
+                        seats: rides_response[i]["seats"],
+                        passengers: passengers
+                    });
+                }
+                //If user is a rider of the ride 
+                else {
+                    rides[i] = new RiderEntry({
+                        id: rides_response[i]["ride_id"],
+                        driver: rides_response[i]["driver_username"],
+                        make: rides_response[i]["make"],
+                        model: rides_response[i]["model"],
+                        plate: rides_response[i]["plate"],
+                        from: rides_response[i]["from"],
+                        to: rides_response[i]["to"],
+                        time: rides_response[i]["date"],
+                        price: rides_response[i]["price"],
+                        seats: rides_response[i]["seats"],
+                        status: rides_response[i]["status"]
+                    });
+                }
+
+                this.setState({ rides: rides });
+            }
+
+        });
+        /*
+                this.testing_arr = ['a', 'b']
+                let rides = [];
+                for (var i = 0; i < this.testing_arr.length; i++) {
+                    rides[i] = new RideEntry({
+                        id: i,
+                        from: "UCLA",
+                        to: this.testing_arr[i],
+                        time: 12,
+                        price: 20,
+                        seats: 4,
+                        info: "More Detailed information"
+                    });
+                }
+                this.setState({ rides: rides });*/
 
     }
 
@@ -94,31 +140,13 @@ class CreateRideMenu extends React.Component {
     }
 }
 
-class RideEntry extends React.Component {
+class RiderEntry extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            users: []
-        };
     }
 
     render() {
-
-        this.testing_arr = ['a', 'b']
-
-        let users = [];
-        for (var i = 0; i < this.testing_arr.length; i++) {
-            users[i] = new UserEntry({
-                id: i,
-                username: this.testing_arr[i],
-                status: "Pending"
-            });
-        }
-        console.log("Users temp ", users)
-        this.state = ({ users: users });
-        console.log("Users ", this.state.users);
         return (
-
             <>
                 <Accordion.Header>
                     <AccordionContent>
@@ -133,6 +161,82 @@ class RideEntry extends React.Component {
                         <TimePriceContainer>
                             <div>
                                 Pickup from:
+                            </div>
+                            <div>
+                                {this.props.time}
+                            </div>
+                            <div>
+                                ${this.props.price}
+                            </div>
+                        </TimePriceContainer>
+                    </AccordionContent>
+                </Accordion.Header>
+                <Accordion.Body>
+
+                    <DetailContainer>
+                        <div>
+                            YOUR STATUS: {this.props.status}
+                        </div>
+                        <div>
+                            Driver username: {this.props.driver}
+                        </div>
+                        <div>
+                            Vehicle: {this.props.make} {this.props.model}
+                        </div>
+                        <div>
+                            License Plate: {this.props.plate}
+                        </div>
+                        <div>
+                            Price: {this.props.price}
+                        </div>
+                        <div>
+                            Seats remaining: {this.props.seats}
+                        </div>
+                    </DetailContainer>
+                </Accordion.Body>
+            </>
+        );
+    }
+}
+
+class DriverEntry extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            users: []
+        };
+    }
+
+    render() {
+        console.log("MY PASSENGERS ", this.props.passengers);
+
+        let users = [];
+        let my_passengers = this.props.passengers;
+        for (var i = 0; i < my_passengers.length; i++) {
+            let passenger = my_passengers[i];
+            users[i] = new UserEntry({
+                id: i,
+                username: passenger["username"],
+                status: passenger["status"]
+            });
+        }
+        this.state = ({ users: users });
+
+        return (
+            <>
+                <Accordion.Header>
+                    <AccordionContent>
+                        <PlaceContainer>
+                            <div>
+                                From: {this.props.from}
+                            </div>
+                            <div>
+                                To: {this.props.to}
+                            </div>
+                        </PlaceContainer>
+                        <TimePriceContainer>
+                            <div>
+                                Time:
                             </div>
                             <div>
                                 {this.props.time}
@@ -169,13 +273,15 @@ class UserEntry extends React.Component {
     };
 
     render() {
-        // dummy API call to fetch query results from DB 
         return (
             //This will be an individual user with a username + button to accept them
-            <div>
+            <UserContainer>
                 <DetailContainer>
                     <div>
                         Username: {this.props.username}
+                    </div>
+                    <div>
+                        Status: {this.props.status}
                     </div>
                 </DetailContainer>
                 <Button onClick={this._handleApprove}>
@@ -184,7 +290,7 @@ class UserEntry extends React.Component {
                 <Button onClick={this._handleDeny}>
                     Deny
                 </Button>
-            </div>
+            </UserContainer>
 
         );
     }
@@ -233,6 +339,13 @@ const DetailContainer = styled.div`
         flex: 1;
     }
 `;
+
+const UserContainer = styled.div`
+    display:flex;
+    flex-direction:row;
+    width:100%;
+`;
+
 
 
 export default withAuthenticator(MyRidesPage);
