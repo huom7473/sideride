@@ -63,8 +63,8 @@ class CreateRideMenu extends React.Component {
 
 
         API.get('flaskapi', '/api/myrides?username=' + this.state.info.username).then((response) => {
-            console.log(response);
-            console.log(response["rides i am part of"]);
+            //console.log(response);
+            //console.log(response["rides i am part of"]);
             let rides_response = response["rides i am part of"];
             let passengers_response = response["my_passengers"];
             let rides = [];
@@ -208,7 +208,7 @@ class DriverEntry extends React.Component {
     }
 
     render() {
-        console.log("MY PASSENGERS ", this.props.passengers);
+        //console.log("MY PASSENGERS ", this.props.passengers);
 
         let users = [];
         let my_passengers = this.props.passengers;
@@ -217,7 +217,8 @@ class DriverEntry extends React.Component {
             users[i] = new UserEntry({
                 id: i,
                 username: passenger["username"],
-                status: passenger["status"]
+                status: passenger["status"],
+                ride: passenger["ride_id"]
             });
         }
         this.state = ({ users: users });
@@ -265,11 +266,26 @@ class UserEntry extends React.Component {
     _handleApprove = (evt) => {
         alert("Approved user!")
         //TODO: API call to approve here
+        // If current status already approved, just raise ALERT 
+        // Use username + ride_id to update status from PENDING->APPROVED in Riders table
+        // Then decrement seat count in MasterRides 
+        console.log(this.props.ride, this.props.status, this.props.username)
+        if (this.props.status == 'ACCEPTED') {
+            alert("Rider has already been accepted!")
+        }
+        // API.get('flaskapi', '/api/acceptride?ride_id=' + this.props.ride + 
+        //"&user=" + this.props.username).then((response) => console.log(response))
     };
 
     _handleDeny = (evt) => {
         alert("Denied user!")
+        if (this.props.status == 'DENIED') {
+            alert("Rider has already been denied!")
+        }
+       
         //TODO: API call to deny here
+        // If current status already DENIED, just raise ALERT 
+        // Use username+ ride_id to update status from PENDING->DENIED in Riders table
     };
 
     render() {

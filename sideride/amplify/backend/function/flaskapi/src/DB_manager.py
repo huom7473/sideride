@@ -190,12 +190,30 @@ class Database:
             # Code 1062 = failed insertion due to duplicate primary key
             if err.errno == 1062: return (1062,err.msg)
 
+    def accept_ride(self, ride_id, user):
+        """
+            Changes status of rider from PENDING->ACCEPTED
+            Decrement seat count for the ride by 1 
+        """
+
+        update = (
+            "UPDATE Riders SET status = 'ACCEPTED' WHERE ride_id = %s AND username = %s "
+        )
+
+        values = (ride_id,user)
+
+        try:
+            self.cursor.execute(update,values)
+            self.connection.commit()
+        except ms.Error as err:
+            return (1,err.msg)
+
         # Then UPDATE MasterRides by decrementing seat count for given ride_id 
         msg =  self.update_seatCount(ride_id)
         if msg == True: return (0,True)
         else: return (0,msg)
 
-    def update_seatCount(self,id):
+    def update_seatCount(self,ride_id):
         """
             Decrements seat count for given ride id
         """
@@ -204,7 +222,7 @@ class Database:
             "UPDATE MasterRides SET seats = seats-1 WHERE ride_id = %s "
         )
 
-        values = (id,)
+        values = (ride_id,)
 
         try:
             self.cursor.execute(update,values)
@@ -213,6 +231,24 @@ class Database:
         except ms.Error as err:
             return err.msg
     
+    def deny_ride(self, ride_id, user):
+        """
+            Changes status of rider from PENDING->ACCEPTED
+            Decrement seat count for the ride by 1 
+        """
+
+        update = (
+            "UPDATE Riders SET status = 'DENIED' WHERE ride_id = %s AND username = %s "
+        )
+
+        values = (ride_id,user)
+
+        try:
+            self.cursor.execute(update,values)
+            self.connection.commit()
+            return (0,)
+        except ms.Error as err:
+            return (1,err.msg)
     
     def cleanup_rides(self) -> None:
         """
