@@ -1,7 +1,11 @@
 import Selection from "../Selection"
 import { configure, mount } from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import Amplify from 'aws-amplify';
+import { Auth } from 'aws-amplify';
+import awsconfig from '../aws-exports';
 
+Amplify.configure(awsconfig);
 
 configure({ adapter: new Adapter() });      // for enzyme methods like mount
 
