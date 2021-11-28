@@ -225,8 +225,8 @@ class DriverEntry extends React.Component {
 
         return (
             <>
-                <Accordion.Header>
-                    <AccordionContent>
+                <DriverHeader>
+                    <DriverAccordionContent>
                         <PlaceContainer>
                             <div>
                                 From: {this.props.from}
@@ -246,8 +246,8 @@ class DriverEntry extends React.Component {
                                 ${this.props.price}
                             </div>
                         </TimePriceContainer>
-                    </AccordionContent>
-                </Accordion.Header>
+                    </DriverAccordionContent>
+                </DriverHeader>
                 <Accordion.Body>
 
                     {this.state.users.map((it, index) => <AccordionBody key={index} eventKey={index}>{it.render()}</AccordionBody>)}
@@ -282,7 +282,7 @@ class UserEntry extends React.Component {
         if (this.props.status == 'DENIED') {
             alert("Rider has already been denied!")
         }
-       
+
         //TODO: API call to deny here
         // If current status already DENIED, just raise ALERT 
         // Use username+ ride_id to update status from PENDING->DENIED in Riders table
@@ -340,6 +340,13 @@ const AccordionContent = styled.div`
     color:white;
 `;
 
+const DriverAccordionContent = styled.div`
+    display:flex;
+    width:100%;
+    color:white;
+    border-color:red;
+`;
+
 
 const AccordionBody = styled.div`
     display:flex;
@@ -360,6 +367,12 @@ const UserContainer = styled.div`
     display:flex;
     flex-direction:row;
     width:100%;
+`;
+
+const DriverHeader = styled(Accordion.Header)`
+    button {
+        background-color:#1a548f !important;
+}
 `;
 
 
