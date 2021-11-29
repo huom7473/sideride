@@ -21,7 +21,7 @@ def addride():
         ride = rm.Ride(request.args) 
         ride.formatDate()
     except:
-        return {'Backend error': "Failed to create Ride instance"}
+        return {'Backend error': "Failed to create Ride instance", "args": request.args}
 
     # Then establish connection to DB 
     try:

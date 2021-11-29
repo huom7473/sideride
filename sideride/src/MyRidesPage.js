@@ -41,13 +41,14 @@ class CreateRideMenu extends React.Component {
             let rides = [];
             for (var i = 0; i < rides_response.length; i++) {
                 //If user is the driver of the ride
-                if (rides_response[i]["driver_username"] == this.state.info.username) {
+                if (rides_response[i]["driver_username"] === this.state.info.username) {
                     let passengers = [];
                     for (var j = 0; j < passengers_response.length; j++) {
                         if (passengers_response[j]["ride_id"] === rides_response[i]["ride_id"]) {
                             passengers.push(passengers_response[j]);
                         }
                     }
+                    console.log(rides_response[i]);
                     rides[i] = new DriverEntry({
                         id: rides_response[i]["ride_id"],
                         from: rides_response[i]["from"],
@@ -134,7 +135,6 @@ class RiderEntry extends React.Component {
                     </AccordionContent>
                 </Accordion.Header>
                 <Accordion.Body>
-
                     <DetailContainer>
                         <div>
                             YOUR STATUS: {this.props.status}
@@ -217,9 +217,8 @@ class DriverEntry extends React.Component {
                     </DriverAccordionContent>
                 </DriverHeader>
                 <Accordion.Body>
-
-                    {this.state.users.map((it, index) => <AccordionBody key={index} eventKey={index}>{it.render()}</AccordionBody>)}
-
+                    {this.state.users.length !== 0 && this.state.users.map((it, index) => <AccordionBody key={index} eventKey={index}>{it.render()}</AccordionBody>)}
+                    {this.state.users.length === 0 && <div>No passengers.</div>}
                 </Accordion.Body>
             </>
         );
@@ -269,7 +268,7 @@ class UserEntry extends React.Component {
                         Status: {this.props.status}
                     </div>
                 </DetailContainer>
-                <Button onClick={this._handleApprove}>
+                <Button onClick={this._handleApprove} className="me-2">
                     Approve
                 </Button>
                 <Button onClick={this._handleDeny}>

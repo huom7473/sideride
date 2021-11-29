@@ -84,24 +84,25 @@ export class CreateRideMenu extends React.Component {
     console.log(time);
 
     if (from !== "" && to !== "" && date !== "" && time !== "" && seats !== "" && price !== "") {
-      // actual call to add ride to DB 
-      const success = API.get('flaskapi', '/api/addride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date
-        + "&fromLat=" + this.state.fromCoord.lat + "&fromLng=" + this.state.fromCoord.lng
-        + "&toLat=" + this.state.toCoord.lat + "&toLng=" + this.state.toCoord.lng + "&time=" + this.state.time +
-        "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" +
-        this.state.model + "&plate=" + this.state.plate + "&driver=" + this.state.info.username)
+      // actual call to add ride to DB
+      const path = '/api/addride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date
+          + "&fromLat=" + this.state.fromCoord.lat + "&fromLng=" + this.state.fromCoord.lng
+          + "&toLat=" + this.state.toCoord.lat + "&toLng=" + this.state.toCoord.lng + "&time=" + this.state.time +
+          "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" +
+          this.state.model + "&plate=" + this.state.plate + "&driver=" + this.state.info.username
+      console.log(path);
+      API.get('flaskapi', path)
           .then((response) => {
               console.log(response);
-              return response.SUCCESS !== undefined;
+              const success = response.SUCCESS !== undefined;
+              if (success) {
+                this.setState({showSuccess: true});
+                this.setState({disableButton: true});
+                setTimeout(() => this.props.history.push('/myrides'), 1500);
+              } else {
+                this.setState({showRejectedAlert: true});
+              }
             })
-
-      if (success) {
-        this.setState({showSuccess: true});
-        this.setState({disableButton: true});
-        setTimeout(() => this.props.history.push('/myrides'), 1500);
-      } else {
-        this.setState({showRejectedAlert: true});
-      }
     } else {
       this.setState({showAlert: true});
     }
