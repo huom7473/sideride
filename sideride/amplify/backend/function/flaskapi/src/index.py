@@ -111,7 +111,7 @@ def acceptride():
     
     errno, status = db_handle.accept_ride(ride_id, user)
 
-    if not errno: return {'SUCCESS': 'Rider was accepeted'}
+    if not errno: return {'SUCCESS': 'Rider was accepted'}
     else: return {'FAILURE': status}
 
 
@@ -128,9 +128,9 @@ def denyride():
     except:
         return {'Backend error': 'Failed to connect to DB'}
     
-    errno, status = db_handle.deny_ride(ride_id, user)
+    status = db_handle.deny_ride(ride_id, user)
 
-    if not errno: return {'SUCCESS': 'Rider was accepeted'}
+    if status == True: return {'SUCCESS': 'Rider was denied'}
     else: return {'FAILURE': status}
 
 def handler(event, context):

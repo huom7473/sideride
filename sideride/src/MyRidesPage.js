@@ -264,7 +264,6 @@ class UserEntry extends React.Component {
     }
 
     _handleApprove = (evt) => {
-        alert("Approved user!")
         //TODO: API call to approve here
         // If current status already approved, just raise ALERT 
         // Use username + ride_id to update status from PENDING->APPROVED in Riders table
@@ -273,12 +272,13 @@ class UserEntry extends React.Component {
         if (this.props.status == 'ACCEPTED') {
             alert("Rider has already been accepted!")
         }
-        // API.get('flaskapi', '/api/acceptride?ride_id=' + this.props.ride + 
-        //"&user=" + this.props.username).then((response) => console.log(response))
+        else {
+            API.get('flaskapi', '/api/acceptride?ride_id=' + this.props.ride + 
+            "&user=" + this.props.username).then((response) => console.log(response))
+        }
     };
 
     _handleDeny = (evt) => {
-        alert("Denied user!")
         if (this.props.status == 'DENIED') {
             alert("Rider has already been denied!")
         }
@@ -286,6 +286,10 @@ class UserEntry extends React.Component {
         //TODO: API call to deny here
         // If current status already DENIED, just raise ALERT 
         // Use username+ ride_id to update status from PENDING->DENIED in Riders table
+        else {
+            API.get('flaskapi', '/api/denyride?ride_id=' + this.props.ride + 
+            "&user=" + this.props.username).then((response) => console.log(response))
+        }
     };
 
     render() {
