@@ -98,7 +98,7 @@ def bookseat():
     else: return {'SUCCESS': "Updated ride with new rider"}
 
 @app.route(BASE_ROUTE + 'acceptride')
-def bookseat():
+def acceptride():
     user = dict(request.args)['user']
     ride_id = dict(request.args)['ride_id']
     
@@ -117,7 +117,7 @@ def bookseat():
 
 
 @app.route(BASE_ROUTE + 'denyride')
-def bookseat():
+def denyride():
     user = dict(request.args)['user']
     ride_id = dict(request.args)['ride_id']
 
