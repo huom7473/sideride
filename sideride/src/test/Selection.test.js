@@ -2,10 +2,12 @@ import Selection from "../Selection"
 import { configure, mount } from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import Amplify from 'aws-amplify';
-import { Auth } from 'aws-amplify';
 import awsconfig from '../aws-exports';
+import renderer from 'react-test-renderer';
+
 
 Amplify.configure(awsconfig);
+// Auth.signIn("test_user", "test_password");
 
 configure({ adapter: new Adapter() });      // for enzyme methods like mount
 
@@ -25,7 +27,7 @@ const dummy_event = {
   target: { value: 'test-value' }
 };
 
-test('Search page: initialization', () => {
+test('Selection: initialization', () => {
   const wrapper = mount(<Selection />);
   const instance = wrapper.instance();
 
@@ -35,7 +37,7 @@ test('Search page: initialization', () => {
 });
 
 
-test('Search page: _handleFromLatLong correctly sets from and fromCoord', () => {
+test('Selection: _handleFromLatLong correctly sets from and fromCoord', () => {
   const wrapper = mount(<Selection />);
   const instance = wrapper.instance();
 
@@ -45,17 +47,17 @@ test('Search page: _handleFromLatLong correctly sets from and fromCoord', () => 
   expect(instance.state.fromCoord.lng).toBe(dummy_from.lng);
 });
 
-test('Search page: _handleToLatLong correctly sets to and toCoord', () => {
+test('Selection: _handleToLatLong correctly sets to and toCoord', () => {
   const wrapper = mount(<Selection />);
   const instance = wrapper.instance();
 
-  instance._handleFromLatLong(dummy_from);
-  expect(instance.state.from).toBe(dummy_from.description);
-  expect(instance.state.fromCoord.lat).toBe(dummy_from.lat);
-  expect(instance.state.fromCoord.lng).toBe(dummy_from.lng);
+  instance._handleToLatLong(dummy_to);
+  expect(instance.state.to).toBe(dummy_to.description);
+  expect(instance.state.toCoord.lat).toBe(dummy_to.lat);
+  expect(instance.state.toCoord.lng).toBe(dummy_to.lng);
 });
 
-test('Search page: _handleFindRide tests', () => {
+test('Selection: _handleFindRide correctly shows alerts for missing data or invalid dates', () => {
   const wrapper1 = mount(<Selection />);
   const instance1 = wrapper1.instance();
   instance1.state.fromCoord = '';
@@ -92,4 +94,10 @@ test('Search page: _handleFindRide tests', () => {
   expect(instance4.state.showAlert).toBe(false);
   expect(instance4.state.showDateAlert).toBe(true);
 
+});
+
+it('renders correctly selection component', () => {
+  const SelectionComponent = renderer.create(<Selection />);
+  const tree = SelectionComponent.toJSON();
+  expect(tree).toMatchSnapshot();
 });
