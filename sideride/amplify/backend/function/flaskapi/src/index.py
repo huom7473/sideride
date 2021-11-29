@@ -97,7 +97,41 @@ def bookseat():
     
     else: return {'SUCCESS': "Updated ride with new rider"}
 
+@app.route(BASE_ROUTE + 'acceptride')
+def acceptride():
+    user = dict(request.args)['user']
+    ride_id = dict(request.args)['ride_id']
+    
+    # First establish connection to DB 
+    try:
+        db_handle = dm.Database() 
+        db_handle.connect_to_db()
+    except:
+        return {'Backend error': 'Failed to connect to DB'}
+    
+    errno, status = db_handle.accept_ride(ride_id, user)
 
+    if not errno: return {'SUCCESS': 'Rider was accepeted'}
+    else: return {'FAILURE': status}
+
+
+
+@app.route(BASE_ROUTE + 'denyride')
+def denyride():
+    user = dict(request.args)['user']
+    ride_id = dict(request.args)['ride_id']
+
+    # First establish connection to DB 
+    try:
+        db_handle = dm.Database() 
+        db_handle.connect_to_db()
+    except:
+        return {'Backend error': 'Failed to connect to DB'}
+    
+    errno, status = db_handle.deny_ride(ride_id, user)
+
+    if not errno: return {'SUCCESS': 'Rider was accepeted'}
+    else: return {'FAILURE': status}
 
 def handler(event, context):
     return awsgi.response(app, event, context)

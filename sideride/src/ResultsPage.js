@@ -26,7 +26,7 @@ export default function ResultsPage() {
                     <Selection isLoaded={isLoaded} loadError={loadError} history={history} location={location} />
                 </div>
                 <div>
-                    <Results location={location} />
+                    <Results location={location} history={history} />
                 </div>
             </Container>
         </div>
@@ -68,7 +68,7 @@ class Results extends React.Component {
                         price: item["price"],
                         seats: item["seats"],
                         distance: item["distance"],
-                        info: "Stuff"
+                        history: this.props.history
                     })
                     console.log(temp_rides)
                 }
@@ -112,7 +112,10 @@ class RideEntry extends React.Component {
     _handleBookRide = (evt) => {
         //console.log("Ride ID is ", this.props.id);
         //console.log("Username of user is ", this.state.info.username);
-        API.get('flaskapi', '/api/bookseat?id=' + this.props.id + "&user=" + this.state.info.username).then((response) => console.log(response))
+        API.get('flaskapi', '/api/bookseat?id=' + this.props.id + "&user=" + this.state.info.username).then((response) => {
+            console.log(response);
+            this.props.history.push("/myrides");
+        })
     };
 
     render() {

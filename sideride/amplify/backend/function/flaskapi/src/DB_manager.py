@@ -190,12 +190,30 @@ class Database:
             # Code 1062 = failed insertion due to duplicate primary key
             if err.errno == 1062: return (1062,err.msg)
 
+    def accept_ride(self, ride_id, user):
+        """
+            Changes status of rider from PENDING->ACCEPTED
+            Decrement seat count for the ride by 1 
+        """
+
+        update = (
+            "UPDATE Riders SET status = 'ACCEPTED' WHERE ride_id = %s AND username = %s "
+        )
+
+        values = (ride_id,user)
+
+        try:
+            self.cursor.execute(update,values)
+            self.connection.commit()
+        except ms.Error as err:
+            return (1,err.msg)
+
         # Then UPDATE MasterRides by decrementing seat count for given ride_id 
         msg =  self.update_seatCount(ride_id)
         if msg == True: return (0,True)
         else: return (0,msg)
 
-    def update_seatCount(self,id):
+    def update_seatCount(self,ride_id):
         """
             Decrements seat count for given ride id
         """
@@ -204,7 +222,7 @@ class Database:
             "UPDATE MasterRides SET seats = seats-1 WHERE ride_id = %s "
         )
 
-        values = (id,)
+        values = (ride_id,)
 
         try:
             self.cursor.execute(update,values)
@@ -213,6 +231,24 @@ class Database:
         except ms.Error as err:
             return err.msg
     
+    def deny_ride(self, ride_id, user):
+        """
+            Changes status of rider from PENDING->ACCEPTED
+            
+        """
+
+        update = (
+            "UPDATE Riders SET status = 'DENIED' WHERE ride_id = %s AND username = %s "
+        )
+
+        values = (ride_id,user)
+
+        try:
+            self.cursor.execute(update,values)
+            self.connection.commit()
+            return (0,)
+        except ms.Error as err:
+            return (1,err.msg)
     
     def cleanup_rides(self) -> None:
         """
@@ -359,7 +395,8 @@ class Database:
     
 
 # params = {'from':'Area 51, NV, USA', 'to':'Area 51, NV, USA', 'fromLat': '37.2431', 'fromLng': '-115.793', 
-#  'date':'2021-11-25 12:00:00','toLat': '34.0195', 'toLng': '-118.491'}
+#  'datetime':'2021-12-12 12:00:00','toLat': '34.0195', 'toLng': '-118.491', 'price':'12', 'seats':'5', 'make':'Toy',
+#  'model':'woo', 'plate':'SDFSADF', 'driver':'kuroodi'}
 
 
 # db_handle = Database()
@@ -368,7 +405,7 @@ class Database:
 # if y == CONN_FAILURE:
 #     print("failed to connect")
 
-# print(db_handle.add_rider('22','kuroodi'))
+# print(db_handle.create_ride(Ride(params)))
 # print(db_handle.update_seatCount('22'))
 
 # print(db_handle.find_rides(params))
