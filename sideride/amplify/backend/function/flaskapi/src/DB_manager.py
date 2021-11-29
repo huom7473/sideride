@@ -234,7 +234,7 @@ class Database:
     def deny_ride(self, ride_id, user):
         """
             Changes status of rider from PENDING->ACCEPTED
-            Decrement seat count for the ride by 1 
+            
         """
 
         update = (
@@ -395,7 +395,8 @@ class Database:
     
 
 # params = {'from':'Area 51, NV, USA', 'to':'Area 51, NV, USA', 'fromLat': '37.2431', 'fromLng': '-115.793', 
-#  'date':'2021-11-25 12:00:00','toLat': '34.0195', 'toLng': '-118.491'}
+#  'datetime':'2021-12-12 12:00:00','toLat': '34.0195', 'toLng': '-118.491', 'price':'12', 'seats':'5', 'make':'Toy',
+#  'model':'woo', 'plate':'SDFSADF', 'driver':'kuroodi'}
 
 
 # db_handle = Database()
@@ -404,7 +405,7 @@ class Database:
 # if y == CONN_FAILURE:
 #     print("failed to connect")
 
-# print(db_handle.add_rider('22','kuroodi'))
+# print(db_handle.create_ride(Ride(params)))
 # print(db_handle.update_seatCount('22'))
 
 # print(db_handle.find_rides(params))
