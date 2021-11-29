@@ -126,7 +126,7 @@ class RiderEntry extends React.Component {
                                 {weekday} {day} {month} {year}
                             </div>
                             <div>
-                                {hours}:{minutes}&nbsp; {AMPM}
+                                {hours}:{minutes}&nbsp;{AMPM}
                             </div>
                             <div>
                                 ${this.props.price}
@@ -149,7 +149,7 @@ class RiderEntry extends React.Component {
                             License Plate: {this.props.plate}
                         </div>
                         <div>
-                            Price: {this.props.price}
+                            Price: ${this.props.price}
                         </div>
                         <div>
                             Seats remaining: {this.props.seats}

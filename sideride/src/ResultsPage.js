@@ -60,7 +60,7 @@ class Results extends React.Component {
                 let temp_rides = []
                 for (let i = 0; i < results_arr.length; i++) {
                     let item = results_arr[i]
-                    if (item === null) {
+                    if (item === null || item["seats"] === 0) {
                         continue;
                     }
                     temp_rides[i] = new RideEntry({
