@@ -9,7 +9,7 @@ import mysql.connector as ms
 default_config = {
     'user': 'SideRideProject',
     'password': 'SideRideProject130*',
-    'host': 'database-side-ride-project.ch9vjbv.oh8tk.us-east-2.rds.amazonaws.com',
+    'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com',
     'database': 'SideRideSchemaTest',
     'raise_on_warnings': True
 }
@@ -93,13 +93,9 @@ def test_DB_pipeline(ride, rider, searchParams):
         if db.add_driver(rm.Ride(ride)) != True: 
             errors.append("Add driver failed" + str(ride))
         
-        if db.add_rider(rider['id'], rider['username']) != (0, True):
+        if db.add_rider(rider['id'], rider['username']) != (0, "Updated ride with new rider"):
             errors.append("Add rider failed" + str(rider))
         
-        # if db.update_seatCount(ride) != True:
-        #     errors.append("Update Seat Count failed" + str(ride))
-
-
         #if find rides doenst return a list, it returned err
         if type(db.find_rides(searchParams)) != list:
             errors.append("Find rides failed" + str(db.find_rides(searchParams)))
