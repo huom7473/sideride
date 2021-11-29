@@ -29,12 +29,15 @@
 <pre><code class="python">from datetime import datetime, date, timedelta
 import mysql.connector as ms
 from flask import json, jsonify
+from Ride_manager import *
 
 # Static global 
 CONN_FAILURE = &#34;Connection failed&#34;
 CONN_SUCCESS = &#34;Connection established&#34;
 
-default_config =     {
+# for CORS: https://cors-anywhere.herokuapp.com/ before the hostname
+
+default_config = {
     &#39;user&#39;: &#39;SideRideProject&#39;,
     &#39;password&#39;: &#39;SideRideProject130*&#39;,
     &#39;host&#39;: &#39;database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com&#39;,
@@ -42,7 +45,7 @@ default_config =     {
     &#39;raise_on_warnings&#39;: True
 }
 
-class DatabaseHandler:
+class Database:
     &#34;&#34;&#34;
     A class used to interact with the backend database and serve results to the frontend
 
@@ -67,18 +70,45 @@ class DatabaseHandler:
     connect_to_db()
         tries to establish a connection to the database using supplied config file
     
-    add_ride(id, start, stop, date)
+    create_ride(params)
         adds an entry to the DB signifying the new ride with the given params 
+        
+    find_rides_(params)
+        serves user list of rides meeting supplied params 
     
-    delete_ride(id)
-        removes the unique ride from the system 
+    add_driver()
+        logs new driver into backend table 
+
+    add_rider()
+        logs new rider into backend table (called when user requests to book a seat in a ride)
     
-    find_rides_by_date(date)
-        queries DB for rides matching given date and returns results in JSON format for frontend 
+    accept_ride()
+        sets user&#39;s status for ride to ACCEPTED
+
+    deny_ride()
+        sets user&#39;s status for ride to DENIED
+    
+    update_seatCount()
+        decrement seat count for given ride if possible
+    
+    cleanupRides()
+        prune all rides that start before the current date 
+    
+    delete_riders()
+        removes all entries from Riders table
+    
+    def find_rides()
+        finds all rides matching given search parameters
+
+    def format_results()
+        formats SQL output into frotend-friendly form 
+    
+    def myrides()
+        finds all rides for current user (both driving and riding)
     
     &#34;&#34;&#34;
-    
-    def __init__(self, config=default_config) -&gt; None:
+    #get rid of return none
+    def __init__(self, config=default_config):
         &#34;&#34;&#34;
         Parameters
         ----------
@@ -117,76 +147,257 @@ class DatabaseHandler:
         except:
             return CONN_FAILURE
     
-    def add_ride(self, id:str, start:str, stop:str, date:str) -&gt; bool:
+    def create_ride(self, ride:Ride) -&gt; bool:
         &#34;&#34;&#34;
-        Adds the specified ride to the Rides table in the backend DB
+        Creates the specified ride and adds it to the MasterRides table in the backend DB
 
         Returns True if ride was succesfully added, False if not 
 
         Parameters
-        --------
-
-        id : str
-            A unique id that identifies the Driver object responsible for this ride 
+        -------- 
         
-        start : str
-            The starting location for the trip
-        
-        stop : str
-            The ending location for the trip
-        
-        date : 
-            The date (YYYY-MM-DD) for which the trip is scheduled
+        ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
 
         &#34;&#34;&#34;
+
+        params = ride.getAll()
+        
         insert_stmt = (
-            &#34;INSERT INTO Rides (driver_id, start, stop, date) &#34;
+            &#34;INSERT INTO MasterRides &#34;
+            &#34;VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s)&#34;
+        )
+        
+        values = (
+            params[&#39;driver&#39;], params[&#39;from&#39;], params[&#39;to&#39;], params[&#39;fromLat&#39;], params[&#39;fromLng&#39;],
+            params[&#39;make&#39;], params[&#39;plate&#39;], params[&#39;datetime&#39;], 
+            params[&#39;price&#39;], params[&#39;seats&#39;], params[&#39;model&#39;], params[&#39;toLat&#39;], params[&#39;toLng&#39;]
+            )
+        
+        # This catches improper insertions 
+        try:
+            self.cursor.execute(insert_stmt,values)
+            id = self.cursor.lastrowid
+            ride.set_ride_id(id)
+            self.connection.commit()
+            return True
+            #GET RID OF THIS LINE AT 130
+        except ms.Error as err:
+            return err.msg
+    
+    def add_driver(self, ride:Ride) -&gt; bool:
+        &#34;&#34;&#34;
+            Adds the driver as a &#34;user of the ride&#34; to the secondary Riders table with following schema:
+            
+            ride_id | username | status | is_driver 
+
+            Returns True on success, False on failure. 
+
+            Parameters
+            -------- 
+        
+            ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
+        &#34;&#34;&#34;
+        params = ride.getAll()
+        id = ride.get_ride_id()
+        insert_stmt = (
+            &#34;INSERT INTO Riders &#34;
             &#34;VALUES (%s, %s, %s, %s)&#34;
         )
         
-        params = (id, start, stop, date)
-
+        values = (
+            id, params[&#39;driver&#39;], &#39;ACCEPTED&#39;, True
+            )
+        
         # This catches improper insertions 
         try:
-            self.cursor.execute(insert_stmt,params)
+            self.cursor.execute(insert_stmt,values)
             self.connection.commit()
             return True
-        except:
-            self.cursor.fetchwarnings()
-            return False
-    
-    def delete_ride(self, id:str) -&gt; bool:
+        except ms.Error as err:
+            return err.msg
+
+    def add_rider(self, ride_id, rider_username):
         &#34;&#34;&#34;
-        Removes the given ride from the Rides table 
+            Called from the &#34;book seat&#34; button, add the user to the requested ride 
 
-        Returns True upon successful deletion, False otherwise 
+            Takes in the ride_id and username, adds entry into Riders table
 
-        Parameters
-        ----------
+            Returns True on success, False on failure 
 
-        id : str
-            The unique identifier for this ride 
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
+
+            rider_username: currently logged in username 
 
         &#34;&#34;&#34;
-        query = (
-            &#34; DELETE FROM Rides WHERE driver_id = %s&#34;
+        # First check that this rider is not already part of the specific ride 
+        # Return False right away if they are 
+        # Otherwise add entry 
+
+        insert_stmt = (
+            &#34;INSERT INTO Riders &#34;
+            &#34;VALUES (%s, %s, %s, %s)&#34;
         )
-        params = (id,)
+        
+        values = (
+            ride_id, rider_username, &#39;PENDING&#39;, False
+            )
+        
+        try:
+            self.cursor.execute(insert_stmt,values)
+            self.connection.commit()
+            return (0, &#34;Updated ride with new rider&#34;)
+        except ms.Error as err:
+            # Code 1062 = failed insertion due to duplicate primary key
+            if err.errno == 1062: return (1062,err.msg)
+
+    def accept_ride(self, ride_id, user):
+        &#34;&#34;&#34;
+            Changes status of rider from PENDING-&gt;ACCEPTED
+            Decrement seat count for the ride by 1 
+
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
+
+            user: currently logged in username 
+
+        &#34;&#34;&#34;
+        # First check if the ride has seats left, return false right away if it doesn&#39;t
+
+        query = (
+            &#34;SELECT seats FROM MasterRides WHERE ride_id = %s &#34;
+        )
+        i = (ride_id,)
+        self.cursor.execute(query,i)
+        rows = self.cursor.fetchall()
+        results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rows:
+            results.append(dict(zip(headers,record)))
+        
+        results = results[0]
+        if results[&#39;seats&#39;] &lt; 1:
+            return (1, &#34;No space left in ride&#34;)
+
+        update = (
+            &#34;UPDATE Riders SET status = &#39;ACCEPTED&#39; WHERE ride_id = %s AND username = %s &#34;
+        )
+
+        values = (ride_id,user)
 
         try:
-            self.cursor.execute(query,params)
+            self.cursor.execute(update,values)
+            self.connection.commit()
+        except ms.Error as err:
+            return (1,err.msg)
+
+        # Then UPDATE MasterRides by decrementing seat count for given ride_id 
+        msg =  self.update_seatCount(ride_id)
+        if msg == True: return (0,True)
+        else: return (0,msg)
+
+    def update_seatCount(self,ride_id):
+        &#34;&#34;&#34;
+            Decrements seat count for given ride id
+
+            Parameters
+            -----------
+            ride_id: an integer describing a unique ride 
+        &#34;&#34;&#34;
+
+        update = (
+            &#34;UPDATE MasterRides SET seats = seats-1 WHERE ride_id = %s &#34;
+        )
+
+        values = (ride_id,)
+
+        try:
+            self.cursor.execute(update,values)
             self.connection.commit()
             return True
-        except:
-            return False
+        except ms.Error as err:
+            return err.msg
+    
+    def deny_ride(self, ride_id, user):
+        &#34;&#34;&#34;
+            Changes status of rider from PENDING-&gt;DENIED
+            
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
 
-    def find_rides(self, params:dict) -&gt; dict:
+            user: currently logged in username 
+        &#34;&#34;&#34;
+
+        update = (
+            &#34;UPDATE Riders SET status = &#39;DENIED&#39; WHERE ride_id = %s AND username = %s &#34;
+        )
+
+        values = (ride_id,user)
+
+        try:
+            self.cursor.execute(update,values)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            return (err.msg)
+    
+    def cleanup_rides(self):
+        &#34;&#34;&#34;
+        Removes all entries from MasterRides with trip start dates that occur before current date  
+
+
+        &#34;&#34;&#34;
+        queryA = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 0&#34;&#34;&#34;)
+        queryB = (&#34;&#34;&#34;DELETE FROM MasterRides WHERE date &lt; curdate()&#34;&#34;&#34;)
+        queryC = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 1&#34;&#34;&#34;)
+        
+
+        try:
+            self.cursor.execute(queryA)
+            self.cursor.execute(queryB)
+            self.cursor.execute(queryC)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            # Error code for attempting an unsafe update 
+            if err.errno == 1175:
+                return err.msg
+            else: return err.msg
+
+    def delete_riders(self):
+        &#34;&#34;&#34;
+        Removes all entries from Rides
+
+
+        &#34;&#34;&#34;
+        queryA = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 0&#34;&#34;&#34;)
+        queryB = (&#34;&#34;&#34;DELETE FROM Riders&#34;&#34;&#34;)
+        queryC = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 1&#34;&#34;&#34;)
+        
+
+        try:
+            self.cursor.execute(queryA)
+            self.cursor.execute(queryB)
+            self.cursor.execute(queryC)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            # Error code for attempting an unsafe update 
+            if err.errno == 1175:
+                return err.msg
+            else: return err.msg
+
+
+    
+    def find_rides(self, params) -&gt; dict:
         &#34;&#34;&#34;
         Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
         Returns an empty list if no rides found for the given date 
-
-        TODO: Update to handle arbitrary dict of params 
 
         Parameters
         --------
@@ -194,28 +405,147 @@ class DatabaseHandler:
         params : dict
             The user-specified set of params on which to query for
         &#34;&#34;&#34;
-        query= (
-            &#34;SELECT * FROM Rides WHERE date = %s&#34;
+        
+        query = (
+            &#34;&#34;&#34;SELECT *, 
+                (
+                3959 * acos (
+                cos ( radians(%(fromLat)s) )
+                * cos( radians( fromLat ) )
+                * cos( radians( fromLng ) - radians(%(fromLng)s))
+                + sin ( radians(%(fromLat)s) )
+                * sin( radians( fromLat ) ))
+                ) AS fromDistance,
+                (
+                3959 * acos (
+                cos ( radians(%(toLat)s) )
+                * cos( radians( toLat ) )
+                * cos( radians( toLng ) - radians(%(toLng)s))
+                + sin ( radians(%(toLat)s) )
+                * sin( radians( toLat ) ))
+                ) AS toDistance,
+                DATEDIFF(date, %(date)s) AS timeDelta
+            FROM MasterRides
+            HAVING fromDistance &lt; 20 AND toDistance &lt; 20 AND timeDelta &gt;= 0
+            ORDER BY timeDelta, fromDistance, toDistance
+            LIMIT 0 , 20&#34;&#34;&#34;
         )
-
+        
         try:
-            self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+            self.cursor.execute(query, params)     # must pass params as tuples, hence (x,) format
             rows = self.cursor.fetchall()
-        except:
-            return []
+        except ms.Error as err:
+            return err.msg
 
         # Now convert SQL output into JSON for frontend 
         results = []
-        headers = [ x[0] for x in self.cursor.description]   # grab column names
+        headers = [x[0] for x in self.cursor.description]   # grab column names
 
         for record in rows:
             results.append(dict(zip(headers,record)))
         
-        # NOTE: &#39;date&#39; return as datetime.date object
-        # TODO: So &#39;2015-9-22&#39; will come back as datetime.date(2015,9,22) so convert prior to displaying
-        return jsonify(results)
+
+        return self.format_results(results)
+    
+    def format_results(self, results):
+        &#34;&#34;&#34;
+            Formats date time of SQL output 
+        &#34;&#34;&#34;
+        #separates datetime objects into date and time key values
+        for result in results:
+            dtime = result[&#39;date&#39;]
+            result.pop(&#39;date&#39;)
+            result[&#39;date&#39;] = dtime.strftime(&#39;%Y-%m-%d&#39;)
+            result[&#39;time&#39;] = dtime.strftime(&#39;%H:%M:%S&#39;)
         
-    </code></pre>
+        return results
+
+    def myrides(self, username):
+        &#34;&#34;&#34;
+            Displays all rides associated with given username 
+
+            Parameters
+            ----------
+            username: the currently logged in username 
+        &#34;&#34;&#34;
+        # First try to grab all riders that are associated with current driver&#39;s rides 
+        driver_query = (
+            &#34;&#34;&#34;SELECT ride_id, username, status FROM Riders
+                WHERE ride_id IN (
+                SELECT ride_id FROM MasterRides
+                WHERE driver_username = %s)
+                AND is_driver = 0&#34;&#34;&#34;
+        )
+
+        value = (username,)
+        
+        try:
+            self.cursor.execute(driver_query, value)     # must pass params as tuples, hence (x,) format
+            driver_rows = self.cursor.fetchall()
+        except:
+            return &#34;Failed to execute my rides querys&#34;
+
+        # Convert data into format for frontend
+        driver_results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in driver_rows:
+            driver_results.append(dict(zip(headers,record)))
+
+        # Then execute the query for riders
+
+        rider_query = (
+            &#34;&#34;&#34;SELECT * FROM MasterRides 
+                INNER JOIN Riders ON
+                MasterRides.ride_id=Riders.ride_id
+                WHERE Riders.username = %s
+                ORDER by MasterRides.date&#34;&#34;&#34;
+        )
+
+        self.cursor.execute(rider_query, value)
+        rider_rows = self.cursor.fetchall()
+        
+        # Else convert SQL output into dict for frontend 
+        rider_results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rider_rows:
+            rider_results.append(dict(zip(headers,record)))
+        
+        return {&#39;my_passengers&#39;: driver_results, &#39;rides i am part of&#39;: rider_results}
+
+    
+
+# params = {&#39;from&#39;:&#39;Area 51, NV, USA&#39;, &#39;to&#39;:&#39;Area 51, NV, USA&#39;, &#39;fromLat&#39;: &#39;37.2431&#39;, &#39;fromLng&#39;: &#39;-115.793&#39;, 
+#  &#39;datetime&#39;:&#39;2021-12-12 12:00:00&#39;,&#39;toLat&#39;: &#39;34.0195&#39;, &#39;toLng&#39;: &#39;-118.491&#39;, &#39;price&#39;:&#39;12&#39;, &#39;seats&#39;:&#39;5&#39;, &#39;make&#39;:&#39;Toy&#39;,
+#  &#39;model&#39;:&#39;woo&#39;, &#39;plate&#39;:&#39;SDFSADF&#39;, &#39;driver&#39;:&#39;kuroodi&#39;}
+
+# test_config = {
+#     &#39;user&#39;: &#39;SideRideProject&#39;,
+#     &#39;password&#39;: &#39;SideRideProject130*&#39;,
+#     &#39;host&#39;: &#39;database-side-ride-project.ch9vjbv.oh8tk.us-east-2.rds.amazonaws.com&#39;,
+#     &#39;database&#39;: &#39;SideRideSchemaTest&#39;,
+#     &#39;raise_on_warnings&#39;: True
+# }
+db_handle = Database()
+y = db_handle.connect_to_db()
+
+if y == CONN_FAILURE:
+    print(&#34;failed to connect&#34;)
+
+# print(db_handle.accept_ride(&#39;81&#39;,&#39;kuroodi&#39;))
+# print(db_handle.create_ride(Ride(params)))
+# print(db_handle.update_seatCount(&#39;22&#39;))
+
+# print(db_handle.find_rides(params))
+
+
+
+# values = {&#39;id&#39;:&#39;1&#39;, &#39;seats&#39;: &#34;5&#34;, &#39;to&#39;: &#34;Los Angeles&#34;}
+
+# x = db_handle.find_rides(params)
+
+# print(x)</code></pre>
 </details>
 </section>
 <section>
@@ -227,8 +557,8 @@ class DatabaseHandler:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="DB_manager.DatabaseHandler"><code class="flex name class">
-<span>class <span class="ident">DatabaseHandler</span></span>
+<dt id="DB_manager.Database"><code class="flex name class">
+<span>class <span class="ident">Database</span></span>
 <span>(</span><span>config={'user': 'SideRideProject', 'password': 'SideRideProject130*', 'host': 'database-side-ride-project.ch9vjbvoh8tk.us-east-2.rds.amazonaws.com', 'database': 'SideRideSchema', 'raise_on_warnings': True})</span>
 </code></dt>
 <dd>
@@ -247,12 +577,30 @@ class DatabaseHandler:
 returns the handle for the connected instance of the database</p>
 <p>connect_to_db()
 tries to establish a connection to the database using supplied config file</p>
-<p>add_ride(id, start, stop, date)
+<p>create_ride(params)
 adds an entry to the DB signifying the new ride with the given params </p>
-<p>delete_ride(id)
-removes the unique ride from the system </p>
-<p>find_rides_by_date(date)
-queries DB for rides matching given date and returns results in JSON format for frontend </p>
+<p>find_rides_(params)
+serves user list of rides meeting supplied params </p>
+<p>add_driver()
+logs new driver into backend table </p>
+<p>add_rider()
+logs new rider into backend table (called when user requests to book a seat in a ride)</p>
+<p>accept_ride()
+sets user's status for ride to ACCEPTED</p>
+<p>deny_ride()
+sets user's status for ride to DENIED</p>
+<p>update_seatCount()
+decrement seat count for given ride if possible</p>
+<p>cleanupRides()
+prune all rides that start before the current date </p>
+<p>delete_riders()
+removes all entries from Riders table</p>
+<p>def find_rides()
+finds all rides matching given search parameters</p>
+<p>def format_results()
+formats SQL output into frotend-friendly form </p>
+<p>def myrides()
+finds all rides for current user (both driving and riding)</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>config</code></strong> :&ensp;<code>dict</code></dt>
@@ -267,7 +615,7 @@ If none specified, defaults to a pre-tested config in order to connect to a mySQ
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class DatabaseHandler:
+<pre><code class="python">class Database:
     &#34;&#34;&#34;
     A class used to interact with the backend database and serve results to the frontend
 
@@ -292,18 +640,45 @@ If none specified, defaults to a pre-tested config in order to connect to a mySQ
     connect_to_db()
         tries to establish a connection to the database using supplied config file
     
-    add_ride(id, start, stop, date)
+    create_ride(params)
         adds an entry to the DB signifying the new ride with the given params 
+        
+    find_rides_(params)
+        serves user list of rides meeting supplied params 
     
-    delete_ride(id)
-        removes the unique ride from the system 
+    add_driver()
+        logs new driver into backend table 
+
+    add_rider()
+        logs new rider into backend table (called when user requests to book a seat in a ride)
     
-    find_rides_by_date(date)
-        queries DB for rides matching given date and returns results in JSON format for frontend 
+    accept_ride()
+        sets user&#39;s status for ride to ACCEPTED
+
+    deny_ride()
+        sets user&#39;s status for ride to DENIED
+    
+    update_seatCount()
+        decrement seat count for given ride if possible
+    
+    cleanupRides()
+        prune all rides that start before the current date 
+    
+    delete_riders()
+        removes all entries from Riders table
+    
+    def find_rides()
+        finds all rides matching given search parameters
+
+    def format_results()
+        formats SQL output into frotend-friendly form 
+    
+    def myrides()
+        finds all rides for current user (both driving and riding)
     
     &#34;&#34;&#34;
-    
-    def __init__(self, config=default_config) -&gt; None:
+    #get rid of return none
+    def __init__(self, config=default_config):
         &#34;&#34;&#34;
         Parameters
         ----------
@@ -342,76 +717,257 @@ If none specified, defaults to a pre-tested config in order to connect to a mySQ
         except:
             return CONN_FAILURE
     
-    def add_ride(self, id:str, start:str, stop:str, date:str) -&gt; bool:
+    def create_ride(self, ride:Ride) -&gt; bool:
         &#34;&#34;&#34;
-        Adds the specified ride to the Rides table in the backend DB
+        Creates the specified ride and adds it to the MasterRides table in the backend DB
 
         Returns True if ride was succesfully added, False if not 
 
         Parameters
-        --------
-
-        id : str
-            A unique id that identifies the Driver object responsible for this ride 
+        -------- 
         
-        start : str
-            The starting location for the trip
-        
-        stop : str
-            The ending location for the trip
-        
-        date : 
-            The date (YYYY-MM-DD) for which the trip is scheduled
+        ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
 
         &#34;&#34;&#34;
+
+        params = ride.getAll()
+        
         insert_stmt = (
-            &#34;INSERT INTO Rides (driver_id, start, stop, date) &#34;
+            &#34;INSERT INTO MasterRides &#34;
+            &#34;VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s)&#34;
+        )
+        
+        values = (
+            params[&#39;driver&#39;], params[&#39;from&#39;], params[&#39;to&#39;], params[&#39;fromLat&#39;], params[&#39;fromLng&#39;],
+            params[&#39;make&#39;], params[&#39;plate&#39;], params[&#39;datetime&#39;], 
+            params[&#39;price&#39;], params[&#39;seats&#39;], params[&#39;model&#39;], params[&#39;toLat&#39;], params[&#39;toLng&#39;]
+            )
+        
+        # This catches improper insertions 
+        try:
+            self.cursor.execute(insert_stmt,values)
+            id = self.cursor.lastrowid
+            ride.set_ride_id(id)
+            self.connection.commit()
+            return True
+            #GET RID OF THIS LINE AT 130
+        except ms.Error as err:
+            return err.msg
+    
+    def add_driver(self, ride:Ride) -&gt; bool:
+        &#34;&#34;&#34;
+            Adds the driver as a &#34;user of the ride&#34; to the secondary Riders table with following schema:
+            
+            ride_id | username | status | is_driver 
+
+            Returns True on success, False on failure. 
+
+            Parameters
+            -------- 
+        
+            ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
+        &#34;&#34;&#34;
+        params = ride.getAll()
+        id = ride.get_ride_id()
+        insert_stmt = (
+            &#34;INSERT INTO Riders &#34;
             &#34;VALUES (%s, %s, %s, %s)&#34;
         )
         
-        params = (id, start, stop, date)
-
+        values = (
+            id, params[&#39;driver&#39;], &#39;ACCEPTED&#39;, True
+            )
+        
         # This catches improper insertions 
         try:
-            self.cursor.execute(insert_stmt,params)
+            self.cursor.execute(insert_stmt,values)
             self.connection.commit()
             return True
-        except:
-            self.cursor.fetchwarnings()
-            return False
-    
-    def delete_ride(self, id:str) -&gt; bool:
+        except ms.Error as err:
+            return err.msg
+
+    def add_rider(self, ride_id, rider_username):
         &#34;&#34;&#34;
-        Removes the given ride from the Rides table 
+            Called from the &#34;book seat&#34; button, add the user to the requested ride 
 
-        Returns True upon successful deletion, False otherwise 
+            Takes in the ride_id and username, adds entry into Riders table
 
-        Parameters
-        ----------
+            Returns True on success, False on failure 
 
-        id : str
-            The unique identifier for this ride 
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
+
+            rider_username: currently logged in username 
 
         &#34;&#34;&#34;
-        query = (
-            &#34; DELETE FROM Rides WHERE driver_id = %s&#34;
+        # First check that this rider is not already part of the specific ride 
+        # Return False right away if they are 
+        # Otherwise add entry 
+
+        insert_stmt = (
+            &#34;INSERT INTO Riders &#34;
+            &#34;VALUES (%s, %s, %s, %s)&#34;
         )
-        params = (id,)
+        
+        values = (
+            ride_id, rider_username, &#39;PENDING&#39;, False
+            )
+        
+        try:
+            self.cursor.execute(insert_stmt,values)
+            self.connection.commit()
+            return (0, &#34;Updated ride with new rider&#34;)
+        except ms.Error as err:
+            # Code 1062 = failed insertion due to duplicate primary key
+            if err.errno == 1062: return (1062,err.msg)
+
+    def accept_ride(self, ride_id, user):
+        &#34;&#34;&#34;
+            Changes status of rider from PENDING-&gt;ACCEPTED
+            Decrement seat count for the ride by 1 
+
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
+
+            user: currently logged in username 
+
+        &#34;&#34;&#34;
+        # First check if the ride has seats left, return false right away if it doesn&#39;t
+
+        query = (
+            &#34;SELECT seats FROM MasterRides WHERE ride_id = %s &#34;
+        )
+        i = (ride_id,)
+        self.cursor.execute(query,i)
+        rows = self.cursor.fetchall()
+        results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rows:
+            results.append(dict(zip(headers,record)))
+        
+        results = results[0]
+        if results[&#39;seats&#39;] &lt; 1:
+            return (1, &#34;No space left in ride&#34;)
+
+        update = (
+            &#34;UPDATE Riders SET status = &#39;ACCEPTED&#39; WHERE ride_id = %s AND username = %s &#34;
+        )
+
+        values = (ride_id,user)
 
         try:
-            self.cursor.execute(query,params)
+            self.cursor.execute(update,values)
+            self.connection.commit()
+        except ms.Error as err:
+            return (1,err.msg)
+
+        # Then UPDATE MasterRides by decrementing seat count for given ride_id 
+        msg =  self.update_seatCount(ride_id)
+        if msg == True: return (0,True)
+        else: return (0,msg)
+
+    def update_seatCount(self,ride_id):
+        &#34;&#34;&#34;
+            Decrements seat count for given ride id
+
+            Parameters
+            -----------
+            ride_id: an integer describing a unique ride 
+        &#34;&#34;&#34;
+
+        update = (
+            &#34;UPDATE MasterRides SET seats = seats-1 WHERE ride_id = %s &#34;
+        )
+
+        values = (ride_id,)
+
+        try:
+            self.cursor.execute(update,values)
             self.connection.commit()
             return True
-        except:
-            return False
+        except ms.Error as err:
+            return err.msg
+    
+    def deny_ride(self, ride_id, user):
+        &#34;&#34;&#34;
+            Changes status of rider from PENDING-&gt;DENIED
+            
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
 
-    def find_rides(self, params:dict) -&gt; dict:
+            user: currently logged in username 
+        &#34;&#34;&#34;
+
+        update = (
+            &#34;UPDATE Riders SET status = &#39;DENIED&#39; WHERE ride_id = %s AND username = %s &#34;
+        )
+
+        values = (ride_id,user)
+
+        try:
+            self.cursor.execute(update,values)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            return (err.msg)
+    
+    def cleanup_rides(self):
+        &#34;&#34;&#34;
+        Removes all entries from MasterRides with trip start dates that occur before current date  
+
+
+        &#34;&#34;&#34;
+        queryA = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 0&#34;&#34;&#34;)
+        queryB = (&#34;&#34;&#34;DELETE FROM MasterRides WHERE date &lt; curdate()&#34;&#34;&#34;)
+        queryC = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 1&#34;&#34;&#34;)
+        
+
+        try:
+            self.cursor.execute(queryA)
+            self.cursor.execute(queryB)
+            self.cursor.execute(queryC)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            # Error code for attempting an unsafe update 
+            if err.errno == 1175:
+                return err.msg
+            else: return err.msg
+
+    def delete_riders(self):
+        &#34;&#34;&#34;
+        Removes all entries from Rides
+
+
+        &#34;&#34;&#34;
+        queryA = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 0&#34;&#34;&#34;)
+        queryB = (&#34;&#34;&#34;DELETE FROM Riders&#34;&#34;&#34;)
+        queryC = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 1&#34;&#34;&#34;)
+        
+
+        try:
+            self.cursor.execute(queryA)
+            self.cursor.execute(queryB)
+            self.cursor.execute(queryC)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            # Error code for attempting an unsafe update 
+            if err.errno == 1175:
+                return err.msg
+            else: return err.msg
+
+
+    
+    def find_rides(self, params) -&gt; dict:
         &#34;&#34;&#34;
         Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
         Returns an empty list if no rides found for the given date 
-
-        TODO: Update to handle arbitrary dict of params 
 
         Parameters
         --------
@@ -419,90 +975,317 @@ If none specified, defaults to a pre-tested config in order to connect to a mySQ
         params : dict
             The user-specified set of params on which to query for
         &#34;&#34;&#34;
-        query= (
-            &#34;SELECT * FROM Rides WHERE date = %s&#34;
+        
+        query = (
+            &#34;&#34;&#34;SELECT *, 
+                (
+                3959 * acos (
+                cos ( radians(%(fromLat)s) )
+                * cos( radians( fromLat ) )
+                * cos( radians( fromLng ) - radians(%(fromLng)s))
+                + sin ( radians(%(fromLat)s) )
+                * sin( radians( fromLat ) ))
+                ) AS fromDistance,
+                (
+                3959 * acos (
+                cos ( radians(%(toLat)s) )
+                * cos( radians( toLat ) )
+                * cos( radians( toLng ) - radians(%(toLng)s))
+                + sin ( radians(%(toLat)s) )
+                * sin( radians( toLat ) ))
+                ) AS toDistance,
+                DATEDIFF(date, %(date)s) AS timeDelta
+            FROM MasterRides
+            HAVING fromDistance &lt; 20 AND toDistance &lt; 20 AND timeDelta &gt;= 0
+            ORDER BY timeDelta, fromDistance, toDistance
+            LIMIT 0 , 20&#34;&#34;&#34;
         )
-
+        
         try:
-            self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+            self.cursor.execute(query, params)     # must pass params as tuples, hence (x,) format
             rows = self.cursor.fetchall()
-        except:
-            return []
+        except ms.Error as err:
+            return err.msg
 
         # Now convert SQL output into JSON for frontend 
         results = []
-        headers = [ x[0] for x in self.cursor.description]   # grab column names
+        headers = [x[0] for x in self.cursor.description]   # grab column names
 
         for record in rows:
             results.append(dict(zip(headers,record)))
         
-        # NOTE: &#39;date&#39; return as datetime.date object
-        # TODO: So &#39;2015-9-22&#39; will come back as datetime.date(2015,9,22) so convert prior to displaying
-        return jsonify(results)</code></pre>
+
+        return self.format_results(results)
+    
+    def format_results(self, results):
+        &#34;&#34;&#34;
+            Formats date time of SQL output 
+        &#34;&#34;&#34;
+        #separates datetime objects into date and time key values
+        for result in results:
+            dtime = result[&#39;date&#39;]
+            result.pop(&#39;date&#39;)
+            result[&#39;date&#39;] = dtime.strftime(&#39;%Y-%m-%d&#39;)
+            result[&#39;time&#39;] = dtime.strftime(&#39;%H:%M:%S&#39;)
+        
+        return results
+
+    def myrides(self, username):
+        &#34;&#34;&#34;
+            Displays all rides associated with given username 
+
+            Parameters
+            ----------
+            username: the currently logged in username 
+        &#34;&#34;&#34;
+        # First try to grab all riders that are associated with current driver&#39;s rides 
+        driver_query = (
+            &#34;&#34;&#34;SELECT ride_id, username, status FROM Riders
+                WHERE ride_id IN (
+                SELECT ride_id FROM MasterRides
+                WHERE driver_username = %s)
+                AND is_driver = 0&#34;&#34;&#34;
+        )
+
+        value = (username,)
+        
+        try:
+            self.cursor.execute(driver_query, value)     # must pass params as tuples, hence (x,) format
+            driver_rows = self.cursor.fetchall()
+        except:
+            return &#34;Failed to execute my rides querys&#34;
+
+        # Convert data into format for frontend
+        driver_results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in driver_rows:
+            driver_results.append(dict(zip(headers,record)))
+
+        # Then execute the query for riders
+
+        rider_query = (
+            &#34;&#34;&#34;SELECT * FROM MasterRides 
+                INNER JOIN Riders ON
+                MasterRides.ride_id=Riders.ride_id
+                WHERE Riders.username = %s
+                ORDER by MasterRides.date&#34;&#34;&#34;
+        )
+
+        self.cursor.execute(rider_query, value)
+        rider_rows = self.cursor.fetchall()
+        
+        # Else convert SQL output into dict for frontend 
+        rider_results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rider_rows:
+            rider_results.append(dict(zip(headers,record)))
+        
+        return {&#39;my_passengers&#39;: driver_results, &#39;rides i am part of&#39;: rider_results}</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="DB_manager.DatabaseHandler.add_ride"><code class="name flex">
-<span>def <span class="ident">add_ride</span></span>(<span>self, id: str, start: str, stop: str, date: str) ‑> bool</span>
+<dt id="DB_manager.Database.accept_ride"><code class="name flex">
+<span>def <span class="ident">accept_ride</span></span>(<span>self, ride_id, user)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Adds the specified ride to the Rides table in the backend DB</p>
-<p>Returns True if ride was succesfully added, False if not </p>
+<div class="desc"><p>Changes status of rider from PENDING-&gt;ACCEPTED
+Decrement seat count for the ride by 1 </p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>A unique id that identifies the Driver object responsible for this ride</dd>
-<dt><strong><code>start</code></strong> :&ensp;<code>str</code></dt>
-<dd>The starting location for the trip</dd>
-<dt><strong><code>stop</code></strong> :&ensp;<code>str</code></dt>
-<dd>The ending location for the trip</dd>
-<dt><strong><code>date</code></strong></dt>
-<dd>The date (YYYY-MM-DD) for which the trip is scheduled</dd>
+<dt><strong><code>ride_id</code></strong> :&ensp;<code>an integer describing a unique ride </code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>user</code></strong> :&ensp;<code>currently logged in username</code></dt>
+<dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_ride(self, id:str, start:str, stop:str, date:str) -&gt; bool:
+<pre><code class="python">def accept_ride(self, ride_id, user):
     &#34;&#34;&#34;
-    Adds the specified ride to the Rides table in the backend DB
+        Changes status of rider from PENDING-&gt;ACCEPTED
+        Decrement seat count for the ride by 1 
 
-    Returns True if ride was succesfully added, False if not 
+        Parameters
+        --------
+        ride_id: an integer describing a unique ride 
 
-    Parameters
-    --------
-
-    id : str
-        A unique id that identifies the Driver object responsible for this ride 
-    
-    start : str
-        The starting location for the trip
-    
-    stop : str
-        The ending location for the trip
-    
-    date : 
-        The date (YYYY-MM-DD) for which the trip is scheduled
+        user: currently logged in username 
 
     &#34;&#34;&#34;
+    # First check if the ride has seats left, return false right away if it doesn&#39;t
+
+    query = (
+        &#34;SELECT seats FROM MasterRides WHERE ride_id = %s &#34;
+    )
+    i = (ride_id,)
+    self.cursor.execute(query,i)
+    rows = self.cursor.fetchall()
+    results = []
+    headers = [x[0] for x in self.cursor.description]   # grab column names
+
+    for record in rows:
+        results.append(dict(zip(headers,record)))
+    
+    results = results[0]
+    if results[&#39;seats&#39;] &lt; 1:
+        return (1, &#34;No space left in ride&#34;)
+
+    update = (
+        &#34;UPDATE Riders SET status = &#39;ACCEPTED&#39; WHERE ride_id = %s AND username = %s &#34;
+    )
+
+    values = (ride_id,user)
+
+    try:
+        self.cursor.execute(update,values)
+        self.connection.commit()
+    except ms.Error as err:
+        return (1,err.msg)
+
+    # Then UPDATE MasterRides by decrementing seat count for given ride_id 
+    msg =  self.update_seatCount(ride_id)
+    if msg == True: return (0,True)
+    else: return (0,msg)</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.add_driver"><code class="name flex">
+<span>def <span class="ident">add_driver</span></span>(<span>self, ride: Ride_manager.Ride) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds the driver as a "user of the ride" to the secondary Riders table with following schema:</p>
+<p>ride_id | username | status | is_driver </p>
+<p>Returns True on success, False on failure. </p>
+<h2 id="parameters">Parameters</h2>
+<p>ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_driver(self, ride:Ride) -&gt; bool:
+    &#34;&#34;&#34;
+        Adds the driver as a &#34;user of the ride&#34; to the secondary Riders table with following schema:
+        
+        ride_id | username | status | is_driver 
+
+        Returns True on success, False on failure. 
+
+        Parameters
+        -------- 
+    
+        ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
+    &#34;&#34;&#34;
+    params = ride.getAll()
+    id = ride.get_ride_id()
     insert_stmt = (
-        &#34;INSERT INTO Rides (driver_id, start, stop, date) &#34;
+        &#34;INSERT INTO Riders &#34;
         &#34;VALUES (%s, %s, %s, %s)&#34;
     )
     
-    params = (id, start, stop, date)
-
+    values = (
+        id, params[&#39;driver&#39;], &#39;ACCEPTED&#39;, True
+        )
+    
     # This catches improper insertions 
     try:
-        self.cursor.execute(insert_stmt,params)
+        self.cursor.execute(insert_stmt,values)
         self.connection.commit()
         return True
-    except:
-        self.cursor.fetchwarnings()
-        return False</code></pre>
+    except ms.Error as err:
+        return err.msg</code></pre>
 </details>
 </dd>
-<dt id="DB_manager.DatabaseHandler.connect_to_db"><code class="name flex">
+<dt id="DB_manager.Database.add_rider"><code class="name flex">
+<span>def <span class="ident">add_rider</span></span>(<span>self, ride_id, rider_username)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called from the "book seat" button, add the user to the requested ride </p>
+<p>Takes in the ride_id and username, adds entry into Riders table</p>
+<p>Returns True on success, False on failure </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ride_id</code></strong> :&ensp;<code>an integer describing a unique ride </code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>rider_username</code></strong> :&ensp;<code>currently logged in username</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_rider(self, ride_id, rider_username):
+    &#34;&#34;&#34;
+        Called from the &#34;book seat&#34; button, add the user to the requested ride 
+
+        Takes in the ride_id and username, adds entry into Riders table
+
+        Returns True on success, False on failure 
+
+        Parameters
+        --------
+        ride_id: an integer describing a unique ride 
+
+        rider_username: currently logged in username 
+
+    &#34;&#34;&#34;
+    # First check that this rider is not already part of the specific ride 
+    # Return False right away if they are 
+    # Otherwise add entry 
+
+    insert_stmt = (
+        &#34;INSERT INTO Riders &#34;
+        &#34;VALUES (%s, %s, %s, %s)&#34;
+    )
+    
+    values = (
+        ride_id, rider_username, &#39;PENDING&#39;, False
+        )
+    
+    try:
+        self.cursor.execute(insert_stmt,values)
+        self.connection.commit()
+        return (0, &#34;Updated ride with new rider&#34;)
+    except ms.Error as err:
+        # Code 1062 = failed insertion due to duplicate primary key
+        if err.errno == 1062: return (1062,err.msg)</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.cleanup_rides"><code class="name flex">
+<span>def <span class="ident">cleanup_rides</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Removes all entries from MasterRides with trip start dates that occur before current date</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cleanup_rides(self):
+    &#34;&#34;&#34;
+    Removes all entries from MasterRides with trip start dates that occur before current date  
+
+
+    &#34;&#34;&#34;
+    queryA = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 0&#34;&#34;&#34;)
+    queryB = (&#34;&#34;&#34;DELETE FROM MasterRides WHERE date &lt; curdate()&#34;&#34;&#34;)
+    queryC = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 1&#34;&#34;&#34;)
+    
+
+    try:
+        self.cursor.execute(queryA)
+        self.cursor.execute(queryB)
+        self.cursor.execute(queryC)
+        self.connection.commit()
+        return True
+    except ms.Error as err:
+        # Error code for attempting an unsafe update 
+        if err.errno == 1175:
+            return err.msg
+        else: return err.msg</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.connect_to_db"><code class="name flex">
 <span>def <span class="ident">connect_to_db</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
@@ -528,55 +1311,137 @@ for the connection to user </p>
         return CONN_FAILURE</code></pre>
 </details>
 </dd>
-<dt id="DB_manager.DatabaseHandler.delete_ride"><code class="name flex">
-<span>def <span class="ident">delete_ride</span></span>(<span>self, id: str) ‑> bool</span>
+<dt id="DB_manager.Database.create_ride"><code class="name flex">
+<span>def <span class="ident">create_ride</span></span>(<span>self, ride: Ride_manager.Ride) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Removes the given ride from the Rides table </p>
-<p>Returns True upon successful deletion, False otherwise </p>
+<div class="desc"><p>Creates the specified ride and adds it to the MasterRides table in the backend DB</p>
+<p>Returns True if ride was succesfully added, False if not </p>
+<h2 id="parameters">Parameters</h2>
+<p>ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_ride(self, ride:Ride) -&gt; bool:
+    &#34;&#34;&#34;
+    Creates the specified ride and adds it to the MasterRides table in the backend DB
+
+    Returns True if ride was succesfully added, False if not 
+
+    Parameters
+    -------- 
+    
+    ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
+
+    &#34;&#34;&#34;
+
+    params = ride.getAll()
+    
+    insert_stmt = (
+        &#34;INSERT INTO MasterRides &#34;
+        &#34;VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s)&#34;
+    )
+    
+    values = (
+        params[&#39;driver&#39;], params[&#39;from&#39;], params[&#39;to&#39;], params[&#39;fromLat&#39;], params[&#39;fromLng&#39;],
+        params[&#39;make&#39;], params[&#39;plate&#39;], params[&#39;datetime&#39;], 
+        params[&#39;price&#39;], params[&#39;seats&#39;], params[&#39;model&#39;], params[&#39;toLat&#39;], params[&#39;toLng&#39;]
+        )
+    
+    # This catches improper insertions 
+    try:
+        self.cursor.execute(insert_stmt,values)
+        id = self.cursor.lastrowid
+        ride.set_ride_id(id)
+        self.connection.commit()
+        return True
+        #GET RID OF THIS LINE AT 130
+    except ms.Error as err:
+        return err.msg</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.delete_riders"><code class="name flex">
+<span>def <span class="ident">delete_riders</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Removes all entries from Rides</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_riders(self):
+    &#34;&#34;&#34;
+    Removes all entries from Rides
+
+
+    &#34;&#34;&#34;
+    queryA = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 0&#34;&#34;&#34;)
+    queryB = (&#34;&#34;&#34;DELETE FROM Riders&#34;&#34;&#34;)
+    queryC = (&#34;&#34;&#34;SET SQL_SAFE_UPDATES = 1&#34;&#34;&#34;)
+    
+
+    try:
+        self.cursor.execute(queryA)
+        self.cursor.execute(queryB)
+        self.cursor.execute(queryC)
+        self.connection.commit()
+        return True
+    except ms.Error as err:
+        # Error code for attempting an unsafe update 
+        if err.errno == 1175:
+            return err.msg
+        else: return err.msg</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.deny_ride"><code class="name flex">
+<span>def <span class="ident">deny_ride</span></span>(<span>self, ride_id, user)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Changes status of rider from PENDING-&gt;DENIED</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The unique identifier for this ride</dd>
+<dt><strong><code>ride_id</code></strong> :&ensp;<code>an integer describing a unique ride </code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>user</code></strong> :&ensp;<code>currently logged in username</code></dt>
+<dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_ride(self, id:str) -&gt; bool:
+<pre><code class="python">def deny_ride(self, ride_id, user):
     &#34;&#34;&#34;
-    Removes the given ride from the Rides table 
+        Changes status of rider from PENDING-&gt;DENIED
+        
+        Parameters
+        --------
+        ride_id: an integer describing a unique ride 
 
-    Returns True upon successful deletion, False otherwise 
-
-    Parameters
-    ----------
-
-    id : str
-        The unique identifier for this ride 
-
+        user: currently logged in username 
     &#34;&#34;&#34;
-    query = (
-        &#34; DELETE FROM Rides WHERE driver_id = %s&#34;
+
+    update = (
+        &#34;UPDATE Riders SET status = &#39;DENIED&#39; WHERE ride_id = %s AND username = %s &#34;
     )
-    params = (id,)
+
+    values = (ride_id,user)
 
     try:
-        self.cursor.execute(query,params)
+        self.cursor.execute(update,values)
         self.connection.commit()
         return True
-    except:
-        return False</code></pre>
+    except ms.Error as err:
+        return (err.msg)</code></pre>
 </details>
 </dd>
-<dt id="DB_manager.DatabaseHandler.find_rides"><code class="name flex">
-<span>def <span class="ident">find_rides</span></span>(<span>self, params: dict) ‑> dict</span>
+<dt id="DB_manager.Database.find_rides"><code class="name flex">
+<span>def <span class="ident">find_rides</span></span>(<span>self, params) ‑> dict</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Currently fetches all rides that occur on the specified date from the database
 Converts result into JSON format for easy processing in front end
 Returns an empty list if no rides found for the given date </p>
-<p>TODO: Update to handle arbitrary dict of params </p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>params</code></strong> :&ensp;<code>dict</code></dt>
@@ -586,13 +1451,11 @@ Returns an empty list if no rides found for the given date </p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def find_rides(self, params:dict) -&gt; dict:
+<pre><code class="python">def find_rides(self, params) -&gt; dict:
     &#34;&#34;&#34;
     Currently fetches all rides that occur on the specified date from the database
     Converts result into JSON format for easy processing in front end
     Returns an empty list if no rides found for the given date 
-
-    TODO: Update to handle arbitrary dict of params 
 
     Parameters
     --------
@@ -600,29 +1463,73 @@ Returns an empty list if no rides found for the given date </p>
     params : dict
         The user-specified set of params on which to query for
     &#34;&#34;&#34;
-    query= (
-        &#34;SELECT * FROM Rides WHERE date = %s&#34;
+    
+    query = (
+        &#34;&#34;&#34;SELECT *, 
+            (
+            3959 * acos (
+            cos ( radians(%(fromLat)s) )
+            * cos( radians( fromLat ) )
+            * cos( radians( fromLng ) - radians(%(fromLng)s))
+            + sin ( radians(%(fromLat)s) )
+            * sin( radians( fromLat ) ))
+            ) AS fromDistance,
+            (
+            3959 * acos (
+            cos ( radians(%(toLat)s) )
+            * cos( radians( toLat ) )
+            * cos( radians( toLng ) - radians(%(toLng)s))
+            + sin ( radians(%(toLat)s) )
+            * sin( radians( toLat ) ))
+            ) AS toDistance,
+            DATEDIFF(date, %(date)s) AS timeDelta
+        FROM MasterRides
+        HAVING fromDistance &lt; 20 AND toDistance &lt; 20 AND timeDelta &gt;= 0
+        ORDER BY timeDelta, fromDistance, toDistance
+        LIMIT 0 , 20&#34;&#34;&#34;
     )
-
+    
     try:
-        self.cursor.execute(query, (date,))     # must pass params as tuples, hence (x,) format
+        self.cursor.execute(query, params)     # must pass params as tuples, hence (x,) format
         rows = self.cursor.fetchall()
-    except:
-        return []
+    except ms.Error as err:
+        return err.msg
 
     # Now convert SQL output into JSON for frontend 
     results = []
-    headers = [ x[0] for x in self.cursor.description]   # grab column names
+    headers = [x[0] for x in self.cursor.description]   # grab column names
 
     for record in rows:
         results.append(dict(zip(headers,record)))
     
-    # NOTE: &#39;date&#39; return as datetime.date object
-    # TODO: So &#39;2015-9-22&#39; will come back as datetime.date(2015,9,22) so convert prior to displaying
-    return jsonify(results)</code></pre>
+
+    return self.format_results(results)</code></pre>
 </details>
 </dd>
-<dt id="DB_manager.DatabaseHandler.get_handle"><code class="name flex">
+<dt id="DB_manager.Database.format_results"><code class="name flex">
+<span>def <span class="ident">format_results</span></span>(<span>self, results)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Formats date time of SQL output</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_results(self, results):
+    &#34;&#34;&#34;
+        Formats date time of SQL output 
+    &#34;&#34;&#34;
+    #separates datetime objects into date and time key values
+    for result in results:
+        dtime = result[&#39;date&#39;]
+        result.pop(&#39;date&#39;)
+        result[&#39;date&#39;] = dtime.strftime(&#39;%Y-%m-%d&#39;)
+        result[&#39;time&#39;] = dtime.strftime(&#39;%H:%M:%S&#39;)
+    
+    return results</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.get_handle"><code class="name flex">
 <span>def <span class="ident">get_handle</span></span>(<span>self) ‑> <module 'mysql.connector' from '/usr/local/lib/python3.9/site-packages/mysql/connector/__init__.pyc'></span>
 </code></dt>
 <dd>
@@ -636,6 +1543,112 @@ Returns an empty list if no rides found for the given date </p>
     Returns handle to the DB instance 
     &#34;&#34;&#34;
     return self.connection</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.myrides"><code class="name flex">
+<span>def <span class="ident">myrides</span></span>(<span>self, username)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Displays all rides associated with given username </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>username</code></strong> :&ensp;<code>the currently logged in username</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def myrides(self, username):
+    &#34;&#34;&#34;
+        Displays all rides associated with given username 
+
+        Parameters
+        ----------
+        username: the currently logged in username 
+    &#34;&#34;&#34;
+    # First try to grab all riders that are associated with current driver&#39;s rides 
+    driver_query = (
+        &#34;&#34;&#34;SELECT ride_id, username, status FROM Riders
+            WHERE ride_id IN (
+            SELECT ride_id FROM MasterRides
+            WHERE driver_username = %s)
+            AND is_driver = 0&#34;&#34;&#34;
+    )
+
+    value = (username,)
+    
+    try:
+        self.cursor.execute(driver_query, value)     # must pass params as tuples, hence (x,) format
+        driver_rows = self.cursor.fetchall()
+    except:
+        return &#34;Failed to execute my rides querys&#34;
+
+    # Convert data into format for frontend
+    driver_results = []
+    headers = [x[0] for x in self.cursor.description]   # grab column names
+
+    for record in driver_rows:
+        driver_results.append(dict(zip(headers,record)))
+
+    # Then execute the query for riders
+
+    rider_query = (
+        &#34;&#34;&#34;SELECT * FROM MasterRides 
+            INNER JOIN Riders ON
+            MasterRides.ride_id=Riders.ride_id
+            WHERE Riders.username = %s
+            ORDER by MasterRides.date&#34;&#34;&#34;
+    )
+
+    self.cursor.execute(rider_query, value)
+    rider_rows = self.cursor.fetchall()
+    
+    # Else convert SQL output into dict for frontend 
+    rider_results = []
+    headers = [x[0] for x in self.cursor.description]   # grab column names
+
+    for record in rider_rows:
+        rider_results.append(dict(zip(headers,record)))
+    
+    return {&#39;my_passengers&#39;: driver_results, &#39;rides i am part of&#39;: rider_results}</code></pre>
+</details>
+</dd>
+<dt id="DB_manager.Database.update_seatCount"><code class="name flex">
+<span>def <span class="ident">update_seatCount</span></span>(<span>self, ride_id)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decrements seat count for given ride id</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ride_id</code></strong> :&ensp;<code>an integer describing a unique ride</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_seatCount(self,ride_id):
+    &#34;&#34;&#34;
+        Decrements seat count for given ride id
+
+        Parameters
+        -----------
+        ride_id: an integer describing a unique ride 
+    &#34;&#34;&#34;
+
+    update = (
+        &#34;UPDATE MasterRides SET seats = seats-1 WHERE ride_id = %s &#34;
+    )
+
+    values = (ride_id,)
+
+    try:
+        self.cursor.execute(update,values)
+        self.connection.commit()
+        return True
+    except ms.Error as err:
+        return err.msg</code></pre>
 </details>
 </dd>
 </dl>
@@ -652,13 +1665,21 @@ Returns an empty list if no rides found for the given date </p>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="DB_manager.DatabaseHandler" href="#DB_manager.DatabaseHandler">DatabaseHandler</a></code></h4>
-<ul class="">
-<li><code><a title="DB_manager.DatabaseHandler.add_ride" href="#DB_manager.DatabaseHandler.add_ride">add_ride</a></code></li>
-<li><code><a title="DB_manager.DatabaseHandler.connect_to_db" href="#DB_manager.DatabaseHandler.connect_to_db">connect_to_db</a></code></li>
-<li><code><a title="DB_manager.DatabaseHandler.delete_ride" href="#DB_manager.DatabaseHandler.delete_ride">delete_ride</a></code></li>
-<li><code><a title="DB_manager.DatabaseHandler.find_rides" href="#DB_manager.DatabaseHandler.find_rides">find_rides</a></code></li>
-<li><code><a title="DB_manager.DatabaseHandler.get_handle" href="#DB_manager.DatabaseHandler.get_handle">get_handle</a></code></li>
+<h4><code><a title="DB_manager.Database" href="#DB_manager.Database">Database</a></code></h4>
+<ul class="two-column">
+<li><code><a title="DB_manager.Database.accept_ride" href="#DB_manager.Database.accept_ride">accept_ride</a></code></li>
+<li><code><a title="DB_manager.Database.add_driver" href="#DB_manager.Database.add_driver">add_driver</a></code></li>
+<li><code><a title="DB_manager.Database.add_rider" href="#DB_manager.Database.add_rider">add_rider</a></code></li>
+<li><code><a title="DB_manager.Database.cleanup_rides" href="#DB_manager.Database.cleanup_rides">cleanup_rides</a></code></li>
+<li><code><a title="DB_manager.Database.connect_to_db" href="#DB_manager.Database.connect_to_db">connect_to_db</a></code></li>
+<li><code><a title="DB_manager.Database.create_ride" href="#DB_manager.Database.create_ride">create_ride</a></code></li>
+<li><code><a title="DB_manager.Database.delete_riders" href="#DB_manager.Database.delete_riders">delete_riders</a></code></li>
+<li><code><a title="DB_manager.Database.deny_ride" href="#DB_manager.Database.deny_ride">deny_ride</a></code></li>
+<li><code><a title="DB_manager.Database.find_rides" href="#DB_manager.Database.find_rides">find_rides</a></code></li>
+<li><code><a title="DB_manager.Database.format_results" href="#DB_manager.Database.format_results">format_results</a></code></li>
+<li><code><a title="DB_manager.Database.get_handle" href="#DB_manager.Database.get_handle">get_handle</a></code></li>
+<li><code><a title="DB_manager.Database.myrides" href="#DB_manager.Database.myrides">myrides</a></code></li>
+<li><code><a title="DB_manager.Database.update_seatCount" href="#DB_manager.Database.update_seatCount">update_seatCount</a></code></li>
 </ul>
 </li>
 </ul>
