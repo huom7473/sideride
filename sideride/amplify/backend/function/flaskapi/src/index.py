@@ -95,7 +95,7 @@ def bookseat():
     if errno == 1062:
         return {'FAILURE': status}
     
-    else: return {'SUCCESS': "Updated ride with new rider"}
+    else: return {'SUCCESS': status}
 
 @app.route(BASE_ROUTE + 'acceptride')
 def acceptride():
