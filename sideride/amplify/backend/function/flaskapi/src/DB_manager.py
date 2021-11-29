@@ -101,14 +101,7 @@ class Database:
         Parameters
         -------- 
         
-        from : str
-            The starting location for the trip
-        
-        to : str
-            The ending location for the trip
-        
-        date : 
-            The date, in DATETIME formate (YYYY-MM-DD HH:MM:SS) for which the trip is scheduled
+        ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
 
         """
 
@@ -136,11 +129,18 @@ class Database:
             error_msg = self.cursor._last_executed
             return False
     
-    def add_driver(self, ride:Ride):
+    def add_driver(self, ride:Ride) -> bool:
         """
-            Add the driver to the secondary Riders table with following schema:
+            Adds the driver as a "user of the ride" to the secondary Riders table with following schema:
             
             ride_id | username | status | is_driver 
+
+            Returns True on success, False on failure. 
+
+            Parameters
+            -------- 
+        
+            ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
         """
         params = ride.getAll()
         id = ride.get_ride_id()
@@ -186,6 +186,7 @@ class Database:
         try:
             self.cursor.execute(insert_stmt,values)
             self.connection.commit()
+            return (0, "Updated ride with new rider")
         except ms.Error as err:
             # Code 1062 = failed insertion due to duplicate primary key
             if err.errno == 1062: return (1062,err.msg)
@@ -195,6 +196,23 @@ class Database:
             Changes status of rider from PENDING->ACCEPTED
             Decrement seat count for the ride by 1 
         """
+        # First check if the ride has seats left, return false right away if it doesn't
+
+        query = (
+            "SELECT seats FROM MasterRides WHERE ride_id = %s "
+        )
+        i = (ride_id,)
+        self.cursor.execute(query,i)
+        rows = self.cursor.fetchall()
+        results = []
+        headers = [x[0] for x in self.cursor.description]   # grab column names
+
+        for record in rows:
+            results.append(dict(zip(headers,record)))
+        
+        results = results[0]
+        if results['seats'] < 1:
+            return (1, "No space left in ride")
 
         update = (
             "UPDATE Riders SET status = 'ACCEPTED' WHERE ride_id = %s AND username = %s "
@@ -233,7 +251,7 @@ class Database:
     
     def deny_ride(self, ride_id, user):
         """
-            Changes status of rider from PENDING->ACCEPTED
+            Changes status of rider from PENDING->DENIED
             
         """
 
@@ -246,9 +264,9 @@ class Database:
         try:
             self.cursor.execute(update,values)
             self.connection.commit()
-            return (0,)
+            return True
         except ms.Error as err:
-            return (1,err.msg)
+            return (err.msg)
     
     def cleanup_rides(self) -> None:
         """
@@ -399,12 +417,13 @@ class Database:
 #  'model':'woo', 'plate':'SDFSADF', 'driver':'kuroodi'}
 
 
-# db_handle = Database()
-# y = db_handle.connect_to_db()
+db_handle = Database()
+y = db_handle.connect_to_db()
 
-# if y == CONN_FAILURE:
-#     print("failed to connect")
+if y == CONN_FAILURE:
+    print("failed to connect")
 
+print(db_handle.accept_ride('81','kuroodi'))
 # print(db_handle.create_ride(Ride(params)))
 # print(db_handle.update_seatCount('22'))
 
