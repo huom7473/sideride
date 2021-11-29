@@ -67,7 +67,7 @@ class Results extends React.Component {
                         time: item["time"],
                         price: item["price"],
                         seats: item["seats"],
-                        distance: item["distance"],
+                        distance: item["fromDistance"],
                         history: this.props.history
                     })
                     console.log(temp_rides)
