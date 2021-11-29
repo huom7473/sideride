@@ -52,8 +52,8 @@ class Database:
         queries DB for rides matching given date and returns results in JSON format for frontend 
     
     """
-    
-    def __init__(self, config=default_config) -> None:
+    #get rid of return none
+    def __init__(self, config=default_config):
         """
         Parameters
         ----------
@@ -125,9 +125,9 @@ class Database:
             ride.set_ride_id(id)
             self.connection.commit()
             return True
-        except:
-            error_msg = self.cursor._last_executed
-            return False
+            #GET RID OF THIS LINE AT 130
+        except ms.Error as err:
+            return err.msg
     
     def add_driver(self, ride:Ride) -> bool:
         """
@@ -158,9 +158,8 @@ class Database:
             self.cursor.execute(insert_stmt,values)
             self.connection.commit()
             return True
-        except:
-            error_msg = self.cursor._last_executed
-            return False
+        except ms.Error as err:
+            return err.msg
 
     def add_rider(self, ride_id, rider_username):
         """
@@ -268,7 +267,7 @@ class Database:
         except ms.Error as err:
             return (err.msg)
     
-    def cleanup_rides(self) -> None:
+    def cleanup_rides(self):
         """
         Removes all entries from MasterRides with trip start dates that occur before current date  
 
@@ -278,6 +277,31 @@ class Database:
         """
         queryA = ("""SET SQL_SAFE_UPDATES = 0""")
         queryB = ("""DELETE FROM MasterRides WHERE date < curdate()""")
+        queryC = ("""SET SQL_SAFE_UPDATES = 1""")
+        
+
+        try:
+            self.cursor.execute(queryA)
+            self.cursor.execute(queryB)
+            self.cursor.execute(queryC)
+            self.connection.commit()
+            return True
+        except ms.Error as err:
+            # Error code for attempting an unsafe update 
+            if err.errno == 1175:
+                return err.msg
+            else: return err.msg
+
+    def delete_riders(self):
+        """
+        Removes all entries from Rides
+
+        Parameters
+        ----------
+
+        """
+        queryA = ("""SET SQL_SAFE_UPDATES = 0""")
+        queryB = ("""DELETE FROM Riders""")
         queryC = ("""SET SQL_SAFE_UPDATES = 1""")
         
 
@@ -416,14 +440,20 @@ class Database:
 #  'datetime':'2021-12-12 12:00:00','toLat': '34.0195', 'toLng': '-118.491', 'price':'12', 'seats':'5', 'make':'Toy',
 #  'model':'woo', 'plate':'SDFSADF', 'driver':'kuroodi'}
 
-
+# test_config = {
+#     'user': 'SideRideProject',
+#     'password': 'SideRideProject130*',
+#     'host': 'database-side-ride-project.ch9vjbv.oh8tk.us-east-2.rds.amazonaws.com',
+#     'database': 'SideRideSchemaTest',
+#     'raise_on_warnings': True
+# }
 db_handle = Database()
 y = db_handle.connect_to_db()
 
 if y == CONN_FAILURE:
     print("failed to connect")
 
-print(db_handle.accept_ride('81','kuroodi'))
+# print(db_handle.accept_ride('81','kuroodi'))
 # print(db_handle.create_ride(Ride(params)))
 # print(db_handle.update_seatCount('22'))
 
