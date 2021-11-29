@@ -34,37 +34,8 @@ class CreateRideMenu extends React.Component {
         let results_arr = {};
         const info = await Auth.currentUserInfo()
         this.setState({ info: info })
-        /*
-        API.get('flaskapi', '/api/findrides?fromLat=' + this.state.fromlat + '&fromLng=' +
-            this.state.fromlng + "&date=" + this.state.date).then((response) => {
-                console.log("anthony", response)
-                console.log("response:", response);
-                results_arr = response["Query results"];
-                let temp_rides = []
-                for (var i = 0; i < results_arr.length; i++) {
-                    let item = results_arr[i]
-                    temp_rides[i] = new RideEntry({
-                        id: i,
-                        from: item["from"],
-                        to: item["to"],
-                        time: item["time"],
-                        price: item["price"],
-                        seats: item["seats"],
-                        distance: item["distance"],
-                        info: "Stuff"
-                    })
-                    console.log(temp_rides)
-                }
-                this.setState({ rides: temp_rides });
-
-            })*/
-
-        //TODO: api call to backend to get associated rides, rather than dummy data below
-
 
         API.get('flaskapi', '/api/myrides?username=' + this.state.info.username).then((response) => {
-            //console.log(response);
-            //console.log(response["rides i am part of"]);
             let rides_response = response["rides i am part of"];
             let passengers_response = response["my_passengers"];
             let rides = [];
@@ -108,22 +79,6 @@ class CreateRideMenu extends React.Component {
             }
 
         });
-        /*
-                this.testing_arr = ['a', 'b']
-                let rides = [];
-                for (var i = 0; i < this.testing_arr.length; i++) {
-                    rides[i] = new RideEntry({
-                        id: i,
-                        from: "UCLA",
-                        to: this.testing_arr[i],
-                        time: 12,
-                        price: 20,
-                        seats: 4,
-                        info: "More Detailed information"
-                    });
-                }
-                this.setState({ rides: rides });*/
-
     }
 
     render() {
@@ -146,6 +101,10 @@ class RiderEntry extends React.Component {
     }
 
     render() {
+        let [weekday, day, month, year, time, zone] = this.props.time.split(" ")
+        let [hours, minutes, seconds] = time.split(":");
+        const AMPM = hours < 12 ? "AM" : "PM";
+        hours = hours > 12 ? hours - 12 : hours;
         return (
             <>
                 <Accordion.Header>
@@ -160,10 +119,13 @@ class RiderEntry extends React.Component {
                         </PlaceContainer>
                         <TimePriceContainer>
                             <div>
-                                Pickup from:
+                                Time:
                             </div>
                             <div>
-                                {this.props.time}
+                                {weekday} {day} {month} {year}
+                            </div>
+                            <div>
+                                {hours}:{minutes}&nbsp; {AMPM}
                             </div>
                             <div>
                                 ${this.props.price}
@@ -208,8 +170,6 @@ class DriverEntry extends React.Component {
     }
 
     render() {
-        //console.log("MY PASSENGERS ", this.props.passengers);
-
         let users = [];
         let my_passengers = this.props.passengers;
         for (var i = 0; i < my_passengers.length; i++) {
@@ -222,6 +182,11 @@ class DriverEntry extends React.Component {
             });
         }
         this.state = ({ users: users });
+
+        let [weekday, day, month, year, time, zone] = this.props.time.split(" ")
+        let [hours, minutes, seconds] = time.split(":");
+        const AMPM = hours < 12 ? "AM" : "PM";
+        hours = hours > 12 ? hours - 12 : hours;
 
         return (
             <>
@@ -240,7 +205,10 @@ class DriverEntry extends React.Component {
                                 Time:
                             </div>
                             <div>
-                                {this.props.time}
+                                {weekday} {day} {month} {year}
+                            </div>
+                            <div>
+                                {hours}:{minutes}&nbsp; {AMPM}
                             </div>
                             <div>
                                 ${this.props.price}
@@ -264,7 +232,6 @@ class UserEntry extends React.Component {
     }
 
     _handleApprove = (evt) => {
-        //TODO: API call to approve here
         // If current status already approved, just raise ALERT 
         // Use username + ride_id to update status from PENDING->APPROVED in Riders table
         // Then decrement seat count in MasterRides 
@@ -273,8 +240,8 @@ class UserEntry extends React.Component {
             alert("Rider has already been accepted!")
         }
         else {
-            API.get('flaskapi', '/api/acceptride?ride_id=' + this.props.ride + 
-            "&user=" + this.props.username).then((response) => console.log(response))
+            API.get('flaskapi', '/api/acceptride?ride_id=' + this.props.ride +
+                "&user=" + this.props.username).then((response) => console.log(response))
         }
     };
 
@@ -282,13 +249,11 @@ class UserEntry extends React.Component {
         if (this.props.status == 'DENIED') {
             alert("Rider has already been denied!")
         }
-
-        //TODO: API call to deny here
         // If current status already DENIED, just raise ALERT 
         // Use username+ ride_id to update status from PENDING->DENIED in Riders table
         else {
-            API.get('flaskapi', '/api/denyride?ride_id=' + this.props.ride + 
-            "&user=" + this.props.username).then((response) => console.log(response))
+            API.get('flaskapi', '/api/denyride?ride_id=' + this.props.ride +
+                "&user=" + this.props.username).then((response) => console.log(response))
         }
     };
 
@@ -342,7 +307,7 @@ const PlaceContainer = styled.div`
 `;
 
 const TimePriceContainer = styled.div`
-    width:125px;
+    width:140px;
     display:flex;
     flex-direction:column;
     justify-content:space-around;
