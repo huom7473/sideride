@@ -1,7 +1,7 @@
 import React from "react";
 import { API, Auth } from "aws-amplify";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import { AddressSearch } from "./AddressSearch";
+import AddressSearch from "./AddressSearch";
 import qs from "qs";
 
 export default class Selection extends React.Component {
