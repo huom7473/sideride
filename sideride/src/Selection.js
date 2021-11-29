@@ -122,7 +122,7 @@ export default class Selection extends React.Component {
                         </Col>
                     </Form.Group>
                 </Form>
-                <Button onClick={this._handleFindRide}>Find a Ride</Button>
+                <Button onClick={this._handleFindRide} className="mb-3">Find a Ride</Button>
             </Container>
         );
     }

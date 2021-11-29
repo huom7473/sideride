@@ -10,9 +10,9 @@ function MyRidesPage() {
     return (
         <div className="App">
             {Header()}
-            <div>
+            <Title className="mb-2">
                 My Rides
-            </div>
+            </Title>
             <div>
                 <CreateRideMenu />
             </div>
@@ -315,6 +315,17 @@ class UserEntry extends React.Component {
         );
     }
 }
+
+const Title = styled.h1`
+  display: flex;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;  
+  font-weight: lighter;
+  margin-top: 0.5em;
+  letter-spacing: 2px;
+`;
 
 const PlaceContainer = styled.div`
     margin-right:1em;
