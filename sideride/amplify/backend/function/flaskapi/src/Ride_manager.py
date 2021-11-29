@@ -28,12 +28,25 @@ class Ride:
         self.attributes['datetime'] = formatted_date
 
     def getAll(self):
+        """
+            Return all of Ride's attributes
+        """
         return self.attributes
 
     def set_ride_id(self, id):
+        """
+            Set ride_id to given value 
+
+            Parameters
+            --------
+            id: an integer describing a unique ride 
+        """
         self.ride_id = id
     
     def get_ride_id(self):
+        """
+            Get value of ride_id
+        """
         return self.ride_id
 
 
