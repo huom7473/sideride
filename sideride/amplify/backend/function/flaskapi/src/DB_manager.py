@@ -101,14 +101,7 @@ class Database:
         Parameters
         -------- 
         
-        from : str
-            The starting location for the trip
-        
-        to : str
-            The ending location for the trip
-        
-        date : 
-            The date, in DATETIME formate (YYYY-MM-DD HH:MM:SS) for which the trip is scheduled
+        ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
 
         """
 
@@ -136,11 +129,18 @@ class Database:
             error_msg = self.cursor._last_executed
             return False
     
-    def add_driver(self, ride:Ride):
+    def add_driver(self, ride:Ride) -> bool:
         """
-            Add the driver to the secondary Riders table with following schema:
+            Adds the driver as a "user of the ride" to the secondary Riders table with following schema:
             
             ride_id | username | status | is_driver 
+
+            Returns True on success, False on failure. 
+
+            Parameters
+            -------- 
+        
+            ride: A Ride object composed of parameters such as from/to locations, date, price, car, etc.
         """
         params = ride.getAll()
         id = ride.get_ride_id()
@@ -233,7 +233,7 @@ class Database:
     
     def deny_ride(self, ride_id, user):
         """
-            Changes status of rider from PENDING->ACCEPTED
+            Changes status of rider from PENDING->DENIED
             
         """
 
@@ -246,9 +246,9 @@ class Database:
         try:
             self.cursor.execute(update,values)
             self.connection.commit()
-            return (0,)
+            return True
         except ms.Error as err:
-            return (1,err.msg)
+            return (err.msg)
     
     def cleanup_rides(self) -> None:
         """
