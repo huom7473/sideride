@@ -18,3 +18,6 @@ The React frontend can be started by running npm start in the sideride directory
 The backend was created in the form of an AWS Amplify (REST) API with a Python runtime. Because of this, the contents of the backend reside in an AWS Lambda function in sideride/amplify/backend/function/flaskapi/src. The API is implemented in Python with a Flask server, which is primarily contained in index.py, which imports from relevant files in the same directory. This backend is kept updated in the AWS server through AWS Amplify CLI.
 
 To conduct tests on our backend, cd into sideride/amplify/backend/function/flaskapi and start a pipenv shell with the command ```pipenv shell```. Ensure that pytest and pytest-cov are installed with ```pipenv install pytest``` and ```pipenv install pytest-cov```. Run the tests with ```pytest src --cov=. --cov-branch```. 
+
+### Documentation
+Documentation for the DB_manager and Ride_manager modules can be found at sideride/sideride/amplify/backend/function/flaskapi/src/html
