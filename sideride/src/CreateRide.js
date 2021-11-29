@@ -4,7 +4,7 @@ import Header from "./Header";
 import { useHistory, useLocation } from "react-router"
 import { useLoadScript } from "@react-google-maps/api";
 import {Alert, Button} from "react-bootstrap";
-import { AddressSearch } from "./AddressSearch";
+import AddressSearch from "./AddressSearch";
 
 import { API } from 'aws-amplify'
 import { Auth } from 'aws-amplify';
