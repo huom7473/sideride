@@ -53,6 +53,9 @@ export class CreateRideMenu extends React.Component {
       plate: "",
       info: {},
       showAlert: false,
+      showRejectedAlert: false,
+      showSuccess: false,
+      disableButton: false,
       errored: false,
     };
   }
@@ -82,14 +85,23 @@ export class CreateRideMenu extends React.Component {
 
     if (from !== "" && to !== "" && date !== "" && time !== "" && seats !== "" && price !== "") {
       // actual call to add ride to DB 
-      API.get('flaskapi', '/api/addride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date
+      const success = API.get('flaskapi', '/api/addride?from=' + this.state.from + "&to=" + this.state.to + "&date=" + this.state.date
         + "&fromLat=" + this.state.fromCoord.lat + "&fromLng=" + this.state.fromCoord.lng
         + "&toLat=" + this.state.toCoord.lat + "&toLng=" + this.state.toCoord.lng + "&time=" + this.state.time +
         "&seats=" + this.state.seats + "&price=" + this.state.price + "&make=" + this.state.make + "&model=" +
-        this.state.model + "&plate=" + this.state.plate + "&driver=" + this.state.info.username).then((response) => console.log(response))
+        this.state.model + "&plate=" + this.state.plate + "&driver=" + this.state.info.username)
+          .then((response) => {
+              console.log(response);
+              return response.SUCCESS !== undefined;
+            })
 
-      // TODO: give user alert of succesful add rides
-        this.props.history.push('/');
+      if (success) {
+        this.setState({showSuccess: true});
+        this.setState({disableButton: true});
+        setTimeout(() => this.props.history.push('/myrides'), 1500);
+      } else {
+        this.setState({showRejectedAlert: true});
+      }
     } else {
       this.setState({showAlert: true});
     }
@@ -107,6 +119,20 @@ export class CreateRideMenu extends React.Component {
                onClose={() => {this.setState({showAlert: false})}}
                dismissible>
           Please fill in all required fields!
+        </Alert>
+        <Alert className="floating-alert position-fixed"
+               show={this.state.showRejectedAlert}
+               variant="danger"
+               onClose={() => {this.setState({showRejectedAlert: false})}}
+               dismissible>
+          Error submitting ride (backend rejected).
+        </Alert>
+        <Alert className="floating-alert position-fixed"
+               show={this.state.showSuccess}
+               variant="success"
+               onClose={() => {this.setState({showSuccess: false})}}
+               dismissible>
+          Success! Redirecting to main page...
         </Alert>
         <Container>
           <Form>
@@ -128,7 +154,7 @@ export class CreateRideMenu extends React.Component {
             <Input className="form-control" name="model" onChange={this._handleUpdate} errored={errored}></Input><br></br>
             <Label>License Plate:</Label>
             <Input className="form-control" name="plate" onChange={this._handleUpdate} errored={errored}></Input><br></br>
-            <Button type="button" onClick={this._handleSubmit}>Create Ride</Button>
+            <Button type="button" disabled={this.state.disableButton} onClick={this._handleSubmit}>Create Ride</Button>
           </Form>
         </Container>
       </>

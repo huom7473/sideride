@@ -42,7 +42,7 @@ class Results extends React.Component {
             tolat: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolat,
             tolng: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).tolng,
             date: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).date,
-            rides: []
+            rides: [null]
         };
     }
 
@@ -60,6 +60,9 @@ class Results extends React.Component {
                 let temp_rides = []
                 for (let i = 0; i < results_arr.length; i++) {
                     let item = results_arr[i]
+                    if (item === null) {
+                        continue;
+                    }
                     temp_rides[i] = new RideEntry({
                         id: item["ride_id"],
                         from: item["from"],
@@ -83,12 +86,13 @@ class Results extends React.Component {
             return <div>
                 No rides found with the specified parameters.
             </div>
+        } else if (this.state.rides.length === 1 && this.state.rides[0] === null) {
+            return <div>
+                Searching for rides...
+            </div>
         }
         return (
             <div>
-                <p>
-                    Results for rides from {this.state.fromlat}, {this.state.fromlng} on {this.state.date}
-                </p>
                 <div>
                     <Accordion defaultActiveKey="0" className="cool-accordion">
                         {this.state.rides.map((it, index) => <Accordion.Item key={index} eventKey={index}>{it.render()}</Accordion.Item>)}
@@ -110,8 +114,6 @@ class RideEntry extends React.Component {
     }
 
     _handleBookRide = (evt) => {
-        //console.log("Ride ID is ", this.props.id);
-        //console.log("Username of user is ", this.state.info.username);
         API.get('flaskapi', '/api/bookseat?id=' + this.props.id + "&user=" + this.state.info.username).then((response) => {
             console.log(response);
             this.props.history.push("/myrides");
