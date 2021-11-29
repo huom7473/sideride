@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 mysql = "*"
 aws-wsgi = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [dev-packages]
 

@@ -12,6 +12,8 @@ aws-wsgi = "*"
 flask-cors = "*"
 mysql-connector = "*"
 mysql = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.9"
