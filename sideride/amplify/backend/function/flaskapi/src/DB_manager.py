@@ -42,14 +42,41 @@ class Database:
     connect_to_db()
         tries to establish a connection to the database using supplied config file
     
-    add_ride(id, start, stop, date)
+    create_ride(params)
         adds an entry to the DB signifying the new ride with the given params 
+        
+    find_rides_(params)
+        serves user list of rides meeting supplied params 
     
-    delete_ride(id)
-        removes the unique ride from the system 
+    add_driver()
+        logs new driver into backend table 
+
+    add_rider()
+        logs new rider into backend table (called when user requests to book a seat in a ride)
     
-    find_rides_by_date(date)
-        queries DB for rides matching given date and returns results in JSON format for frontend 
+    accept_ride()
+        sets user's status for ride to ACCEPTED
+
+    deny_ride()
+        sets user's status for ride to DENIED
+    
+    update_seatCount()
+        decrement seat count for given ride if possible
+    
+    cleanupRides()
+        prune all rides that start before the current date 
+    
+    delete_riders()
+        removes all entries from Riders table
+    
+    def find_rides()
+        finds all rides matching given search parameters
+
+    def format_results()
+        formats SQL output into frotend-friendly form 
+    
+    def myrides()
+        finds all rides for current user (both driving and riding)
     
     """
     #get rid of return none
@@ -168,6 +195,13 @@ class Database:
             Takes in the ride_id and username, adds entry into Riders table
 
             Returns True on success, False on failure 
+
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
+
+            rider_username: currently logged in username 
+
         """
         # First check that this rider is not already part of the specific ride 
         # Return False right away if they are 
@@ -194,6 +228,13 @@ class Database:
         """
             Changes status of rider from PENDING->ACCEPTED
             Decrement seat count for the ride by 1 
+
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
+
+            user: currently logged in username 
+
         """
         # First check if the ride has seats left, return false right away if it doesn't
 
@@ -233,6 +274,10 @@ class Database:
     def update_seatCount(self,ride_id):
         """
             Decrements seat count for given ride id
+
+            Parameters
+            -----------
+            ride_id: an integer describing a unique ride 
         """
 
         update = (
@@ -252,6 +297,11 @@ class Database:
         """
             Changes status of rider from PENDING->DENIED
             
+            Parameters
+            --------
+            ride_id: an integer describing a unique ride 
+
+            user: currently logged in username 
         """
 
         update = (
@@ -271,8 +321,6 @@ class Database:
         """
         Removes all entries from MasterRides with trip start dates that occur before current date  
 
-        Parameters
-        ----------
 
         """
         queryA = ("""SET SQL_SAFE_UPDATES = 0""")
@@ -296,8 +344,6 @@ class Database:
         """
         Removes all entries from Rides
 
-        Parameters
-        ----------
 
         """
         queryA = ("""SET SQL_SAFE_UPDATES = 0""")
@@ -324,7 +370,6 @@ class Database:
         Currently fetches all rides that occur on the specified date from the database
         Converts result into JSON format for easy processing in front end
         Returns an empty list if no rides found for the given date 
-
 
         Parameters
         --------
@@ -375,6 +420,9 @@ class Database:
         return self.format_results(results)
     
     def format_results(self, results):
+        """
+            Formats date time of SQL output 
+        """
         #separates datetime objects into date and time key values
         for result in results:
             dtime = result['date']
@@ -387,6 +435,10 @@ class Database:
     def myrides(self, username):
         """
             Displays all rides associated with given username 
+
+            Parameters
+            ----------
+            username: the currently logged in username 
         """
         # First try to grab all riders that are associated with current driver's rides 
         driver_query = (
