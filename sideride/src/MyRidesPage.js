@@ -240,7 +240,7 @@ class UserEntry extends React.Component {
         }
         else {
             API.get('flaskapi', '/api/acceptride?ride_id=' + this.props.ride +
-                "&user=" + this.props.username).then((response) => response.SUCCESS && alert("Accepted rider!") || alert("Error accepting rider."))
+                "&user=" + this.props.username).then((response) => response.SUCCESS && alert("Accepted rider!"))
         }
     };
 
@@ -252,7 +252,7 @@ class UserEntry extends React.Component {
         // Use username+ ride_id to update status from PENDING->DENIED in Riders table
         else {
             API.get('flaskapi', '/api/denyride?ride_id=' + this.props.ride +
-                "&user=" + this.props.username).then((response) => response.SUCCESS && alert("Denied rider!") || alert("Error denying rider."))
+                "&user=" + this.props.username).then((response) => response.SUCCESS && alert("Denied rider!"))
         }
     };
 
