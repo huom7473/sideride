@@ -122,8 +122,6 @@ export default class Selection extends React.Component {
                         </Col>
                     </Form.Group>
                 </Form>
-                <Button onClick={this._handleCreateRide}
-                    className="me-2">Host a Ride</Button>
                 <Button onClick={this._handleFindRide}>Find a Ride</Button>
             </Container>
         );
