@@ -70,13 +70,14 @@ class CreateRideMenu extends React.Component {
             let rides = [];
             for (var i = 0; i < rides_response.length; i++) {
                 //If user is the driver of the ride
-                if (rides_response[i]["driver_username"] == this.state.info.username) {
+                if (rides_response[i]["driver_username"] === this.state.info.username) {
                     let passengers = [];
                     for (var j = 0; j < passengers_response.length; j++) {
                         if (passengers_response[j]["ride_id"] === rides_response[i]["ride_id"]) {
                             passengers.push(passengers_response[j]);
                         }
                     }
+                    console.log(rides_response[i]);
                     rides[i] = new DriverEntry({
                         id: rides_response[i]["ride_id"],
                         from: rides_response[i]["from"],
@@ -108,22 +109,6 @@ class CreateRideMenu extends React.Component {
             }
 
         });
-        /*
-                this.testing_arr = ['a', 'b']
-                let rides = [];
-                for (var i = 0; i < this.testing_arr.length; i++) {
-                    rides[i] = new RideEntry({
-                        id: i,
-                        from: "UCLA",
-                        to: this.testing_arr[i],
-                        time: 12,
-                        price: 20,
-                        seats: 4,
-                        info: "More Detailed information"
-                    });
-                }
-                this.setState({ rides: rides });*/
-
     }
 
     render() {
@@ -172,7 +157,6 @@ class RiderEntry extends React.Component {
                     </AccordionContent>
                 </Accordion.Header>
                 <Accordion.Body>
-
                     <DetailContainer>
                         <div>
                             YOUR STATUS: {this.props.status}
@@ -208,8 +192,6 @@ class DriverEntry extends React.Component {
     }
 
     render() {
-        //console.log("MY PASSENGERS ", this.props.passengers);
-
         let users = [];
         let my_passengers = this.props.passengers;
         for (var i = 0; i < my_passengers.length; i++) {
@@ -249,9 +231,8 @@ class DriverEntry extends React.Component {
                     </DriverAccordionContent>
                 </DriverHeader>
                 <Accordion.Body>
-
-                    {this.state.users.map((it, index) => <AccordionBody key={index} eventKey={index}>{it.render()}</AccordionBody>)}
-
+                    {this.state.users.length !== 0 && this.state.users.map((it, index) => <AccordionBody key={index} eventKey={index}>{it.render()}</AccordionBody>)}
+                    {this.state.users.length === 0 && <div>No passengers.</div>}
                 </Accordion.Body>
             </>
         );
@@ -304,7 +285,7 @@ class UserEntry extends React.Component {
                         Status: {this.props.status}
                     </div>
                 </DetailContainer>
-                <Button onClick={this._handleApprove}>
+                <Button onClick={this._handleApprove} className="me-2">
                     Approve
                 </Button>
                 <Button onClick={this._handleDeny}>
