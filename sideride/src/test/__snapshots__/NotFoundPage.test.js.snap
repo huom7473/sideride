@@ -1,3 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CheckboxWithLabel changes the text after click 1`] = `ShallowWrapper {}`;
+exports[`NotFoundPage matches snapshot 1`] = `
+<div
+  className="NotFoundPage"
+>
+  <header
+    className="NotFoundPage-header"
+  >
+    <img
+      alt="logo"
+      className="App-logo"
+      src="logo.svg"
+    />
+    <div>
+      404
+    </div>
+  </header>
+</div>
+`;

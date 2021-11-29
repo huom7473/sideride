@@ -1,4 +1,4 @@
-import NotFoundPage from "../NotFoundPage"
+import Header from "../Header"
 import { configure } from 'enzyme';
 import renderer from 'react-test-renderer';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
@@ -11,8 +11,8 @@ Amplify.configure(awsconfig);
 
 configure({ adapter: new Adapter() });      // for enzyme methods like mount
 
-test('NotFoundPage matches snapshot', () => {
-  const tree = renderer.create(<NotFoundPage />).toJSON();
+test('Header matches snapshot', () => {
+  const tree = renderer.create(<Header />).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
